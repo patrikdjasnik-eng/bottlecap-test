@@ -53,6 +53,10 @@ Až budou data schválena, jediný lokální JSONL soubor musí mít **přesně 
 
 Žádná skutečná otázka ani její gold answer není v repozitáři přidána. Validátor odmítá jiné zdroje, neznámá pole, různé revize, jiné splity, nečíselné odpovědi, chybějící úlohy a přesné duplicity. **Neodhalí všechny parafráze či kontaminaci — tu musím zvlášť auditovat.**
 
+## 🐇 Schválená CPU příprava GSM8K dat (10. 10. 2026)
+
+Po zelené sadě 45/45 na Kali jsem schválil **stažení GSM8K main/train a výběr 12 otázek výhradně na CPU**. Implementoval jsem nový pinovaný downloader a 16 dalších CPU testů. **Přesný postup je v [SAFE-START-DATA.md](SAFE-START-DATA.md).** Výběr zůstane jen k revizi, nikoliv automaticky pro trénování. Kompletní sada má nyní 61 definovaných testů; aktuální běh 61/61 na Kali zatím čeká.
+
 ## 🧪 Jak ověřím CPU přípravu
 
 V Kali po `git pull`:
