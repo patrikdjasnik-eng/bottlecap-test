@@ -29,6 +29,8 @@ My first actual offline run reported `records=1`, `selected_for_review=0` and `i
 
 **✅ Verified on Kali after the fix (2026-10-09):** I reran the offline review on the *same* `records.jsonl` and observed `records=1`, `correct_final_answers=0`, `training_eligible_candidates=0`, `selected_for_review=0`, `reasons={"incorrect_answer":1}`. New output: `runs/offline/20261009T214634155051Z/`; input SHA-256 remains `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`. **The rejection reason is now confirmed correct for this input.** The full 30-test suite still needs independent Kali verification.
 
+**✅ CPU test gate passed (2026-10-09):** my Kali output reads `Ran 30 tests in 0.023s` and `OK` — the current **20 selector tests and 10 reasoning diagnostic tests passed**. The separate offline rerun of Experiment 002 also reported `incorrect_answer: 1` and `selected_for_review: 0`. This is not training verification or evidence of a model improvement.
+
 ## Running on Kali / WSL2
 
 First run the CPU-only test suite; it loads no LLM:

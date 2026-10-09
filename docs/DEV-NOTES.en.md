@@ -13,6 +13,21 @@
 
 ## Diary
 
+### 2026-10-09 — ✅ RHAR v0.1: 30/30 CPU tests confirmed
+
+**Actually verified on my Kali / WSL2 system:** after correcting compatibility with legacy diagnostic records, I ran the combined selector and reasoning diagnostic unit test suite. The terminal reported:
+
+- `Ran 30 tests in 0.023s`
+- `OK`
+
+**Result:** **30/30 tests passed**, with no reported errors or failures. This comprises **20 tests in `tests.test_offline_selector` and 10 in `tests.test_reasoning_probe`**. **0.023 s** is the `unittest` CPU test runtime, not inference or training performance.
+
+**Separately verified actual offline run:** `runs/offline/20261009T214634155051Z/` against `runs/diagnostics/20261009T210123Z/records.jsonl` correctly reported `incorrect_answer: 1`, `correct_final_answers: 0` and `selected_for_review: 0`. Input SHA-256 `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`. The earlier incorrect diagnostic observation is preserved.
+
+**Interpretation and evidence boundary:** RHAR v0.1's initial **offline / CPU phase** now has a confirmed passing regression suite plus a real historical-record check. **I have not trained Qwen, modified model weights, performed a new GPU inference, run the official benchmark or demonstrated token savings.** A correct final answer alone cannot validate the entire reasoning trace.
+
+**Next step, not performed:** decide on a specific protocol, compute budget and validation gates for collecting permitted training examples. I will explicitly approve the concrete experiment before running generation or training.
+
 ### 2026-10-09 — ✅ Fixed offline selector verified on Kali
 
 **Actually performed:** after fixing compatibility with legacy diagnostic records, I reran `python -m diagnostics.offline_selector runs/diagnostics/20261009T210123Z/records.jsonl` on my Kali / WSL2 system. No new inference or training was performed.

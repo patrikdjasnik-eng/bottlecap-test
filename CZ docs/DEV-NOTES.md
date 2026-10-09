@@ -13,6 +13,21 @@
 
 ## Deník
 
+### 2026-10-09 — ✅ RHAR v0.1: 30/30 CPU testů potvrzeno
+
+**Skutečně ověřeno v mém Kali / WSL2:** po opravě starého formátu diagnostických záznamů jsem spustil společnou jednotkovou sadu selektoru a reasoning diagnostiky. Terminál skončil:
+
+- `Ran 30 tests in 0.023s`
+- `OK`
+
+**Výsledek:** **30/30 testů prošlo**, žádný test nehlásil chybu ani selhání. Jde o **20 testů v `tests.test_offline_selector` a 10 testů v `tests.test_reasoning_probe`**. Čas **0,023 s** je čas reportovaný modulem `unittest` pro tuto CPU sadu, nikoli rychlost inference ani trénování.
+
+**Navazující skutečně ověřený offline běh:** `runs/offline/20261009T214634155051Z/` na původním souboru `runs/diagnostics/20261009T210123Z/records.jsonl` správně hlásil `incorrect_answer: 1`, `correct_final_answers: 0` a `selected_for_review: 0`. SHA-256 vstupu `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`. Starší neúspěšný diagnostický výsledek zůstává zachován.
+
+**Interpretace a hranice důkazu:** první **offline / CPU část RHAR v0.1** má nyní potvrzené regresní testy i kontrolu historického vstupu. **Netrénoval jsem Qwen, nezměnil modelové váhy, nemám zatím novou GPU inferenci, oficiální benchmark ani doloženou úsporu tokenů.** Správný finální výsledek také sám nedokazuje bezchybnost celého reasoning trace.
+
+**Další krok, zatím neproveden:** rozhodnout o přesném návrhu sběru povolených trénovacích příkladů, jeho nákladech a validačních kontrolách. Nejdřív odsouhlasím konkrétní experiment, teprve pak spustím generování nebo trénování.
+
 ### 2026-10-09 — ✅ Ověření opraveného offline selektoru v Kali
 
 **Skutečně provedeno:** po opravě kompatibility se starými diagnostickými záznamy jsem znovu spustil `python -m diagnostics.offline_selector runs/diagnostics/20261009T210123Z/records.jsonl` ve svém Kali / WSL2. Nepouštěl jsem žádnou novou inferenci ani trénování.
