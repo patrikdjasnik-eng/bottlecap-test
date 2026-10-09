@@ -62,6 +62,10 @@ The provided `train.py` is only a rollout demonstration, **not a working RHAR tr
 
 I collaborate on RHAR with **ChatGPT (OpenAI, GPT-6)** and **my own GGUF AI agent, Máša**. ChatGPT helps with design discussions, analysis, code and documentation. Máša is part of my development environment; **I do not attribute specific experiment results to her without documented evidence**. I retain final authority for research and implementation decisions.
 
+## 🐇 Currently approved Safe Start (2026-10-10)
+
+After choosing the small **12 math questions × 3 generations** route, I prepared CPU-only `diagnostics/safe_start_plan.py` with 15 additional tests. **No real questions were downloaded, no samples generated, and no training performed.** The active protocol and approval boundary are in [SAFE-START.en.md](SAFE-START.en.md). The broader 20–30-question possibility below is historical, not this pilot. The previous 30/30 CPU tests passed on Kali; the combined 45-test suite still awaits Kali verification.
+
 ## 🧪 Implemented offline phase
 
 The first approved implementation step **is now in the repository**: `diagnostics/offline_selector.py` and **16 new CPU tests**. It processes only existing JSONL generations, with no model inference or training. See [OFFLINE-SELECTOR.en.md](OFFLINE-SELECTOR.en.md). **`selected_for_review.jsonl` is not approved training data.** A fresh Kali test run and offline analysis of historical Experiment 002 remain pending.

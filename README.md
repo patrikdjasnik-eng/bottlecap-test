@@ -38,6 +38,7 @@ Details, limitations, and an external-GPU plan: [docs/HARDWARE.en.md](docs/HARDW
 
 ## 🔬 Research files
 
+- [🐇 RHAR Safe Start — implementation plan and CPU tests](docs/SAFE-START.en.md) — 12 math questions × 3 planned generations; no GPU used. [Czech](CZ%20docs/SAFE-START.md).
 - [RHAR v0.1 offline selector](docs/OFFLINE-SELECTOR.en.md) — review existing generations, strict correctness checks, selection and CPU tests. [Czech](CZ%20docs/OFFLINE-SELECTOR.md).
 - [RHAR v0.1 — research protocol](docs/RHAR-V01-PLAN.en.md) — approved direction, proposed data pipeline, metrics and approval boundaries. [Czech](CZ%20docs/RHAR-V01-PLAN.md).
 - [IDEA.md](IDEA.md) — hypothesis, method, measurement plan, and experiment log. [Czech](CZ%20docs/IDEA.md).

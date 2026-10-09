@@ -38,6 +38,7 @@ Podrobnosti, limity a plán práce s externí GPU: [HARDWARE.md](HARDWARE.md). G
 
 ## 🔬 Výzkumné soubory
 
+- [🐇 RHAR Safe Start — plán a CPU testy](SAFE-START.md) — 12 matematických úloh × 3 plánované generace; bez GPU. [English](../docs/SAFE-START.en.md).
 - [Offline filtr RHAR v0.1](OFFLINE-SELECTOR.md) — načítání starých generací, kontrola správnosti, srovnání a CPU testy. [Anglicky](../docs/OFFLINE-SELECTOR.en.md).
 - [RHAR v0.1 — výzkumný protokol](RHAR-V01-PLAN.md) — schválený směr, navržená datová pipeline, měření a hranice dalšího schvalování. [Anglicky](../docs/RHAR-V01-PLAN.en.md).
 - [IDEA.md](IDEA.md) — hypotéza, metoda, plán měření a protokol výsledků. [Anglicky](../IDEA.md).

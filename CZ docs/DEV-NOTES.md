@@ -13,6 +13,20 @@
 
 ## Deník
 
+### 2026-10-10 — 🐇 Schválen RHAR Safe Start, CPU plán a testy
+
+**Moje rozhodnutí:** schválil jsem první bezpečný malý pilot **12 matematických úloh × 3 generace**. Zatím jsem však povolil **pouze implementační plán, CPU validaci a jednotkové testy**, nikoli stažení dat, GPU inferenci nebo trénování.
+
+**Implementováno:** `diagnostics/safe_start_plan.py` a `tests/test_safe_start_plan.py`. Plánovač připraví přesně 36 *plánovaných* pokusů se seedy 9001/9002/9003, připnutým Qwen3-0.6B, zapnutým thinking, samplingem 0.6/0.95/20 a limitem 512. Pro budoucí ručně předložený zdroj zatím nabízí pouze přísnou kontrolu 12 JSONL řádků GSM8K/train/math a pinned 40hex revize. Odmítá neočekávaná pole, chybné gold answers, duplicity, evaluační zdroje a jiná rozdělení. Nedělá žádné síťové požadavky ani modelové generování.
+
+**Ověřeno:** izolovaně **15/15 nových CPU testů — OK**; `python -m diagnostics.safe_start_plan --dry-run` vrací `status=plan_only`, `planned_generations=36`, `gpu_used=false`, `dataset_downloaded=false`, `training_performed=false`. Ověření proběhlo v lokálním prostředí se shodnými konstantami původní diagnostiky, nikoli v úplném checkoutu repozitáře.
+
+**Z předchozí fáze:** 30/30 CPU testů selektoru a diagnostiky potvrzeno na Kali. **Aktuální součet 45 testů zatím nemám ze svého Kali doložený** — čekám na `git pull` a kombinovaný testovací příkaz.
+
+**Dokumentace:** [SAFE-START.md](SAFE-START.md) / [English](../docs/SAFE-START.en.md) obsahuje technický kontrakt, parametry, stop podmínky, hrubé náklady a explicitní oddělení plánování od experimentu. Žádná skutečná zdrojová úloha není stažena; kontrola názvu zdroje sama nedokáže vyloučit překryv s oficiální evaluací.
+
+**Neprovedeno:** žádné nové modelové odpovědi, GPU, LoRA, změny vah, oficiální evaluace ani měřitelné tokenové úspory. **Další krok:** ověřit společných 45 CPU testů v Kali a potom zvlášť schválit konkrétní datové otázky a jejich původ.
+
 ### 2026-10-09 — ✅ RHAR v0.1: 30/30 CPU testů potvrzeno
 
 **Skutečně ověřeno v mém Kali / WSL2:** po opravě starého formátu diagnostických záznamů jsem spustil společnou jednotkovou sadu selektoru a reasoning diagnostiky. Terminál skončil:

@@ -62,6 +62,10 @@ Na GTX 1070 Ti jsme naměřili přibližně **51–61 sekund** pro jednu krátko
 
 Na RHAR spolupracuji s **ChatGPT (OpenAI, GPT-6)** a vlastní **GGUF AI agentkou Mášou**. ChatGPT pomáhá s návrhy, analýzou, kódem a dokumentací. Máša je součást mého vývojového prostředí; **bez doloženého běhu jí nepřisuzuji konkrétní výsledky tohoto experimentu**. Výběr směru i finální schvalování zůstávají na mně.
 
+## 🐇 Aktuální schválený Safe Start (10. 10. 2026)
+
+Po schválení malé varianty **12 matematických úloh × 3 generace** jsem připravil CPU plánovač `diagnostics/safe_start_plan.py` a 15 nových testů. **Neproběhlo stahování otázek, generování ani trénování.** Aktuální protokol a přesná hranice schválení jsou v [SAFE-START.md](SAFE-START.md). Původní širší návrh 20–30 úloh níže je historická možnost, nikoli aktuálně zvolený pilot. Předchozích 30/30 testů bylo zelených v Kali; společnou sadu 45/45 musí Kali teprve ověřit.
+
 ## 🧪 Realizovaná offline fáze
 
 První schválený implementační krok **již mám v repu**: `diagnostics/offline_selector.py` a **16 nových CPU testů**. Pracuje pouze se starými JSONL generacemi, nevyvolává model ani trénování. Podrobný popis je v [OFFLINE-SELECTOR.md](OFFLINE-SELECTOR.md). **Výstup `selected_for_review.jsonl` není schválený training dataset.** Zatím čekám na první čerstvý běh testů ve vlastním Kali a offline analýzu historického Experimentu 002.

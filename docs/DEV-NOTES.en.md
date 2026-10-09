@@ -13,6 +13,20 @@
 
 ## Diary
 
+### 2026-10-10 — 🐇 RHAR Safe Start approved, CPU plan and tests ready
+
+**My decision:** I approved a small initial pilot of **12 math questions × 3 planned generations**, but at this stage authorized **only the implementation plan, CPU validation and unit tests** — not dataset downloads, GPU inference or training.
+
+**Implemented:** `diagnostics/safe_start_plan.py` and `tests/test_safe_start_plan.py`. The planner produces exactly 36 *proposed* attempts with seeds 9001/9002/9003, pinned Qwen3-0.6B, thinking enabled, sampling 0.6/0.95/20 and 512 max output tokens. A future manually supplied dataset must pass the exact 12-record GSM8K/train/math contract with a pinned 40-hex revision. Unknown fields, malformed answers, duplicates, evaluation-source labels and incorrect splits are rejected. There are no network calls or generation operations.
+
+**Verified:** **15/15 new CPU tests passed** in an isolated local environment; `python -m diagnostics.safe_start_plan --dry-run` reports `status=plan_only`, `planned_generations=36`, `gpu_used=false`, `dataset_downloaded=false`, `training_performed=false`. This used a local replica of original diagnostic constants rather than a full GitHub checkout.
+
+**Prior phase:** 30/30 selector and diagnostic CPU tests passed on Kali. **The new combined 45-test suite has not yet been confirmed on Kali**; I must pull the branch and run the combined test command.
+
+**Documentation:** [SAFE-START.en.md](SAFE-START.en.md) / [Czech](../CZ%20docs/SAFE-START.md) records the implementation contract, settings, stop rules, rough runtime estimate and approval boundaries. No real dataset questions were fetched. A source-name string check alone cannot rule out evaluation contamination.
+
+**Not performed:** no new model output, GPU use, LoRA, weight modification, official benchmark or demonstrated token savings. **Next:** run 45 CPU tests on Kali and separately approve exact questions and their provenance before touching GPU.
+
 ### 2026-10-09 — ✅ RHAR v0.1: 30/30 CPU tests confirmed
 
 **Actually verified on my Kali / WSL2 system:** after correcting compatibility with legacy diagnostic records, I ran the combined selector and reasoning diagnostic unit test suite. The terminal reported:
