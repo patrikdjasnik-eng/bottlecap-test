@@ -13,6 +13,16 @@
 
 ## Diary
 
+### 2026-10-10 — ✅ Complete Safe Start CPU suite 61/61 OK; local eval corpus missing
+
+**Actual output from my Kali/WSL2:** after synchronizing `feat/reasoning-compression`, I ran `tests.test_offline_selector`, `tests.test_reasoning_probe`, `tests.test_safe_start_plan` and `tests.test_safe_start_data` together. The terminal reported **`Ran 61 tests in 0.600s`** and **`OK`**. This verifies the complete current CPU suite, not merely separate 45- and 16-test runs.
+
+The command `test -f questions/questions.jsonl` reported **`Eval otázky chybí`** (evaluation questions missing). The earlier real selection report remains `overlap_audit_status=pending_local_eval_corpus`, `local_eval_audit_performed=false`, and `overlap_audit_exhaustive=false`. **Zero filtered overlaps without an evaluation corpus do not establish absence of data contamination.**
+
+**Completed scope:** CPU schema validation, verified cached GSM8K train ingestion, selection of twelve review candidates and a plan for 36 *future* attempts. **Neither performed nor authorized:** fetching official evaluation data, running the official benchmark, GPU inference, LoRA/training, or measuring token savings.
+
+**Next approval:** separately authorize an overlap check against accurately pinned official evaluation prompts. Running the existing `utils/eval/benchmarks.py` directly would fetch additional dependencies and assemble the full benchmark; do not do this automatically. All twelve candidate questions remain `review_only`.
+
 ### 2026-10-10 — ✅ GSM8K Safe Start: real CPU selection of 12 questions confirmed on Kali
 
 **Actual terminal output:** `Ran 16 tests in 0.512s`, `OK` for `tests.test_safe_start_data`. Running `python -m diagnostics.safe_start_data --download` successfully processed **7,473 records** from pinned GSM8K `main/train` revision `740312add88f781978c0658806c59bc2815b9866`. The report included `download_status=verified_cached` and SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`.
