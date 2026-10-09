@@ -13,6 +13,17 @@
 
 ## Diary
 
+### 2026-10-10 — ✅ RHAR Safe Start: 79/79 combined CPU tests green on Kali
+
+**Actual terminal output:** `Ran 79 tests in 0.832s` and `OK`. The entire 79-test CPU suite ran together on my Kali/WSL2 environment: offline selector, reasoning probe, Safe Start planner, GSM8K data selection, and the new overlap audit. This is the first evidenced **full combined** run of the current suite on Kali.
+
+**Previously verified overlap screen:** `python -m diagnostics.safe_start_overlap --download` screened the twelve pinned GSM8K candidates against **2,759 prompt texts** across six SVAMP, MBPP+, BFCL and IFEval files. It returned **zero textual matches** under the implemented heuristic. `semantic_paraphrases_ruled_out=false` and `overlap_audit_exhaustive=false`, so the result does not prove that no semantic paraphrases overlap.
+
+**Completed gate:** CPU preparation, twelve candidate questions, 36 future planned attempts, file integrity screening, and regression testing are green. No new Qwen3-0.6B generations, GPU use, model training, or official benchmark execution occurred. `review_only` and `training_approved=false` remain unchanged.
+
+**Next decision (NOT yet approved):** separately review compute budget, stop conditions, and the implementation of the first proposed GPU sampling phase: **12 questions × 3 seeds = 36 generations**, no LoRA and no automatic training-data authorization. **Do not start GPU work without my consent.**
+
+
 ### 2026-10-10 — ✅ Actual CPU overlap screen: 0 matches among 2,759 evaluation prompts
 
 **Actually completed on Kali / WSL2:** `python -m diagnostics.safe_start_overlap --download` succeeded and returned `audit_result=no_matches_in_screened_sources`. It checked the **twelve previously selected GSM8K train candidates** (pinned revision `740312add88f781978c0658806c59bc2815b9866`) against **2,759 prompt texts** from all six declared files across four benchmark families.
