@@ -64,11 +64,11 @@ Soubor [`train.py`](../train.py) načte model z Hugging Face a předá ti ho; v�
 
 ```bash
 git clone https://github.com/BottleCapAI/ThinkingCap-Test && cd ThinkingCap-Test
-curl -LsSf https://astral.sh/uv/install.sh | sh    # přeskoč, pokud už máš uv
+curl -LsSf https://astral.sh/uv/install.sh | sh    # skip if you already have uv
 uv venv && source .venv/bin/activate
 uv pip install -r requirements.txt
 
-python utils/train/prepare_data.py    # vytvoří data/train.jsonl, která čte train.py
+python utils/train/prepare_data.py    # writes data/train.jsonl, which train.py reads
 python train.py
 ```
 
@@ -130,8 +130,8 @@ Průměr napříč benchmarky má pro každý ze čtyř benchmarků stejnou váh
 Pokud máš repozitář naklonovaný a závislosti nainstalované (viz [Začínáme](#začínáme)), základní nezměněný Qwen3-0.6B vyhodnotíš dvěma příkazy:
 
 ```bash
-python utils/eval/benchmarks.py        # stáhne a zmrazí seznam otázek
-python evaluate.py --out runs/base     # plný baseline běh
+python utils/eval/benchmarks.py        # download and freeze the questions
+python evaluate.py --out runs/base     # the full baseline
 ```
 
 První příkaz stáhne čtyři benchmarky v přesně určených revizích a uloží je do `questions/questions.jsonl`. Druhý vypíše jeden řádek pro každý benchmark (viz tabulka výše) a vytvoří `runs/base/`. V něm najdeš jednotlivé odpovědi v `records.jsonl` a soubor `results.json` se všemi informacemi potřebnými k interpretaci skóre. Baseline vyhodnoť jednou a výsledky si uchovej: všechny další běhy budeš s touto složkou porovnávat pomocí `compare.py`.
@@ -149,10 +149,10 @@ Uvede název každého benchmarku, jehož hodnoticí nástroj nefungoval. Odhali
 Checkpoint vyhodnoť na stejných otázkách jako baseline. Parametry závisí na způsobu trénování:
 
 ```bash
-# LoRA adaptér nad základním modelem
+# a LoRA on top of the base model
 python evaluate.py --out runs/mine --adapter ./my-lora
 
-# vlastní váhy, s případným adaptérem nebo bez něj
+# your own weights, with or without an adapter of their own
 python evaluate.py --out runs/mine --model ./my-qwen3
 python evaluate.py --out runs/mine --model ./my-qwen3 --adapter ./my-lora
 ```
