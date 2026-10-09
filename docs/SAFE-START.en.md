@@ -57,6 +57,10 @@ No actual questions or gold answers have been committed. The validator rejects u
 
 After 45/45 tests passed on Kali, I approved **only downloading GSM8K main/train and selecting 12 questions on CPU**. A pinned downloader and 16 additional CPU tests are in the repository. **See [SAFE-START-DATA.en.md](SAFE-START-DATA.en.md) for the exact commands.** All selected examples remain review-only and not automatically suitable for training. The combined current suite defines 61 tests; 61/61 on Kali is still pending.
 
+## 🧪 Verifying the CPU preparation## 🐇 Next approved phase — preparation only (2026-10-10)
+
+After screening 2,759 official prompts with zero heuristic text matches and passing **79/79 CPU tests on Kali**, I approved **only implementing a future GPU-generation runner and its CPU tests**. The explicitly gated script is `diagnostics/safe_start_generate.py`; the safety protocol and **CPU-only dry-run commands** are in [SAFE-START-GENERATION.en.md](SAFE-START-GENERATION.en.md). The new combined test target is **103 tests**, awaiting full confirmation on Kali. **GPU and training remain unauthorized.**
+
 ## 🧪 Verifying the CPU preparation
 
 After `git pull` on Kali:
