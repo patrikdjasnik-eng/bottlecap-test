@@ -13,6 +13,19 @@
 
 ## Diary
 
+### 2026-10-10 — 🛡️ Approved CPU-only overlap screen of 12 GSM8K candidates against official evaluation questions
+
+**Decision:** after **61/61 CPU tests passed on Kali (`Ran 61 tests in 0.600s`, `OK`)** and confirming `questions/questions.jsonl` was absent, I explicitly authorized **only preparing and downloading pinned official evaluation data for contamination screening**. No inference, GPU, training or official evaluation run is approved.
+
+**Implementation:** separate `diagnostics/safe_start_overlap.py` and `tests/test_safe_start_overlap.py`. The auditor checks exactly six source objects across four benchmark families (SVAMP, MBPP+, three BFCL v4 categories, IFEval) using the source revisions from the **unchanged** `utils/eval/benchmarks.py`. Known content SHA-256 pins are checked for SVAMP and MBPP+. BFCL and IFEval are Git-commit-pinned and their observed file hashes are recorded. Only question/prompt text is extracted for matching, never official gold answers. The regular evaluation downloader and graders are not run.
+
+**Safeguards:** before any network request, validate our **existing twelve selected questions** against their original manifest: IDs and SHA-256. Do not automatically reselect examples. Missing sources, checksum mismatches or malformed data cause a failure without a green report. The ignored `data/safe-start/overlap-audit.json` contains only evidence, counts, hashes, and potential-match indices. It does not claim paraphrase-proof screening or authorize training.
+
+**Verification:** the **18/18** new unit tests passed **in an isolated local CPU environment with mocked network data**. GitHub copies of the two Python files were verified against the tested files. **A full 79/79 Kali run and the actual six-source audit are still pending**. No model or GPU was run.
+
+**Documentation:** [SAFE-START-OVERLAP.en.md](SAFE-START-OVERLAP.en.md) / [Czech](../CZ%20docs/SAFE-START-OVERLAP.md). Next: synchronize the branch, run all CPU tests, only then run `python -m diagnostics.safe_start_overlap --download`, inspect its report, and obtain separate approval before any additional experiment.
+
+
 ### 2026-10-10 — ✅ Complete Safe Start CPU suite 61/61 OK; local eval corpus missing
 
 **Actual output from my Kali/WSL2:** after synchronizing `feat/reasoning-compression`, I ran `tests.test_offline_selector`, `tests.test_reasoning_probe`, `tests.test_safe_start_plan` and `tests.test_safe_start_data` together. The terminal reported **`Ran 61 tests in 0.600s`** and **`OK`**. This verifies the complete current CPU suite, not merely separate 45- and 16-test runs.
