@@ -13,6 +13,20 @@
 
 ## Diary
 
+### 2026-10-09 — HRM proposal documented; implementation deferred
+
+**Owner's consent:** "dobry napad zapsal bych to do md" (good idea, I'd write it in MD) approves **documenting** the **Hallucination Risk Monitor (HRM)** in both versions of `IDEA.md`, not implementing it or formally expanding RHAR to four modules.
+
+**Proposed purpose:** investigate incorrect/unsupported answer risk using answer instability, RPS signals, RPD recoverability and optional checks against external evidence. Distinguish factual hallucinations from other errors.
+
+**Methodological constraint:** a risk score is not automatically a probability. Calibration on independent data, Brier/ECE/AUROC metrics, baseline comparisons, ablations, and measurement of compute overhead are **future proposals**, not obtained results.
+
+**Current verification:** the existing `reasoning_probe.py` does not compute these predictions. No HRM runs or validation results exist. Code, model weights, official benchmark prompts and training remain unchanged.
+
+**Status:** documented research candidate only. A formal fourth module, implementation and experiments each require another owner decision.
+
+## Diary
+
 ### 2026-10-09 — RHAR approved as a unified modular organism
 
 **Owner's approval:** when asked whether to adopt a single connected organism composed of RPS, RPD, and TPC, the owner explicitly answered **"yes"**. Working name: **RHAR — Rabbit Hollow Adaptive Reasoning**.

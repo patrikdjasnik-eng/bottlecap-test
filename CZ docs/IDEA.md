@@ -24,6 +24,33 @@ Jde o *neověřenou výzkumnou hypotézu*. Příbuzné metody již existují; ne
 
 Tyto mechanismy mají v ideálním případě ovlivňovat **učení samotného modelu**, nikoli vyžadovat drahé dodatečné kontrolní agenty při každé inferenci. Proveditelnost a režijní náklady jsou otevřené otázky.
 
+## HRM — Hallucination Risk Monitor (výzkumný kandidát)
+
+**Stav:** dne 9. 10. 2026 vlastník **schválil zápis nápadu do Markdown dokumentace**. HRM je **navržené rozšíření pro diagnostiku rizika**, **nikoli zatím formálně schválený čtvrtý modul RHAR**, trénovací komponenta nebo provedený experiment.
+
+**Výzkumná otázka:** Mohou signály sledované v RHAR předpovídat riziko chybné nebo nepodložené odpovědi **ještě před** nezávislým ověřením správnosti? Chyba v numerické úloze nemusí být faktická halucinace; při měření oba jevy odlišovat.
+
+**Navržené signály (dosud neimplementované):**
+
+| Signál | Navržené pozorování | Omezení |
+| --- | --- | --- |
+| Nestabilita odpovědí | Rozdíly ve finálních odpovědích při opakovaném generování | Shoda nezaručuje pravdivost; další generování stojí čas |
+| Falešný pokrok RPS | Vysoká aktivita či opakování v reasoning procesu bez měřitelného posunu | Metriku pokroku je nutné nejprve ověřit, nestačí délka textu |
+| Ztráta informace RPD | Rozpory nebo nemožnost rekonstruovat podstatné kroky a výsledek | Samotné ověřování může být chybové a výpočetně drahé |
+| Ověření vůči zdroji | Tvrzení odporující poskytnutému zdroji, známému výpočtu nebo spustitelnému testu | Vyžaduje vhodný důkaz; neznámý fakt nelze automaticky označit za chybný |
+
+**Navržené měření a ověření:**
+1. Začít **rizikovým skóre**, nikoli tvrzením o pravděpodobnosti halucinace.
+2. Připravit samostatná data s ověřitelným správným výsledkem. Vést oddělené štítky **chybná odpověď** a **nepodložené faktické tvrzení**.
+3. Kalibrovat pravděpodobnosti pouze na oddělené kalibrační sadě a ověřit je na další nezávislé sadě. Sledovat **Brierovo skóre**, **expected calibration error (ECE)** a rozlišovací schopnost (např. **AUROC**, pokud jsou zastoupeny obě třídy).
+4. Srovnat s jednoduchými baseline, například stabilitou finálních odpovědí. Ablačně ověřit přínos signálů RPS/RPD/TPC.
+5. Započítat dodatečnou výpočetní a paměťovou cenu. Na GTX 1070 Ti upřednostnit lehké měření z jediné generace; opakované generování vyžaduje samostatné odůvodnění.
+6. Nepřizpůsobovat HRM podle testovacích dat SVAMP, MBPP+, BFCL a IFEval. Neměnit oficiální evaluaci.
+
+**Současná diagnostika:** `diagnostics/reasoning_probe.py` eviduje správnost několika ručně připravených úloh, tokeny a opakování, ale **neměří riziko, kalibrovanou pravděpodobnost halucinace, faktickou oporu, ECE ani Brierovo skóre**.
+
+**Čeká na další schválení:** architektura HRM, výběr signálů, prahy, kalibrační data, kontrola zdrojů, trénovací integrace a změny kódu. Nápad nevydávat za světovou novinku, naměřené zlepšení ani funkční predikční systém.
+
 ## Modulární výzkumný plán (navržené experimenty, dosud neschválené)
 
 1. Změřit nezměněný model: správnost, počet reasoning/final/celkových tokenů, čas, variabilitu a selhání.

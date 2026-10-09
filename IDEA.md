@@ -24,6 +24,33 @@ This is an *unproven research hypothesis*. Related methods already exist; we do 
 
 These mechanisms should ideally affect **what the model learns**, not require costly extra verification agents on every inference. Feasibility and overhead remain open questions.
 
+## HRM — Hallucination Risk Monitor (research candidate)
+
+**Status:** On 2026-10-09 the owner **approved recording this idea in the Markdown documentation**. HRM is a **proposed observational/risk-assessment extension**, **not yet a formally approved fourth RHAR module**, training component, or implemented experiment.
+
+**Research question:** Can signals produced while studying RHAR predict the risk of an incorrect or unsupported response **before** correctness is independently verified? An error on a numerical task is not automatically a factual hallucination; distinguish the two in measurement and reporting.
+
+**Proposed signals (not yet implemented):**
+
+| Signal | Proposed observation | Limitation |
+| --- | --- | --- |
+| Answer instability | Variation of final answers over repeated samples | Agreement does not guarantee truth; extra generations cost time |
+| RPS false progress | High reasoning activity or repetition without measurable advancement | A progress metric must first be validated, not inferred from verbosity |
+| RPD information loss | Inconsistency or failure to reconstruct essential steps and the conclusion | Verification can itself be unreliable and expensive |
+| External grounding | Claims contradicted by a provided source, known numerical result, or executable test | Requires suitable external evidence; unknown facts cannot be declared false |
+
+**Measurements to propose and validate:**
+1. Start with a **risk score**, not a claimed hallucination probability.
+2. Label a separately collected dataset with a verifiable ground truth. Record **incorrect answer** and **unsupported factual claim** as distinct labels.
+3. Use an independent calibration/validation split to map scores to probabilities only if supported by evidence. Evaluate **Brier score**, **expected calibration error (ECE)** and discrimination (e.g. **AUROC**, if both classes exist).
+4. Compare against simple baselines such as model answer consistency. Measure predictive value of each RPS/RPD/TPC-derived signal through ablations.
+5. Account for extra compute and memory. Prioritize lightweight single-generation probes locally on the GTX 1070 Ti; repeated sampling should be separately justified.
+6. Never fit HRM using SVAMP, MBPP+, BFCL or IFEval held-out evaluation data. Keep official evaluation settings unchanged.
+
+**Existing diagnostic:** `diagnostics/reasoning_probe.py` currently records correctness for a few hand-written tasks, counts and repetition, but **does not calculate risk, calibrated hallucination probability, factual grounding, ECE or Brier score**.
+
+**Explicitly deferred:** HRM architecture, feature extraction, thresholds, calibration dataset, source checking, training integration and code changes require a **separate owner decision**. The idea must not be described as a verified novelty, measured improvement, or accurate prediction system.
+
 ## Modular research plan (proposed experiments, not yet authorized)
 
 1. Measure the unchanged base model: exact answers, reasoning/final/total token counts, time, variance and failures.

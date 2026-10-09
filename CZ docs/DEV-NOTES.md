@@ -13,6 +13,20 @@
 
 ## Deník
 
+### 2026-10-09 — Návrh HRM zapsán, implementace odložena
+
+**Souhlas vlastníka:** „dobry napad zapsal bych to do md“ — schválen **zápis** nápadu **Hallucination Risk Monitor (HRM)** do obou verzí `IDEA.md`, nikoli jeho implementace nebo definitivní rozšíření RHAR na čtyři moduly.
+
+**Navržený účel:** zkoumat riziko chybné a nepodložené odpovědi pomocí nestability odpovědí, signálů RPS, rekonstruovatelnosti RPD a případného ověření vůči externímu zdroji. Oddělovat faktické halucinace od jiných typů chyb.
+
+**Metodická podmínka:** rizikové skóre není automaticky pravděpodobnost. Kalibrace na samostatných datech, Brier/ECE/AUROC, porovnání baseline, ablace a evidence výpočetní ceny jsou **návrhy pro budoucí schválení**, nikoli hotové výsledky.
+
+**Kontrola dosavadního stavu:** aktuální `reasoning_probe.py` tuto predikci neprovádí. Výstupy HRM ani validace zatím neexistují. Kód, váhy modelu, prompty benchmarků i trénování beze změn.
+
+**Stav:** pouze zdokumentovaný kandidát. O formálním čtvrtém modulu, implementaci a experimentu musí vlastník rozhodnout zvlášť.
+
+## Deník
+
 ### 2026-10-09 — RHAR schváleno jako jeden modulární organismus
 
 **Schválení vlastníka:** na dotaz, zda zvolit jeden propojený organismus složený z RPS, RPD a TPC, vlastník výslovně odpověděl **„ano“**. Přijatý pracovní název: **RHAR — Rabbit Hollow Adaptive Reasoning**.
