@@ -13,6 +13,25 @@
 
 ## Diary
 
+### 🌙 2026-10-10 — End of day / What we learned today
+
+**Status: work is finished for today.** Our objective was not to train Qwen, but to build a safe, reproducible preparation pipeline for **RHAR — Rabbit Hollow Adaptive Reasoning**. We began with a CPU-only planner and finished with **103/103 green tests** (`Ran 103 tests in 0.917s`, `OK`) and a verified generation `--dry-run`. This is a genuine preparation result, **not** measured token savings.
+
+**What we actually completed:** using a pinned revision of `openai/gsm8k` on Kali, we checked the training Parquet SHA-256, loaded **7,473** records, and deterministically selected **twelve candidate math questions**. We prepared the frozen **12 × 3 = 36** future-generation plan for `Qwen/Qwen3-0.6B`, with seeds `9001, 9002, 9003`, thinking enabled, temperature `0.6`, top_p `0.95`, top_k `20` and `512` maximum new tokens. The future runner validates the original twelve IDs, input hashes and completed overlap-screen report. Over the course of the day the complete CPU test suite grew **45 → 61 → 79 → 103**, and each updated complete suite was confirmed green.
+
+**What today's work taught us:**
+- **Reproducibility is foundational.** Pinned dataset/model revisions, SHA-256, fixed seeds and stable prompts are necessary for meaningful comparison. Gold answers belong only in grading, **never in the model prompt**.
+- **Dependency mismatches can block even simple CPU operations.** `pyarrow` was initially absent; a newer version then required NumPy 2.x while Kali used NumPy `1.26.4`. We resolved this narrowly with compatible `pyarrow==16.1.0`, rather than blindly upgrading the AI environment.
+- **Zero matches do not prove a contamination-free dataset.** We compared twelve GSM8K questions with **2,759 prompt texts** from six pinned SVAMP, MBPP+, BFCL and IFEval source objects. We found **zero exact or strong heuristic near-duplicates** in that defined screen, but **semantic paraphrases are not ruled out**, so all candidates remain `review_only`.
+- **Thinking-token accounting must count real generated tokens.** We distinguish reasoning and final tokens, handle chat-template-prefilled `<think>`, `</think>` boundaries and termination tokens. `reasoning_tokens + final_tokens` must equal all generated tokens when the split is known. Unknown is not zero; incomplete or incorrect outputs must not be counted as successful.
+- **Green CPU tests validate preparation, not the model's reasoning quality.** The dry run checked all three local inputs and the fixed execution plan, but **did not load Qwen, use GPU, generate model answers or train anything**. There is no RHAR efficiency measurement or proven model improvement yet. Shorter does not automatically mean correct.
+
+**Research lesson:** a small, auditable experiment with stop conditions beats a costly unguarded run. We must keep **preparation → CPU verification → GPU inference → possible training** under separate explicit approvals. The future GPU runner requires two explicit CLI flags; neither is authorization without a separate decision.
+
+**Next session (planned, not executed):** CPU-only preflight of the local Qwen cache, CUDA/FP16 and available VRAM, plus a proposed time budget, progress persistence and stopping criteria. Only after that will I separately decide whether to allow a short canary or all **36 generations**. **No GPU inference, LoRA/training or official benchmark happened today, and none is automatically authorized for the next session.**
+
+**Final daily scoreboard:** **103/103 CPU tests green · 12 validated candidates · 2,759 evaluation prompts screened · 0 heuristic matches · 36 planned generations only · 0 GPU runs · 0 training runs.** 🐇🛡️
+
 ### 2026-10-10 — ✅ Safe Start generator: 103/103 CPU tests green on Kali
 
 **Actually verified on my Kali/WSL2:** the combined `tests.test_offline_selector`, `tests.test_reasoning_probe`, `tests.test_safe_start_plan`, `tests.test_safe_start_data`, `tests.test_safe_start_overlap`, and `tests.test_safe_start_generate` suite reported `Ran 103 tests in 0.917s`, `OK`. This closes the CPU test gate, **not** an actual GPU experiment.
