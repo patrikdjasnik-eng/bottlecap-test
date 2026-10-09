@@ -13,6 +13,18 @@
 
 ## Diary
 
+### 2026-10-10 — ✅ GSM8K Safe Start: real CPU selection of 12 questions confirmed on Kali
+
+**Actual terminal output:** `Ran 16 tests in 0.512s`, `OK` for `tests.test_safe_start_data`. Running `python -m diagnostics.safe_start_data --download` successfully processed **7,473 records** from pinned GSM8K `main/train` revision `740312add88f781978c0658806c59bc2815b9866`. The report included `download_status=verified_cached` and SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`.
+
+**Selected question IDs (ordered):** `gsm8k-train-06982, gsm8k-train-01136, gsm8k-train-06866, gsm8k-train-02829, gsm8k-train-01500, gsm8k-train-01015, gsm8k-train-01832, gsm8k-train-03268, gsm8k-train-06657, gsm8k-train-06089, gsm8k-train-02730, gsm8k-train-01217`. The local `selection-report.json` also stores every question's SHA-256, while the question text and gold answers remain inside ignored `data/safe-start/questions.jsonl`.
+
+**Verified dry run:** `python -m diagnostics.safe_start_plan --dry-run --questions data/safe-start/questions.jsonl` validated twelve records and planned **36 attempts** (seeds `9001/9002/9003`, Qwen3-0.6B, thinking enabled). **No inference, GPU sampling, or model training occurred**; all selected examples remain `review_only` and `training_approved=false`.
+
+**Unfinished audit:** `overlap_audit_status=pending_local_eval_corpus`, `local_eval_audit_performed=false`, `overlap_audit_exhaustive=false`. The absence of filtered candidates **does not establish the absence of evaluation contamination**. Do not download evaluation data or launch GPU without separate approval.
+
+**Dependency fix:** importing a too-new PyArrow initially failed with NumPy 1.26.4. After the compatible-version installation recommendation, the real CPU selection succeeded. I therefore pinned `pyarrow==16.1.0` in `requirements.txt`. The complete combined **61/61 test run on Kali has not yet been observed**: the earlier 45/45 and current 16/16 are distinct executions.
+
 ### 2026-10-10 — 🐇 Approved GSM8K train CPU download and 12-question selection
 
 **My decision:** after **45/45 CPU tests in 0.045 s** passed on Kali and the `safe_start_plan --dry-run` showed `plan_only`, 12 questions, 36 proposed attempts and `gpu_used=false`, I authorized **only downloading pinned GSM8K main/train and deterministically selecting 12 candidate questions on CPU**. GPU sampling, LoRA, model training and automatic acceptance of selected examples remain unauthorized.
