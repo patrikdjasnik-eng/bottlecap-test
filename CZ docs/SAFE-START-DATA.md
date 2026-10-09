@@ -11,7 +11,7 @@
 - Jediný stahovaný soubor: `main/train-00000-of-00001.parquet` (přibližně 2,31 MB).
 - Očekávané SHA-256 celé stažené Parquet přílohy: `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`.
 - Skript `diagnostics/safe_start_data.py` odmítne poškozený či změněný soubor; nevyžaduje GPU. **Sadu `test` nestahuji.**
-- Knihovna `pyarrow` čte lokální Parquet; patří do závislostí stávajícího `datasets`.
+- Knihovna `pyarrow` je **přímá závislost** čtečky Parquet; po prvním skutečném pokusu chyběla v mé `.venv`. Doplnil jsem `pyarrow>=15` do `requirements.txt`. V Kali ji lze doinstalovat cíleně přes `uv pip install --python .venv/bin/python pyarrow` (bez instalace celého CUDA/vLLM balíku). Stahovací skript ověří již uložený Parquet a nemusí ho znovu přenášet.
 
 ## Jak vyberu 12 úloh
 
