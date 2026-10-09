@@ -178,7 +178,7 @@ This is **a proposal, not a completed test or a confirmed incident**. It does **
 
 **Constraints:** Do not claim proven global novelty without evidence; unpublished work cannot be excluded. Prompt-only shortening, turning thinking off, and training on the held-out official evaluation benchmarks remain prohibited.
 
-**Status:** preference recorded only; **no new algorithm, training, or experiment is authorized by this selection**. The first owner-run GPU diagnostics are still pending.
+**Status:** preference recorded only; **no new algorithm, training, or experiment is authorized by this selection**. At the time of this older entry, the first GPU diagnostic had not yet run; Experiment 002 is now recorded in the checkpoint above.
 
 ### 2026-10-09 — Read-only reasoning diagnostic (approved)
 
