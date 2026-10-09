@@ -13,6 +13,19 @@
 
 ## Deník
 
+### 2026-10-10 — 🐇 RHAR Safe Start: GPU skript připraven, spuštění NEschváleno
+
+**Moje schválení:** po `Ran 79 tests in 0.832s` / `OK` a kontrolním auditu 12 GSM8K train kandidátů proti 2 759 oficiálním zadáním (0 nalezených heuristických textových shod, parafráze nevyloučené) jsem odsouhlasil **výhradně implementaci budoucího GPU skriptu a jednotkových CPU testů**. **Žádný nový GPU běh, inference, download modelu ani trénování nebyly povoleny nebo provedeny.**
+
+**Přidané soubory:** `diagnostics/safe_start_generate.py` a `tests/test_safe_start_generate.py` (**24 nových testovacích metod**). Generátor předem ověřuje 12 přesných otázek, SHA-256 obou review manifestů i všech šest záznamů auditu; bez aktuálního úspěšného screeningu odmítá pokračovat. Z konfigurace `safe_start_plan.py` přebírá model Qwen3-0.6B, připnutou revizi, tři seedy 9001/9002/9003, thinking zapnutý, sampling 0.6/0.95/20 a 512-tokenový limit. Prompty neobsahují gold odpověď ani instrukci ke zkrácení uvažování.
+
+**Ochrany:** `--dry-run` zůstává CPU-only, bez modelu, sítí či GPU. Budoucí generování vyžaduje oba explicitní přepínače `--execute` a `--confirm-gpu-36` **a můj samostatný pozdější souhlas**. V GPU režimu je povolen jen místní již uložený model (`local_files_only=True`), CUDA float16, žádný automatický download. Délky reasoning + final musí dát skutečně generované tokeny; nesprávné a truncated odpovědi neuznávám za správné. Nekompletní výsledek se nevydává za dokončených 36 vzorků; každé spuštění vytváří novou ignorovanou složku a nesmí přepsat předchozí data. Záznamy lze předat `diagnostics/offline_selector.py`, ne přímo trénování.
+
+**Ověření:** v izolovaném lokálním prostředí prošlo **23 CPU testů prototypu**, s lehkými kopiemi závislostí; **novou přesnou sadu 24 testů na GitHub větvi ani všech 103 společně jsem ještě nepotvrdil na Kali**. Počet 103 je plánovaných 79 + 24. Bez zeleného skutečného Kali výstupu žádný další krok.
+
+**Dokumentace:** [SAFE-START-GENERATION.md](SAFE-START-GENERATION.md) / [English](../docs/SAFE-START-GENERATION.en.md). Další jediný doporučený příkaz: všech 103 CPU testů a `python -m diagnostics.safe_start_generate --dry-run`; nikoli GPU.
+
+
 ### 2026-10-10 — ✅ RHAR Safe Start: 79/79 CPU testů zelených na Kali
 
 **Skutečný výstup terminálu:** `Ran 79 tests in 0.832s` a `OK`. Potvrzuji společný běh všech 79 CPU unit testů: offline selektor, reasoning diagnostika, plánovač Safe Start, výběr GSM8K dat a nový audit překryvu. Toto je první doložený **celý společný** běh aktualizované sady na mém Kali/WSL2.
