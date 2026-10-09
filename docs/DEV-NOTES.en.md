@@ -13,6 +13,20 @@
 
 ## Diary
 
+### 2026-10-09 — Diagnostic 002: first GTX 1070 Ti output
+
+**Status:** owner-run measurement on Kali / WSL2; **informal diagnostic**, not the official BottleCap AI benchmark.
+
+**Local artifacts:** `runs/diagnostics/20261009T210123Z/`. The assistant has not accessed the raw run records; the owner supplied the summary only.
+
+**Single-response results:** `responses=1`, `correct_responses=0`, `exploratory_accuracy=0.0`, `reasoning_split_successes=1`, `mean_total_tokens=325`, `mean_reasoning_tokens=317`, `mean_final_tokens=8`, `mean_seconds=51.3`, `mean_tokens_per_second=6.33`, `official_benchmark=false`. Reasoning share: **317/325 = approximately 97.54%**.
+
+**Unknown:** without the record's `final_text`, `grading_error`, `truncated`, and `split_status`, an incorrect number, format failure or EOS detection error cannot be distinguished. A successfully parsed thinking split does not imply correctness; one sample does not establish the model's real accuracy.
+
+**Source-code concern:** `prompt_for()` uses numeric formatting example `Final answer: 42`, while the first apples problem expects `43`. This might bias the generated answer but **has not been confirmed as the failure cause**.
+
+**Next:** inspect the saved record metadata without generating again, then consider a format-example fix and a repeat control run. No changes to training, model, or official evaluation.
+
 ### 2026-10-09 — HRM proposal documented; implementation deferred
 
 **Owner's consent:** "dobry napad zapsal bych to do md" (good idea, I'd write it in MD) approves **documenting** the **Hallucination Risk Monitor (HRM)** in both versions of `IDEA.md`, not implementing it or formally expanding RHAR to four modules.
@@ -24,8 +38,6 @@
 **Current verification:** the existing `reasoning_probe.py` does not compute these predictions. No HRM runs or validation results exist. Code, model weights, official benchmark prompts and training remain unchanged.
 
 **Status:** documented research candidate only. A formal fourth module, implementation and experiments each require another owner decision.
-
-## Diary
 
 ### 2026-10-09 — RHAR approved as a unified modular organism
 
