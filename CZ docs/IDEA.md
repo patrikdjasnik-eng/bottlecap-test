@@ -67,6 +67,8 @@ První zvolený trénovací směr je **Correctness-Gated Reasoning Compression**
 
 Původní nápad destilace krátkých správných postupů zůstává **možnou trénovací baseline**, nikoli schváleným nebo implementovaným algoritmem RHAR.
 
+**Implementována první offline část v0.1:** `diagnostics/offline_selector.py` s 16 CPU testy — kontrola hotových generací a výběr pouze k revizi, **bez trénování**. Viz [OFFLINE-SELECTOR.md](OFFLINE-SELECTOR.md). Konkrétní RHAR trénovací mechanismus zůstává otevřený.
+
 ## Metriky a evaluace
 
 - **Hlavní:** správnost a celkový počet generovaných tokenů včetně uvažování a finální odpovědi.

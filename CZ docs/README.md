@@ -38,6 +38,7 @@ Podrobnosti, limity a plán práce s externí GPU: [HARDWARE.md](HARDWARE.md). G
 
 ## 🔬 Výzkumné soubory
 
+- [Offline filtr RHAR v0.1](OFFLINE-SELECTOR.md) — načítání starých generací, kontrola správnosti, srovnání a CPU testy. [Anglicky](../docs/OFFLINE-SELECTOR.en.md).
 - [RHAR v0.1 — výzkumný protokol](RHAR-V01-PLAN.md) — schválený směr, navržená datová pipeline, měření a hranice dalšího schvalování. [Anglicky](../docs/RHAR-V01-PLAN.en.md).
 - [IDEA.md](IDEA.md) — hypotéza, metoda, plán měření a protokol výsledků. [Anglicky](../IDEA.md).
 - [DEV-NOTES.md](DEV-NOTES.md) — vývojový deník, postup a schvalování rozhodnutí. [Anglicky](../docs/DEV-NOTES.en.md).

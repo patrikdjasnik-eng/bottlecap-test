@@ -67,6 +67,8 @@ I approved **Correctness-Gated Reasoning Compression** as the first training-ori
 
 The previous correctness-filtered short-reasoning distillation idea remains a **possible training baseline**, not an approved or implemented RHAR algorithm.
 
+**First v0.1 offline step implemented:** `diagnostics/offline_selector.py` with 16 CPU tests — review of existing generations and review-only candidate selection, **no model training**. See [OFFLINE-SELECTOR.en.md](docs/OFFLINE-SELECTOR.en.md). A specific RHAR learning mechanism remains undecided.
+
 ## Metrics and evaluation
 
 - **Primary:** correctness and total generated tokens including thinking and final answer.

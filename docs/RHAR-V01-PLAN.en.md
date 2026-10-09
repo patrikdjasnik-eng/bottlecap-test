@@ -62,10 +62,14 @@ The provided `train.py` is only a rollout demonstration, **not a working RHAR tr
 
 I collaborate on RHAR with **ChatGPT (OpenAI, GPT-6)** and **my own GGUF AI agent, Máša**. ChatGPT helps with design discussions, analysis, code and documentation. Máša is part of my development environment; **I do not attribute specific experiment results to her without documented evidence**. I retain final authority for research and implementation decisions.
 
+## 🧪 Implemented offline phase
+
+The first approved implementation step **is now in the repository**: `diagnostics/offline_selector.py` and **16 new CPU tests**. It processes only existing JSONL generations, with no model inference or training. See [OFFLINE-SELECTOR.en.md](OFFLINE-SELECTOR.en.md). **`selected_for_review.jsonl` is not approved training data.** A fresh Kali test run and offline analysis of historical Experiment 002 remain pending.
+
 ## ✅ Approval boundary
 
 **Approved:** RHAR v0.1 research direction and documenting this implementation proposal.  
-**Not yet authorized as concrete actions:** final data choice/download, implementation of the new sampling pipeline, number of GPU generations, LoRA training, weight edits, official evaluation.  
+**Not yet authorized as concrete actions:** final data choice/download, a new GPU sampling pipeline, number of GPU generations, LoRA training, weight edits and official evaluation. **The offline selector and CPU tests are already implemented.**  
 **Not performed:** pilot, training, checkpoint comparison, demonstrated savings, complete green suite since the last diagnostic fix.
 
 **Next decision:** whether to **implement only a safe offline candidate-selection pipeline and CPU unit tests first**, with no sampling, training or GPU cost. This is a limited, independently testable first implementation step.

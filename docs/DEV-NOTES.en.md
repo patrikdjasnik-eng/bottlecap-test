@@ -13,6 +13,20 @@
 
 ## Diary
 
+### 2026-10-09 — 🧪 RHAR v0.1: offline correctness gate implemented
+
+**My approval:** I authorized the first implementation step of RHAR v0.1: **offline-only** review of existing `records.jsonl` and selection of shorter correct candidates, with no generation, training or GPU use.
+
+**Implemented:** `diagnostics/offline_selector.py` and `tests/test_offline_selector.py`. The script independently grades the final answer and checks its format, reasoning markers, termination, token accounting and declared provenance. It selects at most one shortest correct candidate among at least **two distinct correct seeds for the same comparable question**. Legacy diagnostic records without `source / split / prompt_hash` remain analysis-only. Sources resembling official benchmark names are excluded, but **metadata alone cannot prove independent dataset provenance**. Outputs are **`review_only`**, not automatically trusted SFT data.
+
+**Verification:** 16/16 new selector CPU tests passed; the combined local test with a reconstructed copy of the current diagnostic suite yielded **26/26 passing**. This used an isolated environment with no LLM or GPU. **A fresh run on my own Kali after pulling the branch is still pending.** No actual output of this new selector from my original on-disk historical `records.jsonl` has been supplied yet.
+
+**Documentation:** [OFFLINE-SELECTOR.en.md](OFFLINE-SELECTOR.en.md) in mirrored Czech/English specifies commands, metadata, output files, trust boundaries and limitations. Original diagnostics and official evaluation settings remain unchanged.
+
+**Critical limit:** a correct final answer **does not verify the validity of each intermediate reasoning step**. RPS/RPD, real LoRA training, GPU generations and training-dataset selection still require separate decisions.
+
+**Next:** pull and run `python -m unittest tests.test_offline_selector tests.test_reasoning_probe -v`; only then inspect Experiment 002 offline. It has one incorrect answer, so **zero selections are expected**, but the actual result will be logged only after execution.
+
 ### 2026-10-09 — 🧬 RHAR v0.1 research direction approved
 
 **My decision:** I approved **RHAR v0.1 — Correctness-Gated Reasoning Compression** as my first training-oriented research direction. I want to learn from **shorter correct reasoning traces** and eventually test whether that behavior can be learned by the base Qwen model without sacrificing accuracy. This does **not** automatically authorize a particular loss function, dataset acquisition, GPU pilot length or weight training.

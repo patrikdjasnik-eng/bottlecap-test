@@ -62,10 +62,14 @@ Na GTX 1070 Ti jsme naměřili přibližně **51–61 sekund** pro jednu krátko
 
 Na RHAR spolupracuji s **ChatGPT (OpenAI, GPT-6)** a vlastní **GGUF AI agentkou Mášou**. ChatGPT pomáhá s návrhy, analýzou, kódem a dokumentací. Máša je součást mého vývojového prostředí; **bez doloženého běhu jí nepřisuzuji konkrétní výsledky tohoto experimentu**. Výběr směru i finální schvalování zůstávají na mně.
 
+## 🧪 Realizovaná offline fáze
+
+První schválený implementační krok **již mám v repu**: `diagnostics/offline_selector.py` a **16 nových CPU testů**. Pracuje pouze se starými JSONL generacemi, nevyvolává model ani trénování. Podrobný popis je v [OFFLINE-SELECTOR.md](OFFLINE-SELECTOR.md). **Výstup `selected_for_review.jsonl` není schválený training dataset.** Zatím čekám na první čerstvý běh testů ve vlastním Kali a offline analýzu historického Experimentu 002.
+
 ## ✅ Aktuální hranice schválení
 
 **Schváleno:** výzkumný směr v0.1 a sepsání jeho implementačního návrhu.  
-**Dosud neschváleno jako konkrétní akce:** výběr a stahování dat, kód nové generovací pipeline, počet GPU generování, LoRA trénování, úpravy vah a oficiální evaluace.  
+**Dosud neschváleno jako konkrétní akce:** výběr a stahování dat, kód nové GPU generovací pipeline, počet GPU generování, LoRA trénování, úpravy vah a oficiální evaluace. **Offline filtr a jeho CPU testy už jsou implementované.**  
 **Zatím neprovedeno:** pilot, trénování, porovnání checkpointu, naměřená úspora, zelené testy po poslední diagnostické opravě.
 
 **Další rozhodnutí:** zda mám připravit **nejdřív bezpečnou offline implementaci výběru kandidátů + jednotkové testy bez generování nebo trénování**. To je první omezená fáze, kterou mohu ověřit bez spotřeby GPU.

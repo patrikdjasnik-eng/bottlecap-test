@@ -13,6 +13,20 @@
 
 ## Deník
 
+### 2026-10-09 — 🧪 RHAR v0.1: offline correctness gate hotový
+
+**Moje schválení:** odsouhlasil jsem první implementační krok RHAR v0.1: **výhradně offline** kontrolu už vytvořených `records.jsonl` a výběr kratších správných kandidátů, bez generování, trénování nebo čerpání GPU.
+
+**Implementoval jsem:** `diagnostics/offline_selector.py` a `tests/test_offline_selector.py`. Algoritmus znovu ověřuje finální odpověď, formát, reasoning značky, ukončení, součet tokenů a původ dat. Vybere nanejvýš jednoho nejkratšího správného kandidáta z nejméně **dvou různých správných seedů stejné otázky**. Původní jednoduché diagnostické záznamy bez metadata `source / split / prompt_hash` zůstanou pouze pro analýzu. Zdroj podobný názvům oficiálních evaluací odmítá, ale **nemůže nezávisle prokázat původ libovolných dat**. Výstupy ukládá jako **`review_only`**, nikoli data k automatickému učení.
+
+**Ověření:** 16/16 nových CPU testů selektoru prošlo; ve společném lokálním testu s rekonstruovanou současnou diagnostikou **26/26 prošlo**. Testování proběhlo v izolovaném prostředí bez LLM/GPU. **Čerstvý běh v mém Kali na větvi po pullu zatím nedokládám.** Žádný skutečný výsledek selektoru na historickém `records.jsonl` z mého počítače ještě nemám.
+
+**Dokumentace:** [OFFLINE-SELECTOR.md](OFFLINE-SELECTOR.md) v CZ/EN obsahuje přesné příkazy, požadované metadata, schéma výstupu, hranice důvěry a omezení. Kód ani nastavení oficiální evaluace jsem neměnil; předchozí diagnostický skript zůstal zachovaný.
+
+**Důležitá hranice:** správná finální odpověď **nezaručuje správné reasoning kroky**. Na RPS/RPD, skutečné LoRA trénování, nové GPU generace i výběr trénovací sady bude potřeba další schválení.
+
+**Další krok:** po aktualizaci repa nejprve spustit `python -m unittest tests.test_offline_selector tests.test_reasoning_probe -v`. Potom můžu offline vyhodnotit starý Experiment 002. Protože obsahuje jednu nesprávnou odpověď, očekávám **0 výběrů**; výsledek však do deníku doplním až po skutečném spuštění.
+
 ### 2026-10-09 — 🧬 Schválení výzkumného směru RHAR v0.1
 
 **Moje rozhodnutí:** schválil jsem **RHAR v0.1 — Correctness-Gated Reasoning Compression** jako první směr pro trénovací výzkum: chci se učit z **kratších správných reasoning traces** a později testovat, zda tuto schopnost lze přenést do vah původního Qwenu bez zhoršení přesnosti. Schválení není automatický souhlas s konkrétní loss funkcí, sběrem datasetu, délkou GPU pilotu ani trénováním.
