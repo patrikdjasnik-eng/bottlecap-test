@@ -13,6 +13,16 @@
 
 ## Diary
 
+### 2026-10-10 — ✅ Actual CPU overlap screen: 0 matches among 2,759 evaluation prompts
+
+**Actually completed on Kali / WSL2:** `python -m diagnostics.safe_start_overlap --download` succeeded and returned `audit_result=no_matches_in_screened_sources`. It checked the **twelve previously selected GSM8K train candidates** (pinned revision `740312add88f781978c0658806c59bc2815b9866`) against **2,759 prompt texts** from all six declared files across four benchmark families.
+
+**Observed counts:** SVAMP 1,000; MBPP+ 378; BFCL simple_python 400; BFCL multiple 200; BFCL irrelevance 240; IFEval 541. **Zero exact or heuristic near-duplicate matches** were reported; `potential_matches=[]`. Known content SHA-256 pins passed for SVAMP and MBPP+. Observed hashes of the commit-pinned BFCL files were `82dd63ba502eb2520c6b5d1d9a5c4b590e03ff261565175561f6228a367d1991`, `aef168155ebd74b7ac2401198b201343bc7d16d7a3d7e0d4e6d8ee82c6969b2a` and `2b6ed4c2e992cdcf5f1678a701851f944bef7550ee026ed1ddb89efed5be01a6`. The IFEval hash was `67ffeee0fcb87c317c5b08a2de85557b4a7e96ada6178aa645b4954fe4b53d49`. For BFCL and IFEval these hashes were **recorded, not prechecked against independent known values** (`known_sha256_pin_checked=false`).
+
+**Interpretation:** this is a negative match result **within the six declared datasets under the implemented similarity rule**. It does **not** establish zero contamination or exclude semantic paraphrases (`semantic_paraphrases_ruled_out=false`, `overlap_audit_exhaustive=false`). Candidates remain `review_only`, `training_approved=false`, and no original files were changed. **No inference, GPU, training, or official evaluation** took place (`gpu_used=false`, `model_generations_performed=0`, `training_performed=false`, `official_benchmark_run=false`).
+
+**Test gate:** 61/61 earlier CPU tests were confirmed, but **the combined new 79/79 suite has not been demonstrated in this latest user terminal output**. Wait for a successful complete suite before any new experimental approval. GPU sampling and training require separate explicit authorization.
+
 ### 2026-10-10 — 🛡️ Approved CPU-only overlap screen of 12 GSM8K candidates against official evaluation questions
 
 **Decision:** after **61/61 CPU tests passed on Kali (`Ran 61 tests in 0.600s`, `OK`)** and confirming `questions/questions.jsonl` was absent, I explicitly authorized **only preparing and downloading pinned official evaluation data for contamination screening**. No inference, GPU, training or official evaluation run is approved.
