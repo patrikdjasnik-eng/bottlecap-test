@@ -11,7 +11,7 @@
 - Only downloaded object: `main/train-00000-of-00001.parquet` (about 2.31 MB).
 - Expected full-file SHA-256: `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`.
 - The `diagnostics/safe_start_data.py` script refuses modified or corrupt files and never uses GPU. **It does not download the test split.**
-- Reading the cached Parquet **directly requires `pyarrow`**. The first actual Kali download attempt reached Parquet parsing but failed because `pyarrow` was missing from `.venv`. I added `pyarrow>=15` to `requirements.txt`; install only this dependency with `uv pip install --python .venv/bin/python pyarrow` (no need to pull the full CUDA/vLLM requirements). The downloader validates and reuses the existing cached file.
+- Reading the cached Parquet **directly requires `pyarrow`**. The first actual Kali download attempt reached Parquet parsing but failed because `pyarrow` was missing from `.venv`. I added `pyarrow==16.1.0` to `requirements.txt`; install only this dependency with `uv pip install --python .venv/bin/python pyarrow` (no need to pull the full CUDA/vLLM requirements). The downloader validates and reuses the existing cached file.
 
 ## Selection protocol
 
@@ -56,6 +56,7 @@ Existing output is **never overwritten**. Avoid publicly committing raw data or 
 
 - **Completed:** 16/16 new download/selector CPU unit tests plus the existing 15 planner tests: **31/31 passed in an isolated local environment**. Download success and SHA-256 failure cases used mocked network I/O.
 - **Previously confirmed on Kali:** **45/45** existing CPU tests. **The combined current 61/61 suite has not yet been run on Kali.**
-- **Not performed:** an actual GSM8K download on Kali in this step, selecting real twelve question IDs, an exhaustive benchmark overlap audit, GPU inference, training, or demonstrating a model improvement.
+- **Newly confirmed on Kali:** 16/16 tests for the new module passed in 0.512 s; GSM8K main/train was loaded from a verified cached file with SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`; **7,473 real train records, 12 actually selected question IDs and 36 validated planned attempts**. IDs are preserved in `selection-report.json` and both DEV-NOTES.
+- **Still pending:** one combined 61/61 Kali run, an evaluation-question overlap check (`pending_local_eval_corpus`, `local_eval_audit_performed=false`), GPU sampling, LoRA, or token savings measurements. Selected data remain `review_only` and not authorized for training.
 
 I collaborate on this project with **ChatGPT (OpenAI, GPT-6)** and my local GGUF agent **Máša**; only verified work is credited.
