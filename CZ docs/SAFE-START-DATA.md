@@ -11,7 +11,7 @@
 - Jediný stahovaný soubor: `main/train-00000-of-00001.parquet` (přibližně 2,31 MB).
 - Očekávané SHA-256 celé stažené Parquet přílohy: `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`.
 - Skript `diagnostics/safe_start_data.py` odmítne poškozený či změněný soubor; nevyžaduje GPU. **Sadu `test` nestahuji.**
-- Knihovna `pyarrow` je **přímá závislost** čtečky Parquet; po prvním skutečném pokusu chyběla v mé `.venv`. Doplnil jsem `pyarrow>=15` do `requirements.txt`. V Kali ji lze doinstalovat cíleně přes `uv pip install --python .venv/bin/python pyarrow` (bez instalace celého CUDA/vLLM balíku). Stahovací skript ověří již uložený Parquet a nemusí ho znovu přenášet.
+- Knihovna `pyarrow` je **přímá závislost** čtečky Parquet; po prvním skutečném pokusu chyběla v mé `.venv`. Doplnil jsem `pyarrow==16.1.0` do `requirements.txt`. V Kali ji lze doinstalovat cíleně přes `uv pip install --python .venv/bin/python pyarrow` (bez instalace celého CUDA/vLLM balíku). Stahovací skript ověří již uložený Parquet a nemusí ho znovu přenášet.
 
 ## Jak vyberu 12 úloh
 
@@ -56,6 +56,7 @@ Existující výstup se **nepřepíše**; opakované spuštění bez předchozí
 
 - **Provedeno:** 16/16 nových CPU unit testů stahovacího/výběrového modulu + dosavadních 15 testů plánovače, dohromady **31/31 OK v izolovaném prostředí**. Stažení bylo v testech simulováno, včetně správného a nesprávného SHA-256.
 - **Dříve ověřeno na Kali:** původních **45/45** CPU testů. Současná celá sada **61/61 na Kali zatím čeká** na skutečný výpis.
-- **Neprovedeno:** skutečné stažení GSM8K na Kali v rámci tohoto kroku, výběr skutečných 12 ID, úplný overlap audit, jakékoliv GPU generování, trénování nebo zlepšení modelu.
+- **Nově potvrzeno na Kali:** 16/16 testů nového modulu za 0,512 s; ověřená cache GSM8K main/train s SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`; **7473 načtených train řádků, 12 skutečně vybraných ID, 36 validovaných plánovaných pokusů**. Přesné identifikátory jsou v `selection-report.json` a CZ/EN DEV-NOTES.
+- **Stále chybí:** společný Kali běh 61/61, kontrola překryvu s oficiálními evaluačními otázkami (`pending_local_eval_corpus`; `local_eval_audit_performed=false`), GPU generování, LoRA i měření úspor. Dataset je `review_only` a neschválený pro trénování.
 
 Na projektu spolupracuji s **ChatGPT (OpenAI, GPT-6)** a vlastní agentkou **Mášou**; všechny výsledky uvádím jen tehdy, když jsou doložené.
