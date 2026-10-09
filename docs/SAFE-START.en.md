@@ -53,6 +53,10 @@ Once the data choice is approved, a local JSONL file must contain **exactly 12 r
 
 No actual questions or gold answers have been committed. The validator rejects unexpected sources and fields, mixed revisions, wrong splits, nonnumeric answers, missing questions and exact duplicates. **Near-duplicates and evaluation contamination require a separate external audit.**
 
+## 🐇 Approved GSM8K CPU-only data preparation (2026-10-10)
+
+After 45/45 tests passed on Kali, I approved **only downloading GSM8K main/train and selecting 12 questions on CPU**. A pinned downloader and 16 additional CPU tests are in the repository. **See [SAFE-START-DATA.en.md](SAFE-START-DATA.en.md) for the exact commands.** All selected examples remain review-only and not automatically suitable for training. The combined current suite defines 61 tests; 61/61 on Kali is still pending.
+
 ## 🧪 Verifying the CPU preparation
 
 After `git pull` on Kali:
