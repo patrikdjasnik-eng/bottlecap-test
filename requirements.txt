@@ -15,7 +15,8 @@ vllm>=0.6,<1
 # fsspec first and backtracks to datasets 2.14, which crashes on current pyarrow.
 datasets>=3
 # Required directly by diagnostics/safe_start_data.py to read pinned Parquet.
-pyarrow>=15
+# Keep NumPy 1.26 compatibility on the tested Kali setup; newer PyArrow required NumPy 2.
+pyarrow==16.1.0
 
 # evalplus runs MBPP+ inside the sandbox and imports these at module load.
 # Missing any of them fails only MBPP+, which the run reports rather than
