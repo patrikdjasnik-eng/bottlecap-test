@@ -13,6 +13,19 @@
 
 ## Deník
 
+### 2026-10-10 — 🛡️ Schválena CPU kontrola překryvu 12 GSM8K kandidátů vůči oficiálním otázkám
+
+**Rozhodnutí:** po úspěšném **61/61 CPU testů v Kali (`Ran 61 tests in 0.600s`, `OK`)** a zjištění, že nemám lokální `questions/questions.jsonl`, jsem výslovně schválil **pouze přípravu a stažení připnutých oficiálních evaluačních textů kvůli decontamination screeningu**. Nepovolil jsem inference, GPU, trénování ani oficiální evaluační běh.
+
+**Implementace:** nový izolovaný `diagnostics/safe_start_overlap.py` a `tests/test_safe_start_overlap.py`. Kontroluji přesně šest vstupních souborů ze čtyř rodin (SVAMP, MBPP+, 3 BFCL v4 kategorie, IFEval) na revizích z **nezměněného** `utils/eval/benchmarks.py`. SVAMP a MBPP+ ověřuji také proti známému SHA-256. BFCL/IFEval jsou připnuté Git commitem; zaznamenávám skutečný hash souboru. Ve všech případech extrahuji pouze texty zadání, nikoli gold answers. Přímý downloader oficiální evaluace ani jeho verifiery nespouštím.
+
+**Ochrany:** před síťovým přístupem ověřím SHA-256 a ID našich **stávajících 12 otázek** proti původnímu `selection-report.json`; žádný automatický nový výběr. Chybějící zdroj, selhání hashe či neplatné schéma zruší audit bez pozitivního reportu. Finální ignorovaný `data/safe-start/overlap-audit.json` obsahuje jen evidenci, počty, hashe a indexy potenciálních shod. Nikdy nedeklaruje úplnou odolnost proti parafrázím ani `training_approved=true`.
+
+**Ověření:** nových **18/18** unit testů prošlo **v izolovaném místním CPU prostředí**, se simulovanými síťovými zdroji; verifikoval jsem přesné kopie Python souborů na GitHubu. **Společná sada 79/79 a skutečné stažení všech šesti zdrojů v Kali ještě čekají**. V tomto kroku nebyl spuštěn model ani GPU.
+
+**Dokumentace:** [SAFE-START-OVERLAP.md](SAFE-START-OVERLAP.md) / [English](../docs/SAFE-START-OVERLAP.en.md). Další postup: po pullu nejprve všechny testy; teprve poté `python -m diagnostics.safe_start_overlap --download`, vyhodnotit výstup a před jakýmkoli dalším experimentem si vyžádat nové schválení.
+
+
 ### 2026-10-10 — ✅ Kompletní Safe Start CPU suite 61/61 OK; eval korpus chybí
 
 **Skutečný výstup z mého Kali/WSL2:** po synchronizaci větve `feat/reasoning-compression` jsem spustil společně `tests.test_offline_selector`, `tests.test_reasoning_probe`, `tests.test_safe_start_plan` a `tests.test_safe_start_data`. Terminál potvrdil **`Ran 61 tests in 0.600s`** a **`OK`**. Tím je doložená celá aktuální CPU testovací sada, nikoli jen oddělené běhy 45 + 16 testů.
