@@ -1,5 +1,7 @@
 # 🧠 BottleCapAI — ThinkingCap Test
 
+**🇨🇿 Čeština** · [🇬🇧 English](README.en.md)
+
 [![Challenge](https://img.shields.io/badge/Challenge-BottleCapAI_ThinkingCap-7C3AED)](https://github.com/BottleCapAI/ThinkingCap-Test)
 ![Research status](https://img.shields.io/badge/Research-in_progress-yellow)
 ![Benchmark status](https://img.shields.io/badge/Full_benchmark-not_run-orange)
@@ -34,13 +36,16 @@ Podrobnosti, limity a plán práce s externí GPU: [docs/HARDWARE.md](docs/HARDW
 
 ## 🔬 Výzkumné soubory
 
-- [IDEA.md](IDEA.md) — hypotéza, metoda, plán měření a protokol výsledků.
-- [docs/DEV-NOTES.md](docs/DEV-NOTES.md) — postup a kontrolní body.
-- [docs/UPSTREAM-README.md](docs/UPSTREAM-README.md) — originální zadání.
+- [IDEA.cs.md](IDEA.cs.md) — hypotéza, metoda, plán měření a protokol výsledků. [Anglicky](IDEA.md).
+- [docs/DEV-NOTES.md](docs/DEV-NOTES.md) — vývojový deník, postup a schvalování rozhodnutí. [Anglicky](docs/DEV-NOTES.en.md).
+- [docs/UPSTREAM-README.cs.md](docs/UPSTREAM-README.cs.md) — kompletní český překlad zadání. [Anglický originál](docs/UPSTREAM-README.md).
+- [docs/HARDWARE.md](docs/HARDWARE.md) — hardware a jeho omezení. [Anglicky](docs/HARDWARE.en.md).
 - `train.py`, `evaluate.py`, `compare.py` — oficiální nástroje BottleCapAI.
 
 ## ✅ Zásady experimentů
 
 **Bez zelených testů ani krok.** Každý zásah musí mít opakovatelné ověření a měření proti stejné baseline. Výsledky zapisujeme včetně nepovedených experimentů a hardware, na kterém vznikly.
+
+O důležitých technických rozhodnutích, nových experimentech a zásadních změnách se nejprve poradíme a vyžádáme souhlas vlastníka projektu. Pravidla a zápisy najdeš ve [vývojovém deníku](docs/DEV-NOTES.md).
 
 Zdrojové zadání: [BottleCapAI/ThinkingCap-Test](https://github.com/BottleCapAI/ThinkingCap-Test). Původní kód je distribuován s licencí Apache-2.0; viz [LICENSE](LICENSE).
