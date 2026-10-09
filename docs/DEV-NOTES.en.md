@@ -13,6 +13,16 @@
 
 ## Diary
 
+### 2026-10-10 — 🐇 Approved GSM8K train CPU download and 12-question selection
+
+**My decision:** after **45/45 CPU tests in 0.045 s** passed on Kali and the `safe_start_plan --dry-run` showed `plan_only`, 12 questions, 36 proposed attempts and `gpu_used=false`, I authorized **only downloading pinned GSM8K main/train and deterministically selecting 12 candidate questions on CPU**. GPU sampling, LoRA, model training and automatic acceptance of selected examples remain unauthorized.
+
+**Implemented:** `diagnostics/safe_start_data.py` and `tests/test_safe_start_data.py` (16 new unit tests). The dataset revision is pinned to `740312add88f781978c0658806c59bc2815b9866`; only `main/train-00000-of-00001.parquet` is downloaded, with expected SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`. Selection uses fixed SHA-256 ordering and screens for malformed numeric gold, duplicates and obvious overlaps with an optional existing local eval question file. Official evaluation is unchanged. Artifacts under `data/safe-start/` remain `review_only` and are not training-approved.
+
+**Verification:** 16/16 new CPU unit tests and the previous 15 planner tests (**31/31**) passed in an isolated local environment. Network I/O was mocked for the tests; **the real GSM8K download on my Kali and the combined new 61/61 suite are still pending**. The two new GitHub Python files were confirmed to match the locally tested versions.
+
+**Procedure:** [SAFE-START-DATA.en.md](SAFE-START-DATA.en.md) / [Czech](../CZ%20docs/SAFE-START-DATA.md). I must first run all CPU tests on Kali, then, if green, execute `python -m diagnostics.safe_start_data --download`, inspect `selection-report.json` and verify the 12 real question IDs. Without local evaluation questions the overlap audit remains `pending_local_eval_corpus`; **I cannot claim the absence of contamination**.
+
 ### 2026-10-10 — 🐇 RHAR Safe Start approved, CPU plan and tests ready
 
 **My decision:** I approved a small initial pilot of **12 math questions × 3 planned generations**, but at this stage authorized **only the implementation plan, CPU validation and unit tests** — not dataset downloads, GPU inference or training.
