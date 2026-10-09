@@ -13,6 +13,17 @@
 
 ## Deník
 
+### 2026-10-10 — ✅ RHAR Safe Start: 79/79 CPU testů zelených na Kali
+
+**Skutečný výstup terminálu:** `Ran 79 tests in 0.832s` a `OK`. Potvrzuji společný běh všech 79 CPU unit testů: offline selektor, reasoning diagnostika, plánovač Safe Start, výběr GSM8K dat a nový audit překryvu. Toto je první doložený **celý společný** běh aktualizované sady na mém Kali/WSL2.
+
+**Předchozí doložený audit:** `python -m diagnostics.safe_start_overlap --download` úspěšně porovnal 12 připnutých GSM8K kandidátů se **2 759 zadáními** ze šesti souborů SVAMP, MBPP+, BFCL a IFEval a nahlásil **0 textových shod** podle implementované heuristiky. `semantic_paraphrases_ruled_out=false` a `overlap_audit_exhaustive=false`, takže ani tento výsledek neprokazuje vyloučení všech sémantických parafrází.
+
+**Uzavřená brána:** CPU příprava, 12 kandidátů, 36 budoucích plánovaných pokusů, kontrola integrity souborů a regresní testy jsou zelené. Neproběhlo žádné nové generování Qwen3-0.6B, použití GPU, trénování, ani oficiální benchmark. `review_only` a `training_approved=false` zatím zůstávají beze změny.
+
+**Další rozhodnutí (dosud neschváleno):** samostatně projít rozpočet, stop podmínky a implementaci první GPU generovací fáze **12 otázek × 3 seedy = 36 generací**, bez LoRA a bez automatického použití výstupů pro trénování. **Bez mého souhlasu GPU nespouštět.**
+
+
 ### 2026-10-10 — ✅ Skutečný CPU audit překryvu: 0 shod v 2 759 evaluačních otázkách
 
 **Skutečně provedeno na Kali / WSL2:** `python -m diagnostics.safe_start_overlap --download` doběhl úspěšně a vypsal `audit_result=no_matches_in_screened_sources`. Porovnal **12 původních GSM8K train kandidátů** (připnutá revize `740312add88f781978c0658806c59bc2815b9866`) s texty **2 759 zadání** ze všech šesti deklarovaných souborů a čtyř rodin benchmarků.
