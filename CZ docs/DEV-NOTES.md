@@ -13,6 +13,16 @@
 
 ## Deník
 
+### 2026-10-10 — ✅ Kompletní Safe Start CPU suite 61/61 OK; eval korpus chybí
+
+**Skutečný výstup z mého Kali/WSL2:** po synchronizaci větve `feat/reasoning-compression` jsem spustil společně `tests.test_offline_selector`, `tests.test_reasoning_probe`, `tests.test_safe_start_plan` a `tests.test_safe_start_data`. Terminál potvrdil **`Ran 61 tests in 0.600s`** a **`OK`**. Tím je doložená celá aktuální CPU testovací sada, nikoli jen oddělené běhy 45 + 16 testů.
+
+Kontrola `test -f questions/questions.jsonl` oznámila **`Eval otázky chybí`**. Z předchozího skutečného reportu platí `overlap_audit_status=pending_local_eval_corpus`, `local_eval_audit_performed=false` a `overlap_audit_exhaustive=false`. **Nulový počet odmítnutých překryvů bez eval korpusu není důkaz absence kontaminace.**
+
+**Uzavřená fáze:** úspěšná CPU validace schématu, načtení ověřeného GSM8K train souboru, výběr 12 kandidátů a příprava 36 *plánovaných* pokusů. **Neprovedeno a neschváleno:** stahování oficiálních evaluačních dat, spuštění oficiálního benchmarku, GPU inference, LoRA/trénování či měření tokenové úspory.
+
+**Další volba:** nejprve schválit pouze kontrolu překryvu proti správným připnutým evaluačním otázkám; můj existující `utils/eval/benchmarks.py` při přímém spuštění stahuje další závislosti a sestaví celý benchmark, proto se nespouští automaticky. Výběr 12 příkladů zůstává `review_only`.
+
 ### 2026-10-10 — ✅ GSM8K Safe Start: potvrzen skutečný CPU výběr 12 úloh na Kali
 
 **Skutečný výstup terminálu:** `Ran 16 tests in 0.512s`, `OK` pro `tests.test_safe_start_data`. `python -m diagnostics.safe_start_data --download` úspěšně zpracoval **7473 záznamů** z GSM8K `main/train`, zafixovaná revize `740312add88f781978c0658806c59bc2815b9866`; report uvedl `download_status=verified_cached` a kontrolní SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`.
