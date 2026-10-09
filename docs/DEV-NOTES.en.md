@@ -1,4 +1,29 @@
-# 🔬 DEV-NOTES
+# 🔬 DEV-NOTES — Development diary
+
+[🇨🇿 Česky](DEV-NOTES.md) · [🇬🇧 English](DEV-NOTES.en.md)
+
+## Collaboration rules
+
+- **The project owner approves important technical decisions, new experiments, and major ideas.** The assistant must first explain the options, benefits, and risks, then ask for approval.
+- Do not change the research direction, model, training strategy, benchmark settings, project structure, or make major repository changes without prior approval.
+- Routine documentation updates and technical fixes within an explicitly approved scope can proceed if clearly recorded in the diary.
+- Distinguish **completed / verified / proposed / awaiting approval / failed**. Never fabricate test success or benchmark results.
+- Entries must include date, changes, rationale, verification, and next step. Material decisions must have an explicit approval status.
+- **No step forward without green tests** for code changes; verify structure and links for documentation changes.
+
+## Diary
+
+### 2026-10-09 — Collaboration rules and language mirrors
+
+**Status:** rules confirmed by the project owner; bilingual documentation is being added on the development branch.
+
+**Completed:** DEV-NOTES designated as a development diary instead of merely a to-do list. Added approval requirements for major decisions. Started Czech and English documentation mirrors.
+
+**Verification:** previous user-run unit tests: 87 OK, 2 skipped; no new training or benchmarking has been performed as part of these documentation updates.
+
+**Awaiting approval:** specific reasoning-compression algorithm, training approach, first GPU experiment, and any code changes.
+
+## Previous status overview
 
 ## Status — October 9, 2026
 
