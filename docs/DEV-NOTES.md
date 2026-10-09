@@ -1,4 +1,29 @@
-# 🔬 DEV-NOTES
+# 🔬 DEV-NOTES — Vývojový deník
+
+[🇨🇿 Česky](DEV-NOTES.md) · [🇬🇧 English](DEV-NOTES.en.md)
+
+## Pravidla spolupráce
+
+- **O důležitých technických rozhodnutích, nových experimentech a zásadních nápadech rozhoduje vlastník projektu.** Asistent předem vysvětlí možnosti, výhody, rizika a vyžádá si souhlas.
+- Bez předchozího souhlasu neměnit směr výzkumu, model, trénovací strategii, benchmarkové podmínky, strukturu projektu ani neprovádět zásadní změny v repozitáři.
+- Běžné, výslovně zadané úpravy dokumentace a technické opravy v odsouhlaseném rozsahu lze provádět, s jasným zápisem do deníku.
+- Rozlišovat **provedeno / ověřeno / navrženo / čeká na schválení / chyba**. Nikdy nepředstírat úspěch testů nebo naměřené výsledky.
+- Zápisy uvádějí datum, změny, důvod, ověření a další krok. Zásadní rozhodnutí mají explicitní stav schválení.
+- **Bez zelených testů ani krok** při změnách kódu; pro dokumentační změny ověřit strukturu a odkazy.
+
+## Deník
+
+### 2026-10-09 — Pravidla spolupráce a jazykové klony
+
+**Stav:** pravidla potvrzena vlastníkem projektu; dokumentace se doplňuje na vývojové větvi.
+
+**Provedeno:** zaznamenáno, že DEV-NOTES je vývojový deník, nikoli jen seznam úkolů. Doplněna pravidla schvalování významných kroků. Zahájeny české a anglické jazykové protějšky dokumentace.
+
+**Ověření:** předchozí uživatelský běh jednotkových testů 87 OK, 2 přeskočené; pro novou dokumentaci nebylo provedeno nové trénování ani spuštění benchmarku.
+
+**Čeká na schválení:** konkrétní algoritmus komprese reasoning procesu, způsob trénování, první GPU experiment a případné změny v kódu.
+
+## Přehled dosavadního stavu
 
 ## Stav — 9. 10. 2026
 
