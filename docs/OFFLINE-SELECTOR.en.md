@@ -25,7 +25,9 @@ My first actual offline run reported `records=1`, `selected_for_review=0` and `i
 
 **Historical first run:** `runs/offline/20261009T214125471552Z/`, source SHA-256 `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`. The original result remains unchanged.
 
-**Expected after rerun:** `reasons={"incorrect_answer":1}` and still **zero selected candidates**. This is a prediction, not a measured new result. Current source defines **20 selector tests plus 10 diagnostic tests**; a fresh test run is still required.
+**Observed after rerun:** `reasons={"incorrect_answer":1}` and still **zero selected candidates**. The new `runs/offline/20261009T214634155051Z/` captures this real result. Current source defines **20 selector tests plus 10 diagnostic tests**; a fresh test run is still required.
+
+**✅ Verified on Kali after the fix (2026-10-09):** I reran the offline review on the *same* `records.jsonl` and observed `records=1`, `correct_final_answers=0`, `training_eligible_candidates=0`, `selected_for_review=0`, `reasons={"incorrect_answer":1}`. New output: `runs/offline/20261009T214634155051Z/`; input SHA-256 remains `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`. **The rejection reason is now confirmed correct for this input.** The full 30-test suite still needs independent Kali verification.
 
 ## Running on Kali / WSL2
 

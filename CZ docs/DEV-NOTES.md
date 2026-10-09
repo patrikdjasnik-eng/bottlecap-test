@@ -13,6 +13,31 @@
 
 ## Deník
 
+### 2026-10-09 — ✅ Ověření opraveného offline selektoru v Kali
+
+**Skutečně provedeno:** po opravě kompatibility se starými diagnostickými záznamy jsem znovu spustil `python -m diagnostics.offline_selector runs/diagnostics/20261009T210123Z/records.jsonl` ve svém Kali / WSL2. Nepouštěl jsem žádnou novou inferenci ani trénování.
+
+**Výsledek (doslovné hodnoty souhrnu):**
+
+| Metrika | Hodnota |
+| --- | ---: |
+| `records` | **1** |
+| `correct_final_answers` | **0** |
+| `training_eligible_candidates` | **0** |
+| `selected_for_review` | **0** |
+| `reasons` | `{"incorrect_answer": 1}` |
+| `no_training_performed` | `true` |
+| `official_benchmark` | `false` |
+| `review_only` | `true` |
+
+**Identita a reprodukovatelnost:** zdrojový soubor `runs/diagnostics/20261009T210123Z/records.jsonl`, SHA-256 `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`; výstupní složka `runs/offline/20261009T214634155051Z/`. Stejný SHA-256 jako při předchozím běhu znamená, že hodnotím stejné vstupní bajty.
+
+**Interpretace:** oproti prvnímu offline běhu, který chybně skončil `invalid_question_metadata: 1`, teď selektor pro známou úlohu `arithmetic_apples` správně rozlišil nesprávnou finální odpověď **42 místo očekávaných 43**. Žádný kandidát neprošel do trénovacího výběru; staré diagnostické záznamy navíc nemají požadovaná metadata pro trénování. Oprava tedy **funguje v tomto jednom reálném případu**, ale sama nedokazuje obecnou spolehlivost selektoru.
+
+**Stav testování:** výpis potvrzuje **úspěšný offline CLI běh**, nikoli kompletní regresní sadu. Ve zdrojovém kódu je **20 testů selektoru + 10 testů reasoning diagnostiky**; výsledný běh `python -m unittest tests.test_offline_selector tests.test_reasoning_probe -v` z mého Kali **zatím nemám doložený**. Neoznačuji 30/30 za splněné.
+
+**Historie:** starý výstup `runs/offline/20261009T214125471552Z/` ponechávám beze změny jako záznam původní chyby. Tento běh vytvořil vlastní nový výstup. Další krok: získat úplný výpis 30 jednotkových testů a teprve potom rozhodnout o navazujícím experimentu. **Žádné oficiální benchmarky, váhy ani GPU parametry jsem nezměnil.**
+
 ### 2026-10-09 — 🩹 První offline běh: kompatibilita staré diagnostiky
 
 **Skutečně spuštěno na mém Kali:** `python -m diagnostics.offline_selector runs/diagnostics/20261009T210123Z/records.jsonl`. Běh vytvořil `runs/offline/20261009T214125471552Z/`; SHA-256 vstupu `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`.

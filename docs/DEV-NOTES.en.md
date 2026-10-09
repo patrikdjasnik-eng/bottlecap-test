@@ -13,6 +13,31 @@
 
 ## Diary
 
+### 2026-10-09 — ✅ Fixed offline selector verified on Kali
+
+**Actually performed:** after fixing compatibility with legacy diagnostic records, I reran `python -m diagnostics.offline_selector runs/diagnostics/20261009T210123Z/records.jsonl` on my Kali / WSL2 system. No new inference or training was performed.
+
+**Observed summary values:**
+
+| Metric | Value |
+| --- | ---: |
+| `records` | **1** |
+| `correct_final_answers` | **0** |
+| `training_eligible_candidates` | **0** |
+| `selected_for_review` | **0** |
+| `reasons` | `{"incorrect_answer": 1}` |
+| `no_training_performed` | `true` |
+| `official_benchmark` | `false` |
+| `review_only` | `true` |
+
+**Provenance:** input `runs/diagnostics/20261009T210123Z/records.jsonl`, SHA-256 `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`; output `runs/offline/20261009T214634155051Z/`. The matching SHA-256 across both offline runs confirms that the same input bytes were reviewed.
+
+**Interpretation:** unlike the first offline run, which returned `invalid_question_metadata: 1`, this run recognized the known `arithmetic_apples` case and correctly reported the **incorrect numeric answer 42 rather than expected 43**. Zero candidates were selected for training review; the legacy record also lacks training provenance. This confirms **the fix works for this one real input**, not universal correctness of the selector.
+
+**Test status:** the log confirms **one successful offline CLI run**, not the full regression suite. The repository defines **20 selector tests plus 10 reasoning-diagnostic tests**, but I **do not yet have evidence of a complete Kali run of `python -m unittest tests.test_offline_selector tests.test_reasoning_probe -v`**. Do not claim 30/30 passed.
+
+**History:** I retain `runs/offline/20261009T214125471552Z/` unchanged as evidence of the initial compatibility bug. The rerun created a separate output directory. Next: obtain the full 30-test output before proceeding with another experiment. **No official benchmark, model weights, or GPU settings were changed.**
+
 ### 2026-10-09 — 🩹 First offline run: legacy diagnostic compatibility
 
 **Actually run on my Kali:** `python -m diagnostics.offline_selector runs/diagnostics/20261009T210123Z/records.jsonl`. It created `runs/offline/20261009T214125471552Z/`; input SHA-256 `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`.

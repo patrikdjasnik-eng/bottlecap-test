@@ -25,7 +25,9 @@ Při prvním skutečném offline běhu jsem získal `records=1`, `selected_for_r
 
 **Skutečný první běh**: `runs/offline/20261009T214125471552Z/`, SHA-256 vstupu `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`. Výsledky zachovávám beze změny.
 
-**Očekávám po opakování:** `reasons={"incorrect_answer":1}`, stále **0 vybraných kandidátů**. Očekávání není naměřený výsledek. Aktuální kód má **20 selector testů a 10 diagnostických testů**; čerstvý testovací běh musí teprve proběhnout.
+**Po opakování skutečně naměřeno:** `reasons={"incorrect_answer":1}`, stále **0 vybraných kandidátů**. Záznam s úplným výpisem je v novém `runs/offline/20261009T214634155051Z/`. Aktuální kód má **20 selector testů a 10 diagnostických testů**; čerstvý testovací běh musí teprve proběhnout.
+
+**✅ Ověřeno v Kali po opravě (2026-10-09):** zopakoval jsem offline analýzu *stejného* `records.jsonl` a dostal `records=1`, `correct_final_answers=0`, `training_eligible_candidates=0`, `selected_for_review=0`, `reasons={"incorrect_answer":1}`. Nový výstup je v `runs/offline/20261009T214634155051Z/`; SHA-256 vstupu zůstává `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`. **Oprava příčiny odmítnutí je v tomto případě potvrzená.** Celou sadu 30 testů na Kali stále potřebuji doložit.
 
 ## Spuštění v Kali / WSL2
 
