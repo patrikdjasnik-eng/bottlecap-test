@@ -1,6 +1,6 @@
 # IDEA.md — RHAR: Rabbit Hollow Adaptive Reasoning
 
-**Status (2026-10-09):** The project owner **approved RHAR as a unified modular research direction**. This authorizes the concept, not specific training methods, architectural code changes, expenditure, or model weight updates.
+**Status (2026-10-09):** I **chose RHAR as a unified modular research direction**. This authorizes the concept, not specific training methods, architectural code changes, expenditure, or model weight updates.
 
 [🇨🇿 Czech version](CZ%20docs/IDEA.md) · [Development diary](docs/DEV-NOTES.en.md)
 
@@ -26,7 +26,7 @@ These mechanisms should ideally affect **what the model learns**, not require co
 
 ## HRM — Hallucination Risk Monitor (research candidate)
 
-**Status:** On 2026-10-09 the owner **approved recording this idea in the Markdown documentation**. HRM is a **proposed observational/risk-assessment extension**, **not yet a formally approved fourth RHAR module**, training component, or implemented experiment.
+**Status:** On 2026-10-09 I **decided to record this idea in Markdown**. HRM is a **proposed observational/risk-assessment extension**, **not yet a formally approved fourth RHAR module**, training component, or implemented experiment.
 
 **Research question:** Can signals produced while studying RHAR predict the risk of an incorrect or unsupported response **before** correctness is independently verified? An error on a numerical task is not automatically a factual hallucination; distinguish the two in measurement and reporting.
 
@@ -49,7 +49,7 @@ These mechanisms should ideally affect **what the model learns**, not require co
 
 **Existing diagnostic:** `diagnostics/reasoning_probe.py` currently records correctness for a few hand-written tasks, counts and repetition, but **does not calculate risk, calibrated hallucination probability, factual grounding, ECE or Brier score**.
 
-**Explicitly deferred:** HRM architecture, feature extraction, thresholds, calibration dataset, source checking, training integration and code changes require a **separate owner decision**. The idea must not be described as a verified novelty, measured improvement, or accurate prediction system.
+**Explicitly deferred:** HRM architecture, feature extraction, thresholds, calibration dataset, source checking, training integration and code changes require **my separate decision**. The idea must not be described as a verified novelty, measured improvement, or accurate prediction system.
 
 ## Modular research plan (proposed experiments, not yet authorized)
 
@@ -58,7 +58,7 @@ These mechanisms should ideally affect **what the model learns**, not require co
 3. Investigate **RPD separately** on permitted training or research data; measure reconstruction reliability and its computational cost.
 4. Investigate **TPC separately** using separate allowed training/validation tasks across several domains, without fitting to official held-out evaluation data.
 5. Perform **ablation comparisons** of base, individually testable modules, RPS+RPD and RPS+RPD+TPC; preserve matched experimental settings.
-6. **After further owner approval**, select training objectives and data, choose LoRA or another model modification, define the compute budget, and run training.
+6. **After I explicitly approve the next step**, select training objectives and data, choose LoRA or another model modification, define the compute budget, and run training.
 7. Evaluate trained candidates with unchanged official `evaluate.py`; compare paired base/candidate outputs using `compare.py`.
 
 The previous correctness-filtered short-reasoning distillation idea remains a **possible training baseline**, not an approved or implemented RHAR algorithm.
@@ -78,12 +78,12 @@ The previous correctness-filtered short-reasoning distillation idea remains a **
 - Do not change the official benchmark prompts, generation settings, token cap or scoring.
 - Keep standard Hugging Face Transformers/vLLM compatibility for final submission.
 - Never invent benchmark scores, improvements, originality, or tests that did not happen.
-- **Major choices require explicit project-owner approval**; documentation of this approved concept does not authorize new experiments.
+- **I explicitly decide on major changes before implementation**; documentation of this approved concept does not authorize new experiments.
 
 ## Current status and observations
 
-- **User-verified exploratory inference:** correct `Final answer: 43`, 371 generated tokens, 61.45 seconds, 6.04 tokens/s and 1.12 GiB allocated PyTorch memory on GTX 1070 Ti. **One unofficial question, not a measured improvement.**
-- **Read-only diagnostic:** `diagnostics/reasoning_probe.py` exists with independent tests; its first owner-run GPU diagnostic output is still pending.
+- **My verified exploratory inference:** correct `Final answer: 43`, 371 generated tokens, 61.45 seconds, 6.04 tokens/s and 1.12 GiB allocated PyTorch memory on GTX 1070 Ti. **One unofficial question, not a measured improvement.**
+- **Read-only diagnostic:** `diagnostics/reasoning_probe.py` exists with independent tests; my first GPU diagnostic completed: 325 tokens, incorrect 42 rather than 43 (Experiment 002).
 - **RHAR:** direction approved, mechanisms and training unimplemented, **no RHAR results yet**.
 
 ## Hardware

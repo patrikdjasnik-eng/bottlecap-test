@@ -12,7 +12,7 @@
 - Prompt specifikuje pouze formát výsledku (`Final answer: ...`) — **nevyžaduje kratší úvahu**.
 - Skript nemění váhy, nevytváří adaptér a neupravuje oficiální `evaluate.py`, `compare.py` ani nastavení evaluace.
 - Použité otázky jsou ručně vytvořené příklady (matematika, logika, porozumění kódu), **ne** otázky ze SVAMP, BFCL, MBPP+ ani IFEval.
-- Budoucí algoritmus pro kompresi reasoning procesu **podléhá schválení vlastníka**.
+- Budoucí algoritmus pro kompresi reasoning procesu **si předem výslovně odsouhlasím**.
 
 ## Spuštění ve WSL2 / Kali
 
@@ -62,7 +62,7 @@ Složka `runs/` je ignorována Gitem: surové výstupy modelu (včetně uvažov�
 
 Po diagnostickém běhu Experimentu 002 jsme zjistili, že prompt obsahoval doslovný příklad `Final answer: 42`, přestože správná odpověď byla `43`. Model odpověděl `42`; příčinná souvislost s ukázkou **není prokázaná**.
 
-**Vlastník schválil** odstranění zavádějícího příkladu z `diagnostics/reasoning_probe.py`. Diagnostika nyní instruuje pouze: `On the last line, write 'Final answer:' followed by your answer.` Neobsahuje vzorové číslo ani možnost výběru a **nevyžaduje kratší uvažování**.
+**Schválil jsem** odstranění zavádějícího příkladu z `diagnostics/reasoning_probe.py`. Diagnostika nyní instruuje pouze: `On the last line, write 'Final answer:' followed by your answer.` Neobsahuje vzorové číslo ani možnost výběru a **nevyžaduje kratší uvažování**.
 
 - Ostatní parametry, `enable_thinking=True`, otázky i vyhodnocení zůstávají beze změn.
 - Nový regresní test v `tests/test_reasoning_probe.py` kontroluje přesnou neutrální instrukci pro všechny diagnostické otázky, bez prozrazení očekávané odpovědi.
@@ -76,6 +76,6 @@ Po diagnostickém běhu Experimentu 002 jsme zjistili, že prompt obsahoval dosl
 - [x] První GPU diagnostika: **Experiment 002** dokončen (1 odpověď, nesprávné číslo 42, 325 tokenů).
 - [x] Neutrální diagnostický prompt po schválení opraven; regresní test přidán.
 - [ ] Spuštění aktualizovaných jednotkových testů na Kali a následný **nový kontrolní GPU běh**.
-- [ ] Rozhodnutí o dalších experimentech: **čeká na souhlas vlastníka**.
+- [ ] Rozhodnutí o dalších experimentech: **čeká na moje rozhodnutí**.
 
 Poznámky a výsledky ukládáme také do [vývojového deníku](DEV-NOTES.md).

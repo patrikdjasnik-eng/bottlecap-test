@@ -4,8 +4,8 @@
 
 ## Collaboration rules
 
-- **The project owner approves important technical decisions, new experiments, and major ideas.** The assistant must first explain the options, benefits, and risks, then ask for approval.
-- Do not change the research direction, model, training strategy, benchmark settings, project structure, or make major repository changes without prior approval.
+- **I make the final decisions about major technical changes, experiments and ideas.** Before a substantial change, we discuss options, risks and the next steps.
+- I do not change research direction, model, training strategy, benchmark settings or project structure without making an explicit decision first.
 - Routine documentation updates and technical fixes within an explicitly approved scope can proceed if clearly recorded in the diary.
 - Distinguish **completed / verified / proposed / awaiting approval / failed**. Never fabricate test success or benchmark results.
 - Entries must include date, changes, rationale, verification, and next step. Material decisions must have an explicit approval status.
@@ -13,13 +13,109 @@
 
 ## Diary
 
+### 2026-10-09 — 🐇 RHAR: complete research checkpoint, evidence and next steps
+
+**Purpose:** I consolidated what I have proposed, approved, measured and corrected. This is my first-person engineering diary, not a third-party audit. **Older entries below are historical snapshots and may contain pending statuses now superseded by this checkpoint.** Updating Markdown itself does not run inference, training or evaluation.
+
+#### 🤝 My collaboration workflow
+
+I work on RHAR together with **ChatGPT (OpenAI, GPT-6)** and **my own local GGUF AI agent, Máša**. I disclose AI assistance openly: I use ChatGPT to discuss hypotheses, develop and review code, organize documentation and interpret measurements. Máša is part of my own agent-based development environment. **I have not separately verified specific commits or benchmark results contributed by Máša to this repository, so I do not attribute unverified work to her.** I keep final authority over research direction, experiments and publication. I also use “we” naturally when discussing collaborative work.
+
+#### 🎯 ThinkingCap-Test goal and binding constraints
+
+- Start with the original **`Qwen/Qwen3-0.6B`**. I want to teach the model to emit **fewer total generated tokens (reasoning plus final response)** while maintaining comparable correctness.
+- **Prompt engineering alone is not an acceptable compression method; thinking must not be turned off.** The diagnostic uses `enable_thinking=True`. Asking for a parseable final-answer format does not constitute compression.
+- **Never train on SVAMP, MBPP+, BFCL or IFEval**; reserve these for held-out evaluation. Keep official `evaluate.py`, `compare.py`, prompts, sampling and scoring unchanged.
+- **I cannot guarantee no one has tried an idea before.** Novelty requires precise literature comparison and real results.
+- I make material decisions before costly changes and stop on red tests. **No step without green tests.**
+
+#### 🧬 RHAR: chosen modular research organism
+
+I chose **one unified research direction**, **Rabbit Hollow Adaptive Reasoning (RHAR)**:
+
+| Component | What I want to investigate | Actual status |
+| --- | --- | --- |
+| **RPS — Reasoning Progress Signature** | Useful information progress versus repetition or stalled thought | Hypothesis; no validated progress signal or learning method |
+| **RPD — Reversible Proof Distillation** | Preserving sufficient information to reconstruct an answer from a shorter reasoning trace | Hypothesis; recovery metric and cost untested |
+| **TPC — Transfer-Protected Compression** | Protecting math, coding, function calling, instruction following and other capabilities | Hypothesis; no implemented cross-domain training safeguard |
+| **HRM — Hallucination Risk Monitor** | Detecting risk of incorrect or unsupported answers and potential failure signals | **Research candidate only**, not a formal fourth module or calibrated predictor |
+
+For HRM I might examine answer instability, poor progress, failed reconstruction and checks against external evidence. An arithmetic mistake does not automatically qualify as a factual hallucination. A probability estimate would require independent labels, calibration, Brier score, ECE and AUROC. **I have trained zero RHAR models; no improvement or novelty is established.** Previously discussed LoRA distillation remains a possible comparison baseline, **not my selected algorithm**.
+
+#### 🖥️ Environment I have actually run
+
+- Kali Linux under WSL2, Python **3.11.17** in `.venv`, source directory `~/bottlecap-test`.
+- GPU **GTX 1070 Ti 8 GB** (compute capability **6.1**), CPU **Intel i5-3450**, **16 GB RAM**.
+- PyTorch **2.6.0+cu118**, CUDA runtime **11.8**; `torch.cuda.is_available()` returned `True`, and a real GPU calculation returned **512.0**.
+- I loaded and ran the original **Qwen3-0.6B** via Transformers in `float16` on the GPU. An earlier missing NumPy warning did not mean CUDA was broken; I have not completed a full dependency audit.
+- Current official **vLLM** evaluation is not expected to work on older Pascal `sm_61`. A supported newer GPU will be needed for the full benchmark.
+- Original tests warned that **bubblewrap** was missing. Safe sandboxing must precede execution of generated MBPP+ code.
+
+#### ✅ Tests: evidence versus pending validation
+
+| Check | Actual recorded state |
+| --- | --- |
+| Original repository tests | **87 passing, 2 skipped** (EvalPlus/BFCL assets missing) |
+| Earlier diagnostic suite | Previously reported **9/9 CPU tests** and working `--dry-run` |
+| Current diagnostic after prompt fix | **10 tests defined**, but no confirmed **full 10/10 run on my Kali** |
+| Focused neutral-format check | A prior note reports **1/1**; this does not replace a complete fresh test log |
+| Control GPU inference after fix | **Not performed / no result recorded** |
+| Official BottleCap AI evaluation | **Not performed**, no paired confidence intervals or official `results.json` |
+
+#### 📊 Two real exploratory Qwen runs
+
+| Metric | First inference | Experiment 002 |
+| --- | ---: | ---: |
+| Final answer | **43, correct** | **42, incorrect** (expected 43) |
+| Total generated tokens | **371** | **325** |
+| Reasoning tokens | Not separately measured | **317** |
+| Final-answer tokens | Not separately measured | **8** |
+| Reasoning proportion | Unknown | **97.54%** |
+| Generation time | **61.45 s** | **51.3 s** |
+| Average throughput | **6.04 tokens/s** | **6.33 tokens/s** |
+| PyTorch memory | **1.12 GiB allocated** | Unknown from the provided summary |
+
+**371 → 325 is NOT a demonstrated RHAR improvement.** Both runs used the **unmodified base model**, with different diagnostic question/prompt conditions and just one sample each. I have no statistical evidence of token compression, generalization or hallucination probability.
+
+#### 🔎 Experiment 002: what actually failed
+
+I ran `python -m diagnostics.reasoning_probe --limit 1`. The output remains on my machine at `runs/diagnostics/20261009T210123Z/`; Git ignores `runs/`. Reported metrics: `responses=1`, `correct_responses=0`, `exploratory_accuracy=0.0`, `reasoning_split_successes=1`, `mean_total_tokens=325`, `mean_reasoning_tokens=317`, `mean_final_tokens=8`, `mean_seconds=51.3`, `mean_tokens_per_second=6.33`, `official_benchmark=false`.
+
+I examined `records.jsonl` and found `id='arithmetic_apples'`, `expected='43'`, `final_text='\\n\\nFinal answer: 42'`, `correct=False`, `grading_error=None`, `truncated=False`, `split_status='generated_think_block'`. **The answer was numerically wrong, not malformed or truncated.** The diagnostic instruction had included `Final answer: 42` as an example and the model returned `42`. **Copying the example is a possible but unproven explanation.** I have not published the full reasoning trace in this diary.
+
+[📊 Detailed Experiment 002 report](experiments/002-reasoning-baseline.en.md) · [SVG overview](../assets/reports/rhar-exp-002-en.svg)
+
+#### 🩹 Approved diagnostic prompt correction
+
+I removed the literal example answer from **my own diagnostic**, not the official benchmark. `prompt_for()` now asks only **`On the last line, write 'Final answer:' followed by your answer.`** It does not require shorter reasoning and thinking remains on. I added the test `test_prompt_has_no_example_answer_or_answer_leakage`. **The old Experiment 002 stays unchanged.** I still need a full confirmed post-fix 10/10 test run and control GPU inference.
+
+#### 🛡️ Optional cybersecurity diagnostic (decision pending)
+
+I also want to test **defensive cybersecurity reasoning**, relevant to TPC's cross-domain generalization. I am **considering replacing the trivial hand-written `logic_triangle` case** with a deterministic security-log triage scenario:
+
+> Fifteen failed SSH login attempts for one account from the same source within a minute, followed by a success. What is the most defensible next action? **A:** Flag the event for security review; **B:** automatically delete the logs; **C:** trust the source without checking. **Expected: A.**
+
+This is **a proposal, not a completed test or a confirmed incident**. It does **not replace any official BottleCap AI evaluation dataset**. Before touching `CASES` I will decide the exact wording, answer key and balance with math/code/logic. I could alternatively add a separately labeled domain-specific case. **The Python diagnostic has not been changed to include cybersecurity.**
+
+#### 📁 Documentation and immediate next steps
+
+- Branch `feat/reasoning-compression`. Czech documentation lives under `CZ docs/`; English mirrors are at the root and under `docs/`.
+- I keep **matched CZ/EN experimental reports** with raw numerical tables, dark SVG cards, explicit answer correctness, run config, time and limitations.
+- **Next:** `git pull --ff-only origin feat/reasoning-compression` → `python -m unittest tests.test_reasoning_probe -v`. Stop if red. Only then run `python -m diagnostics.reasoning_probe --limit 1` with a new run ID and record its actual outcome, without claiming model improvements due to a changed prompt.
+- Later I will decide on RPS/RPD/TPC implementation and the optional cyber/HRM work. Safe MBPP+ sandboxing and compatible evaluation GPU remain unresolved.
+
+**Current conclusion:** local CUDA and baseline Qwen inference work; I have **two exploratory samples, one diagnostic error and a corrected prompt**. **There is no trained RHAR model, proven token saving, confirmed post-fix 10/10 test run or official BottleCap AI benchmark result.**
+
+---
+**Historical note:** older diary entries below record their then-current state. Refer to the checkpoint above for up-to-date pending test status.
+
 ### 2026-10-09 — Approved diagnostic answer-example correction
 
-**Owner approval:** explicitly approved removing the misleading `Final answer: 42` example from the diagnostic prompt after reviewing Experiment 002.
+**My decision:** I approved removing the misleading `Final answer: 42` example from the diagnostic prompt after reviewing Experiment 002.
 
 **Change:** `prompt_for()` in `diagnostics/reasoning_probe.py` no longer suggests an example answer. All diagnostic cases now use the neutral last-line instruction `On the last line, write 'Final answer:' followed by your answer.`. A regression test was added to prevent answer leakage. **Thinking is neither shortened by prompt instruction nor disabled; official BottleCap AI prompts are untouched.**
 
-**Verification:** one focused isolated test of the revised format instruction **passed (1/1)**. Source changes and documentation links were inspected. The full repository test suite and follow-up inference on the owner's Kali GPU **have not yet been rerun**.
+**Verification:** one focused isolated test of the revised format instruction **passed (1/1)**. Source changes and documentation links were inspected. The full repository test suite and follow-up inference on my Kali GPU **have not yet been rerun**.
 
 **History:** original Experiment 002 data remain unchanged (325 tokens; 42 returned rather than 43). **The illustrative 42's causal influence is unproven.** A follow-up control run needs a new output directory and must not be presented as a trained-model improvement.
 
@@ -29,13 +125,13 @@
 
 [📊 Full visual report and data table](experiments/002-reasoning-baseline.en.md)
 
-**Status:** owner-run measurement on Kali / WSL2; **informal diagnostic**, not the official BottleCap AI benchmark.
+**Status:** I ran this measurement on Kali / WSL2; **informal diagnostic**, not the official BottleCap AI benchmark.
 
-**Local artifacts:** `runs/diagnostics/20261009T210123Z/`. The assistant has not accessed the raw run records; the owner supplied the summary only.
+**My local artifacts:** `runs/diagnostics/20261009T210123Z/`. I keep the raw records on my machine and have documented the summary and key fields.
 
 **Single-response results:** `responses=1`, `correct_responses=0`, `exploratory_accuracy=0.0`, `reasoning_split_successes=1`, `mean_total_tokens=325`, `mean_reasoning_tokens=317`, `mean_final_tokens=8`, `mean_seconds=51.3`, `mean_tokens_per_second=6.33`, `official_benchmark=false`. Reasoning share: **317/325 = approximately 97.54%**.
 
-**Follow-up from the owner's inspection of `records.jsonl`:** `id=arithmetic_apples`, `expected=43`, `final_text="\n\nFinal answer: 42"`, `correct=false`, `grading_error=null`, `truncated=false`, `split_status=generated_think_block`. This confirms **an incorrect numeric final answer**, not a format failure or truncation. The connection to the illustrative `42` in the prompt remains **a hypothesis, not established causation**.
+**My follow-up inspection of `records.jsonl`:** `id=arithmetic_apples`, `expected=43`, `final_text="\n\nFinal answer: 42"`, `correct=false`, `grading_error=null`, `truncated=false`, `split_status=generated_think_block`. This confirms **an incorrect numeric final answer**, not a format failure or truncation. The connection to the illustrative `42` in the prompt remains **a hypothesis, not established causation**.
 
 **Known now:** inspection confirmed the incorrect numerical answer 42, with valid formatting and normal termination. **Still unknown:** whether the model made an arithmetic mistake or copied the example 42 from the prompt; one sample does not establish the model's overall accuracy.
 
@@ -45,7 +141,7 @@
 
 ### 2026-10-09 — HRM proposal documented; implementation deferred
 
-**Owner's consent:** "dobry napad zapsal bych to do md" (good idea, I'd write it in MD) approves **documenting** the **Hallucination Risk Monitor (HRM)** in both versions of `IDEA.md`, not implementing it or formally expanding RHAR to four modules.
+**My decision:** I decided to **document** the **Hallucination Risk Monitor (HRM)** in both versions of `IDEA.md`, not implementing it or formally expanding RHAR to four modules.
 
 **Proposed purpose:** investigate incorrect/unsupported answer risk using answer instability, RPS signals, RPD recoverability and optional checks against external evidence. Distinguish factual hallucinations from other errors.
 
@@ -53,11 +149,11 @@
 
 **Current verification:** the existing `reasoning_probe.py` does not compute these predictions. No HRM runs or validation results exist. Code, model weights, official benchmark prompts and training remain unchanged.
 
-**Status:** documented research candidate only. A formal fourth module, implementation and experiments each require another owner decision.
+**Status:** documented research candidate only. I will decide separately whether to approve a fourth module, implementation or experiment.
 
 ### 2026-10-09 — RHAR approved as a unified modular organism
 
-**Owner's approval:** when asked whether to adopt a single connected organism composed of RPS, RPD, and TPC, the owner explicitly answered **"yes"**. Working name: **RHAR — Rabbit Hollow Adaptive Reasoning**.
+**My decision:** I chose a single connected organism combining RPS, RPD and TPC. Working name: **RHAR — Rabbit Hollow Adaptive Reasoning**.
 
 **Approval scope:** unified **research direction and modular concept**. RPS investigates information progress, RPD investigates recoverability of crucial information, and TPC protects other capabilities. Each module must be independently assessable; combining them remains a hypothesis. The concept does not require inefficient chaining of additional models during inference.
 
@@ -65,13 +161,13 @@
 
 **NOT approved:** a specific RPS/RPD/TPC computation, loss, dataset choice, new model modification, training, GPU spending, large-scale evaluation, or claims of scientific novelty.
 
-**Measurement status:** previously reported single inference of 371 tokens / correct answer 43; `reasoning_probe.py` still awaits the first owner-run GPU output. No RHAR improvement or model metrics exist yet.
+**Measurement status:** previously reported single inference of 371 tokens / correct answer 43; `reasoning_probe.py` still awaits my first GPU output. No RHAR improvement or model metrics exist yet.
 
 **Next item to discuss:** run the already prepared baseline diagnostic first, then specify and test RPS, RPD, and TPC hypotheses one by one, requesting approval before each implementation.
 
 ### 2026-10-09 — Three research hypotheses shortlisted (preferred, not approved for implementation)
 
-**Owner's preference:** three research directions are of interest: **Reasoning Progress Signature (RPS)**, **Reversible Proof Distillation (RPD)**, and **Transfer-Protected Compression (TPC)**.
+**My research choices:** I selected three directions: **Reasoning Progress Signature (RPS)**, **Reversible Proof Distillation (RPD)**, and **Transfer-Protected Compression (TPC)**.
 
 **Working scope:**
 - **RPS:** measure whether reasoning steps convey useful progress or mainly repeat earlier content.
@@ -86,43 +182,43 @@
 
 ### 2026-10-09 — Read-only reasoning diagnostic (approved)
 
-**Approval:** the project owner explicitly approved development of the diagnostic tool and reiterated the ban on prompt-only shortening and turning off thinking.
+**My decision:** I approved the diagnostic tool while insisting that neither prompt-only shortening nor turning off thinking meets our goal.
 
 **Implemented:** `diagnostics/reasoning_probe.py` and `tests/test_reasoning_probe.py`. The diagnostic uses six hand-written problems across three domains, measuring three by default. It pins the original `Qwen/Qwen3-0.6B` revision, uses `enable_thinking=True`, standard sampling (temperature 0.6, top-p 0.95, top-k 20), and requests only the `Final answer: ...` format. Model weights, adapters, and official evaluation settings are **unchanged**.
 
 **Outputs:** `runs/diagnostics/<UTC>/config.json`, `records.jsonl`, and `summary.json`. Collected fields: total/reasoning/final tokens, correctness, time, tokens/s, PyTorch memory, and a rough repetition indicator. Malformed or absent reasoning boundaries yield an unknown value rather than an invented zero.
 
-**Verification:** **9/9 new CPU unit tests passed** in a separate local test environment; `--dry-run` was exercised. **The new tool has not yet run on the owner's GTX 1070 Ti; the nine tests are not the full upstream test suite.**
+**Verification:** **9/9 new CPU unit tests passed** in a separate local test environment; `--dry-run` was exercised. **The new tool has not yet run on my GTX 1070 Ti; the nine tests are not the full upstream test suite.**
 
-**Status:** code and CZ/EN documentation implemented. Awaiting the owner's first GPU measurement; the training algorithm remains undecided.
+**Status:** code and CZ/EN documentation implemented. Awaiting my first GPU measurement; the training algorithm remains undecided.
 
 ### 2026-10-09 — First Qwen3-0.6B inference (baseline exploration)
 
-**Status:** user-verified on Kali Linux / WSL2 with a GTX 1070 Ti; **not** an official BottleCap AI evaluation.
+**Status:** I verified this on Kali Linux / WSL2 with a GTX 1070 Ti; **not** an official BottleCap AI evaluation.
 
 **Procedure:** loaded the original `Qwen/Qwen3-0.6B` via Transformers on GPU in `torch.float16`. One simple math task: 5 boxes × 12 apples − 17 sold. Thinking enabled; the previously provided script used seed 9001, temperature 0.6, top-p 0.95, top-k 20 and max_new_tokens 512.
 
-**Measured from the user-provided terminal output:**
+**Measured in my terminal:**
 - Final reply: `Final answer: 43` (**correct**).
 - **371 generated tokens** in total (including final answer and any reasoning).
 - Generation time: **61.45 s**.
 - Mean throughput: **6.04 tokens/s**.
 - `torch.cuda.memory_allocated()`: **1.12 GiB** (PyTorch allocated memory, not full GPU VRAM use or peak).
 
-**Limitations:** one question and one run only. The user shared the answer ending and metrics but not the full reasoning trace, so reasoning-only token count has not been measured. This is not an SVAMP/MBPP+/BFCL/IFEval benchmark result, nor evidence of model training or improvement.
+**Limitations:** one question and one run only. I recorded the answer ending and metrics but not the full reasoning trace, so reasoning-only token count has not been measured. This is not an SVAMP/MBPP+/BFCL/IFEval benchmark result, nor evidence of model training or improvement.
 
 **Next proposal (awaiting approval):** create reproducible per-segment measurements for reasoning vs. final answer on several independent sample questions; do not alter the model or official evaluation rules yet.
 
 ### 2026-10-09 — Language file reorganization
 
-**Approved scope:** at the owner's explicit request, move all Czech Markdown documents into `CZ docs/`. Keep the root `README.md` in English for BottleCap AI reviewers. Python code, model, and evaluation settings remain unchanged.
+**Approved scope:** as I decided, move all Czech Markdown documents into `CZ docs/`. Keep the root `README.md` in English for BottleCap AI reviewers. Python code, model, and evaluation settings remain unchanged.
 
 **Verification:** verify all relative links and preserve every document after the move. **Project submission:** instructions explained only; nothing was submitted or emailed.
 
 
 ### 2026-10-09 — CUDA calculation verified on local GPU
 
-**Status:** verified by the user on Kali Linux / WSL2.
+**Status:** I verified this on Kali Linux / WSL2.
 
 **Completed:** inside the active Python 3.11 `.venv`, ran a simple PyTorch CUDA test creating `torch.ones(256, device="cuda")` and computing `(tensor * 2).sum()`.
 
@@ -137,13 +233,13 @@
 
 ### 2026-10-09 — Collaboration rules and language mirrors
 
-**Status:** rules confirmed by the project owner; bilingual documentation is being added on the development branch.
+**Status:** I defined our collaboration rules; bilingual documentation is being added on the development branch.
 
 **Completed:** DEV-NOTES designated as a development diary instead of merely a to-do list. Added approval requirements for major decisions. Completed Czech and English documentation mirrors: README, IDEA, HARDWARE, DEV-NOTES, and the official assignment. Corrected relative links in the copied upstream document.
 
 **Documentation verification:** 10 files checked; all relative links exist, and the Czech assignment retains all 19 headings, all table rows, and 8 unmodified example code blocks.
 
-**Verification:** previous user-run unit tests: 87 OK, 2 skipped; no new training or benchmarking has been performed as part of these documentation updates.
+**Verification:** my previous unit tests: 87 OK, 2 skipped; no new training or benchmarking has been performed as part of these documentation updates.
 
 **Awaiting approval:** specific reasoning-compression algorithm, training approach, first GPU experiment, and any code changes.
 
@@ -156,10 +252,10 @@
 - [x] Documented the actual PC configuration and GPU limitations.
 - [x] Prepared the research plan in `IDEA.md`.
 - [x] Ran local unit tests (Kali Linux / WSL2, Python 3.14.7): **87 tests OK, 2 skipped** (EvalPlus and BFCL not yet downloaded), duration 0.321 s.
-- [x] Set up isolated **Python 3.11.17** in `.venv` on Kali Linux / WSL2; user verified on October 9, 2026.
+- [x] Set up isolated **Python 3.11.17** in `.venv` on Kali Linux / WSL2; I verified on October 9, 2026.
 - [x] `nvidia-smi` in WSL2 detects **NVIDIA GeForce GTX 1070 Ti (8192 MiB)**, driver 582.78, nvidia-smi 580.178.01; 882 MiB in use at the time of checking. The reported `CUDA Version: 13.0` is the driver's capability, not proof that PyTorch works.
 - [x] Verified CUDA calculations with **PyTorch 2.6.0 + cu118** on GTX 1070 Ti (compute capability 6.1; calculated result 512.0).
-- [x] Transformers/Accelerate installed for the first successful Qwen3-0.6B inference (verified by user-run inference).
+- [x] Transformers/Accelerate installed for the first successful Qwen3-0.6B inference (verified in my inference run).
 - [ ] Verify the bubblewrap sandbox before MBPP+ evaluation (warning: only a weaker fallback with resource limits is available).
 - [ ] Prepare training data without using evaluation benchmarks.
 - [ ] Run the baseline smoke test and save run artifacts.

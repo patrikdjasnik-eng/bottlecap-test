@@ -13,7 +13,7 @@
 
 > 🐇 Rabbit Hollow Research: explore **RHAR — Rabbit Hollow Adaptive Reasoning**, a modular research concept for shorter Qwen3-0.6B reasoning without sacrificing accuracy.
 
-**Owner-approved research direction:** RPS (Reasoning Progress Signature) + RPD (Reversible Proof Distillation) + TPC (Transfer-Protected Compression). The concepts are approved; no RHAR learning algorithm or improvement has been implemented or demonstrated.
+**My chosen research direction:** RPS (Reasoning Progress Signature) + RPD (Reversible Proof Distillation) + TPC (Transfer-Protected Compression). The concepts are approved; no RHAR learning algorithm or improvement has been implemented or demonstrated.
 
 ## 🎯 Challenge
 
@@ -45,10 +45,14 @@ Details, limitations, and an external-GPU plan: [docs/HARDWARE.en.md](docs/HARDW
 - [📊 Experiment 002 — visual report](docs/experiments/002-reasoning-baseline.en.md) — measured metrics, reasoning ratio, incorrect answer, and investigation. [Czech](CZ%20docs/experiments/002-reasoning-baseline.md).
 - `train.py`, `evaluate.py`, `compare.py` — official BottleCapAI tools.
 
+## 🤝 Working with AI
+
+I work on the project together with **ChatGPT (OpenAI, GPT-6)** and **my own local GGUF agent, Máša**. I disclose AI assistance for hypothesis discussions, development and documentation. I separate real measurements and my decisions from AI proposals; I do not attribute specific commits or tests to Máša without evidence. See my [development diary](docs/DEV-NOTES.en.md).
+
 ## ✅ Experiment principles
 
 **No progress without green tests.** Every intervention must have repeatable verification and a baseline comparison. Record negative results and the exact hardware used, too.
 
-Important technical decisions, experiments, and major changes require the project owner's explicit approval. See the [development diary](docs/DEV-NOTES.en.md).
+Important technical decisions, experiments, and major changes are discussed first; I make the final decision. See the [development diary](docs/DEV-NOTES.en.md).
 
 Original challenge: [BottleCapAI/ThinkingCap-Test](https://github.com/BottleCapAI/ThinkingCap-Test). The upstream source is distributed under Apache-2.0; see [LICENSE](LICENSE).

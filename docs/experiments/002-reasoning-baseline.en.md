@@ -31,7 +31,7 @@
 | `truncated` | `false` |
 | `split_status` | `generated_think_block` |
 
-The owner directly inspected fields from the local `records.jsonl`. This confirms that **the format and thinking boundaries parsed successfully**, but the numerical answer was wrong. `grading_error: null` indicates no format error was reported; it is not evidence of correctness.
+I inspected fields from the local `records.jsonl`. This confirms that **the format and thinking boundaries parsed successfully**, but the numerical answer was wrong. `grading_error: null` indicates no format error was reported; it is not evidence of correctness.
 
 ### ⚠️ Open question: influence of the format example
 
@@ -42,17 +42,17 @@ The diagnostic prompt contained an illustrative `Final answer: 42`, and the mode
 - **Run date:** 2026-10-09; UTC ID `20261009T210123Z`.
 - **Model:** original `Qwen/Qwen3-0.6B`, no RHAR training.
 - **Environment:** Kali Linux / WSL2; NVIDIA GTX 1070 Ti.
-- **Local artifacts:** `runs/diagnostics/20261009T210123Z/` on the owner's computer.
-- **Evidence:** user-provided summary and selected record fields. The complete reasoning trace was not shared.
+- **My local artifacts:** `runs/diagnostics/20261009T210123Z/` on my computer.
+- **Evidence:** my terminal summary and selected record fields. The complete reasoning trace was not shared.
 - **Status:** exploratory diagnosis, **not** official BottleCap AI evaluation, calibrated HRM risk, proven token savings, or implementation of RPS/RPD/TPC.
 - **Do not compare to the earlier 371-token run as a model improvement:** conditions differed and no fine-tuned candidate exists.
 
 ## 🐇 Proposed next step
 
-With owner approval, remove the potentially misleading example number from the diagnostic prompt (retaining only the final-answer format), test the grading logic, and perform a clearly labeled control run. **Official benchmark prompts remain unchanged.**
+Following my decision, remove the potentially misleading example number from the diagnostic prompt (retaining only the final-answer format), test the grading logic, and perform a clearly labeled control run. **Official benchmark prompts remain unchanged.**
 
 ## 📐 Visual style for future reports
 
 Document each subsequent run in a matched **CZ/EN pair**: metric panel, reasoning/final token ratio, explicit correctness status, table of grounded values, run identifier, errors, and limitations. Every chart must come from actual evidence. If token splitting is unknown, do not invent a percentage. SVG is the visual layer; the Markdown table remains readable without the image.
 
-**Update 2026-10-09:** the owner approved removing the potentially misleading example from the diagnostic prompt. The code now uses a neutral formatting instruction without the example number `42`. **This does not change any historical Experiment 002 data.** No post-fix control inference has run yet.
+**Update 2026-10-09:** I approved removing the potentially misleading example from the diagnostic prompt. The code now uses a neutral formatting instruction without the example number `42`. **This does not change any historical Experiment 002 data.** No post-fix control inference has run yet.

@@ -1,6 +1,6 @@
 # IDEA.md — RHAR: Rabbit Hollow Adaptive Reasoning
 
-**Stav (9. 10. 2026):** vlastník projektu **schválil RHAR jako společný modulární výzkumný směr**. Schválení se týká koncepce, nikoli konkrétního trénování, změn architektury v kódu, finančních nákladů nebo úprav vah modelu.
+**Stav (9. 10. 2026):** **rozhodl jsem se pro RHAR jako společný modulární výzkumný směr**. Schválení se týká koncepce, nikoli konkrétního trénování, změn architektury v kódu, finančních nákladů nebo úprav vah modelu.
 
 [🇬🇧 Anglická verze](../IDEA.md) · [Vývojový deník](DEV-NOTES.md)
 
@@ -26,7 +26,7 @@ Tyto mechanismy mají v ideálním případě ovlivňovat **učení samotného m
 
 ## HRM — Hallucination Risk Monitor (výzkumný kandidát)
 
-**Stav:** dne 9. 10. 2026 vlastník **schválil zápis nápadu do Markdown dokumentace**. HRM je **navržené rozšíření pro diagnostiku rizika**, **nikoli zatím formálně schválený čtvrtý modul RHAR**, trénovací komponenta nebo provedený experiment.
+**Stav:** dne 9. 10. 2026 jsem **schválil zápis nápadu do Markdown dokumentace**. HRM je **navržené rozšíření pro diagnostiku rizika**, **nikoli zatím formálně schválený čtvrtý modul RHAR**, trénovací komponenta nebo provedený experiment.
 
 **Výzkumná otázka:** Mohou signály sledované v RHAR předpovídat riziko chybné nebo nepodložené odpovědi **ještě před** nezávislým ověřením správnosti? Chyba v numerické úloze nemusí být faktická halucinace; při měření oba jevy odlišovat.
 
@@ -58,7 +58,7 @@ Tyto mechanismy mají v ideálním případě ovlivňovat **učení samotného m
 3. Zkoumat **RPD samostatně** na povolených výzkumných či trénovacích datech; měřit rekonstruovatelnost a výpočetní náklady.
 4. Zkoumat **TPC samostatně** na oddělených povolených trénovacích/validačních datech z několika oblastí, bez přizpůsobování na oficiální testovací sady.
 5. Provést **ablační srovnání** baseline, samostatně testovatelných modulů, RPS+RPD a RPS+RPD+TPC při shodném nastavení.
-6. **Po dalším souhlasu vlastníka** vybrat trénovací cíl a data, určit LoRA nebo jinou úpravu modelu, výpočetní rozpočet a spustit trénování.
+6. **Až po mém dalším rozhodnutí** vybrat trénovací cíl a data, určit LoRA nebo jinou úpravu modelu, výpočetní rozpočet a spustit trénování.
 7. Vyhodnotit natrénované kandidáty nezměněným oficiálním `evaluate.py` a párově porovnat baseline/kandidáta pomocí `compare.py`.
 
 Původní nápad destilace krátkých správných postupů zůstává **možnou trénovací baseline**, nikoli schváleným nebo implementovaným algoritmem RHAR.
@@ -78,12 +78,12 @@ Původní nápad destilace krátkých správných postupů zůstává **možnou 
 - Neměnit oficiální prompty benchmarků, nastavení generování, limity tokenů ani hodnocení.
 - Zachovat kompatibilitu s běžnými Hugging Face Transformers/vLLM pro finální odevzdání.
 - Nevymýšlet výsledky benchmarků, zlepšení, originalitu ani neprovedené testy.
-- **Důležitá rozhodnutí vyžadují výslovný souhlas vlastníka**; zápis schválené koncepce neznamená povolení nových experimentů.
+- **Důležité kroky si výslovně odsouhlasím**; zápis schválené koncepce neznamená povolení nových experimentů.
 
 ## Aktuální stav a pozorování
 
-- **Průzkumná inference ověřená uživatelem:** správně `Final answer: 43`, 371 generovaných tokenů, 61,45 sekundy, 6,04 tokenu/s a 1,12 GiB alokované paměti PyTorch na GTX 1070 Ti. **Jedna neoficiální otázka, nikoli naměřené zlepšení.**
-- **Diagnostika bez zásahu do modelu:** existuje `diagnostics/reasoning_probe.py` s vlastními testy; výstup prvního diagnostického běhu uživatele na GPU stále nemáme.
+- **Moje ověřená průzkumná inference:** správně `Final answer: 43`, 371 generovaných tokenů, 61,45 sekundy, 6,04 tokenu/s a 1,12 GiB alokované paměti PyTorch na GTX 1070 Ti. **Jedna neoficiální otázka, nikoli naměřené zlepšení.**
+- **Diagnostika bez zásahu do modelu:** existuje `diagnostics/reasoning_probe.py` s vlastními testy; první GPU diagnostika již proběhla: 325 tokenů, chybná odpověď 42 místo 43 (Experiment 002).
 - **RHAR:** směr schválen, mechanismy a trénování neimplementovány, **zatím žádné výsledky RHAR**.
 
 ## Hardware

@@ -13,7 +13,7 @@
 
 > 🐇 Rabbit Hollow Research: výzkum **RHAR — Rabbit Hollow Adaptive Reasoning**, modulárního přístupu k efektivnějšímu uvažování modelu Qwen3-0.6B bez ztráty přesnosti.
 
-**Výzkumný směr schválený vlastníkem:** RPS (Reasoning Progress Signature) + RPD (Reversible Proof Distillation) + TPC (Transfer-Protected Compression). Schválená je koncepce; žádný algoritmus učení RHAR ani zlepšení dosud nebyly implementovány či prokázány.
+**Můj zvolený výzkumný směr:** RPS (Reasoning Progress Signature) + RPD (Reversible Proof Distillation) + TPC (Transfer-Protected Compression). Schválená je koncepce; žádný algoritmus učení RHAR ani zlepšení dosud nebyly implementovány či prokázány.
 
 ## 🎯 Zadání
 
@@ -46,10 +46,14 @@ Podrobnosti, limity a plán práce s externí GPU: [HARDWARE.md](HARDWARE.md). G
 - [📊 Experiment 002 — grafický report](experiments/002-reasoning-baseline.md) — reálně naměřené hodnoty, poměr tokenů, nesprávná odpověď a rozbor. [Anglicky](../docs/experiments/002-reasoning-baseline.en.md).
 - `train.py`, `evaluate.py`, `compare.py` — oficiální nástroje BottleCapAI.
 
+## 🤝 Spolupráce s AI
+
+Na projektu pracuji společně s **ChatGPT (OpenAI, GPT-6)** a se svou vlastní lokální **GGUF agentkou Mášou**. AI používám transparentně pro diskusi o hypotézách, pomoc při vývoji a dokumentaci. Vlastní měření a technická rozhodnutí eviduji odděleně od návrhů AI; Máše nepřipisuji konkrétní commity nebo testy bez dokladů. Podrobnosti uvádím ve [vývojovém deníku](DEV-NOTES.md).
+
 ## ✅ Zásady experimentů
 
 **Bez zelených testů ani krok.** Každý zásah musí mít opakovatelné ověření a měření proti stejné baseline. Výsledky zapisujeme včetně nepovedených experimentů a hardware, na kterém vznikly.
 
-O důležitých technických rozhodnutích, nových experimentech a zásadních změnách se nejprve poradíme a vyžádáme souhlas vlastníka projektu. Pravidla a zápisy najdeš ve [vývojovém deníku](DEV-NOTES.md).
+O důležitých technických rozhodnutích, nových experimentech a zásadních změnách se nejprve společně poradíme, konečné rozhodnutí provedu já. Pravidla a zápisy najdeš ve [vývojovém deníku](DEV-NOTES.md).
 
 Zdrojové zadání: [BottleCapAI/ThinkingCap-Test](https://github.com/BottleCapAI/ThinkingCap-Test). Původní kód je distribuován s licencí Apache-2.0; viz [LICENSE](../LICENSE).

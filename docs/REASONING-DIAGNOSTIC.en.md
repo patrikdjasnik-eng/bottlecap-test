@@ -12,7 +12,7 @@
 - The prompt specifies only the output format (`Final answer: ...`) — it **does not request shorter reasoning**.
 - The script does not modify weights, create an adapter, or change the official `evaluate.py`, `compare.py`, or evaluation settings.
 - All questions are hand-written (math, logic, code comprehension), **not** copied from SVAMP, BFCL, MBPP+, or IFEval.
-- Any future reasoning compression algorithm **requires the project owner's approval**.
+- Any future reasoning compression algorithm **requires my explicit decision**.
 
 ## Running on WSL2 / Kali
 
@@ -62,7 +62,7 @@ The `runs/` directory is ignored by Git: raw generated output (including reasoni
 
 Experiment 002 revealed that the diagnostic prompt contained a literal example `Final answer: 42`, while the correct answer was `43`. The model returned `42`, but causation by the example **has not been established**.
 
-**The owner approved** removing the potentially misleading example from `diagnostics/reasoning_probe.py`. The diagnostic now asks only: `On the last line, write 'Final answer:' followed by your answer.` It contains no sample number or choice and **does not request shorter reasoning**.
+**I approved** removing the potentially misleading example from `diagnostics/reasoning_probe.py`. The diagnostic now asks only: `On the last line, write 'Final answer:' followed by your answer.` It contains no sample number or choice and **does not request shorter reasoning**.
 
 - Other parameters, `enable_thinking=True`, cases, and grading remain unchanged.
 - A new regression test in `tests/test_reasoning_probe.py` checks the exact neutral instruction across all diagnostic cases, without revealing the expected answer.
@@ -74,8 +74,8 @@ Experiment 002 revealed that the diagnostic prompt contained a literal example `
 - [x] Diagnostic CPU unit tests: **9/9** passed locally.
 - [x] `--dry-run` tested locally.
 - [x] First GPU diagnostic: **Experiment 002** completed (one incorrect numeric reply of 42, 325 tokens).
-- [x] Neutral diagnostic prompt corrected with owner approval; regression test added.
+- [x] Neutral diagnostic prompt corrected after my approval; regression test added.
 - [ ] Run updated unit tests on Kali and then perform a **new control GPU measurement**.
-- [ ] Decision on further experiments: **requires owner's approval**.
+- [ ] Decision on further experiments: **requires my approval**.
 
 Record measurements and decisions in the [development diary](DEV-NOTES.en.md).

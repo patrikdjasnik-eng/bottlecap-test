@@ -31,7 +31,7 @@
 | `truncated` | `false` |
 | `split_status` | `generated_think_block` |
 
-Záznam uživatel ručně načetl ze souboru `records.jsonl`. Hodnoty ukazují, že **formát i hranice reasoning procesu byly rozpoznány**, ale výsledné číslo je chybné. `grading_error: null` neznamená úspěch; pouze nebyla ohlášena chyba formátu.
+Záznam jsem ručně načetl ze souboru `records.jsonl`. Hodnoty ukazují, že **formát i hranice reasoning procesu byly rozpoznány**, ale výsledné číslo je chybné. `grading_error: null` neznamená úspěch; pouze nebyla ohlášena chyba formátu.
 
 ### ⚠️ Otevřená otázka: vliv formátového příkladu
 
@@ -42,17 +42,17 @@ Diagnostický prompt obsahoval ukázku `Final answer: 42`, a model pak skutečn�
 - **Datum běhu:** 2026-10-09, identifikátor `20261009T210123Z` (UTC).
 - **Model:** původní `Qwen/Qwen3-0.6B`, bez trénování RHAR.
 - **Prostředí:** Kali Linux / WSL2; NVIDIA GTX 1070 Ti.
-- **Lokální artefakty:** `runs/diagnostics/20261009T210123Z/` na počítači vlastníka.
-- **Důkaz:** souhrn a vybraná pole záznamu poskytnutá vlastníkem. Úplný reasoning trace jsme nepřenášeli.
+- **Lokální artefakty:** `runs/diagnostics/20261009T210123Z/` na mém počítači.
+- **Důkaz:** můj terminálový souhrn a vybraná pole uloženého záznamu. Úplný reasoning trace jsme nepřenášeli.
 - **Stav:** průzkumná diagnostika, **nikoli** oficiální BottleCap AI benchmark, kalibrace HRM, důkaz úspory tokenů ani implementace RPS/RPD/TPC.
 - **Neporovnávat s předchozím během 371 tokenů jako se zlepšením:** lišily se konkrétní podmínky a neexistuje doladěný kandidátní model.
 
 ## 🐇 Následující navržený krok
 
-Po schválení vlastníkem odstranit zavádějící ilustrační hodnotu z diagnostického promptu (zachovat pouze definici formátu finální odpovědi), otestovat hodnoticí logiku a provést nový jasně označený kontrolní běh. **Oficiální benchmarkové prompty beze změn.**
+Podle svého rozhodnutí odstranit zavádějící ilustrační hodnotu z diagnostického promptu (zachovat pouze definici formátu finální odpovědi), otestovat hodnoticí logiku a provést nový jasně označený kontrolní běh. **Oficiální benchmarkové prompty beze změn.**
 
 ## 📐 Jednotný vzhled budoucích reportů
 
 Každé další měření zapisujeme v **CZ/EN dvojici**: grafický panel s metrikami, poměr reasoning/final tokenů, přiznaný stav správnosti, tabulku skutečných hodnot, identifikátor běhu, chyby a omezení. Graf musí vždy vycházet z reálně doložených dat. Pokud je rozdělení tokenů neznámé, žádné procento nedopočítáváme. SVG je jen vizuální vrstva; tabulka zůstává čitelná i bez obrázku.
 
-**Aktualizace 9. 10. 2026:** vlastník schválil opravu zavádějícího formátového příkladu. Kód diagnostiky nově používá neutrální instrukci bez čísla `42`. **Tato změna nemění žádné historické údaje v Experimentu 002.** Kontrolní běh po opravě zatím neproběhl.
+**Aktualizace 9. 10. 2026:** jsem schválil opravu zavádějícího formátového příkladu. Kód diagnostiky nově používá neutrální instrukci bez čísla `42`. **Tato změna nemění žádné historické údaje v Experimentu 002.** Kontrolní běh po opravě zatím neproběhl.
