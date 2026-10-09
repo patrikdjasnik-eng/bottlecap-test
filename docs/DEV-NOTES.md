@@ -6,7 +6,9 @@
 - [x] Převzaty oficiální Python skripty, testy a licence BottleCapAI.
 - [x] Popsána skutečná PC konfigurace a limity GPU.
 - [x] Připraven výzkumný plán `IDEA.md`.
-- [ ] Spustit unit testy (nesimulovat „zelené“ výsledky).
+- [x] Spuštěny lokální unit testy (Kali Linux / WSL2, Python 3.14.7): **87 testů OK, 2 přeskočeny** (EvalPlus a BFCL zatím nejsou stažené), běh 0,321 s.
+- [ ] Zprovoznit izolovaný Python 3.11 a kompatibilní ML dependencies pro další fázi.
+- [ ] Prověřit bubblewrap sandbox před evaluací MBPP+ (varování: dostupný jen slabší fallback s resource limity).
 - [ ] Připravit tréninková data mimo eval benchmarky.
 - [ ] Provést baseline smoke test a uložit run artefakty.
 - [ ] Vygenerovat správné, krátké reasoning traces.
