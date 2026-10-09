@@ -1,6 +1,6 @@
 # 🔬 DEV-NOTES — Development diary
 
-[🇨🇿 Česky](DEV-NOTES.md) · [🇬🇧 English](DEV-NOTES.en.md)
+[🇨🇿 Česky](../CZ%20docs/DEV-NOTES.md) · [🇬🇧 English](DEV-NOTES.en.md)
 
 ## Collaboration rules
 
@@ -12,6 +12,13 @@
 - **No step forward without green tests** for code changes; verify structure and links for documentation changes.
 
 ## Diary
+
+### 2026-10-09 — Language file reorganization
+
+**Approved scope:** at the owner's explicit request, move all Czech Markdown documents into `CZ docs/`. Keep the root `README.md` in English for BottleCap AI reviewers. Python code, model, and evaluation settings remain unchanged.
+
+**Verification:** verify all relative links and preserve every document after the move. **Project submission:** instructions explained only; nothing was submitted or emailed.
+
 
 ### 2026-10-09 — CUDA calculation verified on local GPU
 
@@ -51,7 +58,7 @@
 - [x] Ran local unit tests (Kali Linux / WSL2, Python 3.14.7): **87 tests OK, 2 skipped** (EvalPlus and BFCL not yet downloaded), duration 0.321 s.
 - [x] Set up isolated **Python 3.11.17** in `.venv` on Kali Linux / WSL2; user verified on October 9, 2026.
 - [x] `nvidia-smi` in WSL2 detects **NVIDIA GeForce GTX 1070 Ti (8192 MiB)**, driver 582.78, nvidia-smi 580.178.01; 882 MiB in use at the time of checking. The reported `CUDA Version: 13.0` is the driver's capability, not proof that PyTorch works.
-- [ ] Verify CUDA calculations with **PyTorch 2.6.0 + cu118** on the GPU (not yet tested); if an error occurs, do not confuse GPU detection with a working CUDA kernel.
+- [x] Verified CUDA calculations with **PyTorch 2.6.0 + cu118** on GTX 1070 Ti (compute capability 6.1; calculated result 512.0).
 - [ ] Install Transformers/Accelerate only after a successful PyTorch CUDA test.
 - [ ] Verify the bubblewrap sandbox before MBPP+ evaluation (warning: only a weaker fallback with resource limits is available).
 - [ ] Prepare training data without using evaluation benchmarks.

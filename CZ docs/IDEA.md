@@ -32,7 +32,7 @@ Zatím nezměřeno.
 
 ## Hardware
 
-Viz [docs/HARDWARE.md](docs/HARDWARE.md). Lokální sestava: GTX 1070 Ti (8 GB), Intel i5-3450, ASUS P8B75-M, 16 GB RAM.
+Viz [HARDWARE.md](HARDWARE.md). Lokální sestava: GTX 1070 Ti (8 GB), Intel i5-3450, ASUS P8B75-M, 16 GB RAM.
 
 ## Co fungovalo / nefungovalo
 

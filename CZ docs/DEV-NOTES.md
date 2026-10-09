@@ -1,6 +1,6 @@
 # 🔬 DEV-NOTES — Vývojový deník
 
-[🇨🇿 Česky](DEV-NOTES.md) · [🇬🇧 English](DEV-NOTES.en.md)
+[🇨🇿 Česky](DEV-NOTES.md) · [🇬🇧 English](../docs/DEV-NOTES.en.md)
 
 ## Pravidla spolupráce
 
@@ -12,6 +12,13 @@
 - **Bez zelených testů ani krok** při změnách kódu; pro dokumentační změny ověřit strukturu a odkazy.
 
 ## Deník
+
+### 2026-10-09 — Uspořádání jazykových souborů
+
+**Schválený rozsah:** na výslovnou žádost vlastníka přesunout všechny české MD dokumenty do `CZ docs/`. Anglické `README.md` ponechat v kořeni pro snadné čtení při posuzování BottleCap AI. Python, model a evaluační nastavení beze změn.
+
+**Ověření:** všechny relativní odkazy a zachování dokumentů zkontrolovat po přesunu. **Odevzdání projektu:** postup vysvětlen, nic nebylo odesláno.
+
 
 ### 2026-10-09 — CUDA výpočet ověřen na lokální GPU
 
@@ -51,7 +58,7 @@
 - [x] Spuštěny lokální unit testy (Kali Linux / WSL2, Python 3.14.7): **87 testů OK, 2 přeskočeny** (EvalPlus a BFCL zatím nejsou stažené), běh 0,321 s.
 - [x] Zprovozněn izolovaný Python **3.11.17** v `.venv` na Kali Linux / WSL2; ověřil uživatel 9. 10. 2026.
 - [x] `nvidia-smi` ve WSL2 detekuje **NVIDIA GeForce GTX 1070 Ti (8192 MiB)**, driver 582.78, nvidia-smi 580.178.01; v okamžiku kontroly 882 MiB obsazeno. Zobrazené `CUDA Version: 13.0` udává schopnost driveru, nikoli funkčnost PyTorch.
-- [ ] Ověřit CUDA výpočty v **PyTorch 2.6.0 + cu118** na GPU (zatím netestováno); při problémech nezaměňovat detekci GPU za funkční kernel.
+- [x] Ověřeny CUDA výpočty v **PyTorch 2.6.0 + cu118** na GPU (GTX 1070 Ti, compute capability 6.1, testovací výsledek 512.0).
 - [ ] Doinstalovat knihovny Transformers/Accelerate až po zeleném PyTorch CUDA testu.
 - [ ] Prověřit bubblewrap sandbox před evaluací MBPP+ (varování: dostupný jen slabší fallback s resource limity).
 - [ ] Připravit tréninková data mimo eval benchmarky.
