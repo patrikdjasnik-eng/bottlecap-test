@@ -11,7 +11,9 @@
 ![RAM](https://img.shields.io/badge/RAM-16_GB-475569)
 ![License](https://img.shields.io/badge/Upstream-Apache_2.0-2563EB)
 
-> 🐇 Rabbit Hollow Research: teach **Qwen3-0.6B** a shorter reasoning process without a noticeable loss in accuracy.
+> 🐇 Rabbit Hollow Research: explore **RHAR — Rabbit Hollow Adaptive Reasoning**, a modular research concept for shorter Qwen3-0.6B reasoning without sacrificing accuracy.
+
+**Owner-approved research direction:** RPS (Reasoning Progress Signature) + RPD (Reversible Proof Distillation) + TPC (Transfer-Protected Compression). The concepts are approved; no RHAR learning algorithm or improvement has been implemented or demonstrated.
 
 ## 🎯 Challenge
 
