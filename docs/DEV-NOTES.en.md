@@ -13,6 +13,19 @@
 
 ## Diary
 
+### 2026-10-10 — 🐇 RHAR Safe Start: GPU runner prepared, execution NOT authorized
+
+**My approval:** after `Ran 79 tests in 0.832s` / `OK` and the 12-candidate screen against 2,759 official evaluation prompts (zero heuristic text matches but semantic paraphrases not ruled out), I approved **only implementing a future GPU runner and CPU unit tests**. **No new GPU inference, model downloads, or training were authorized or performed.**
+
+**Added:** `diagnostics/safe_start_generate.py` and `tests/test_safe_start_generate.py` (**24 new test methods**). The runner binds its inputs to the twelve original question IDs and hashed review manifests, verifies all six reported official source records, and refuses incomplete or matching audits. It reuses frozen Safe Start settings: Qwen3-0.6B and pinned model revision, seeds 9001/9002/9003, thinking enabled, 0.6/0.95/20 sampling, and 512 new tokens maximum. Gold answers and shortening instructions are excluded from prompts.
+
+**Safeguards:** `--dry-run` never loads the model, uses CUDA or downloads files. Future sampling requires **both** `--execute` and `--confirm-gpu-36` **plus my separate future approval**. GPU execution only uses already cached weights (`local_files_only=True`) on CUDA float16; no background download. Reasoning and final counts cover every actually generated token; incomplete or incorrect answers cannot be treated as correct. A partial result is not reported as a successful 36-sample run. Output directories are fresh/ignored and never overwritten. Generated records are intended only for offline `diagnostics/offline_selector.py` review, not training.
+
+**Verification:** an isolated local prototype passed **23 CPU-only tests using minimal stubs**, but **the exact new 24-test GitHub suite and the full 103-test Kali suite are not yet confirmed on the user's machine**. Expected total 103 = previous 79 + new 24. Do not advance without actual green Kali tests.
+
+**Documentation:** [SAFE-START-GENERATION.en.md](SAFE-START-GENERATION.en.md) / [Czech](../CZ%20docs/SAFE-START-GENERATION.md). Next step: run all 103 CPU tests and `python -m diagnostics.safe_start_generate --dry-run` only; no GPU command.
+
+
 ### 2026-10-10 — ✅ RHAR Safe Start: 79/79 combined CPU tests green on Kali
 
 **Actual terminal output:** `Ran 79 tests in 0.832s` and `OK`. The entire 79-test CPU suite ran together on my Kali/WSL2 environment: offline selector, reasoning probe, Safe Start planner, GSM8K data selection, and the new overlap audit. This is the first evidenced **full combined** run of the current suite on Kali.
