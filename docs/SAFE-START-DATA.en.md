@@ -52,6 +52,10 @@ All output stays in Git-ignored `data/safe-start/`:
 
 Existing output is **never overwritten**. Avoid publicly committing raw data or answer keys.
 
+## 🛡️ Follow-up evaluation overlap audit
+
+After 61/61 CPU tests passed on Kali, I separately authorized downloading official evaluation question texts **only for overlap screening**. The independent CPU-only protocol and 18 new tests are documented in [SAFE-START-OVERLAP.en.md](SAFE-START-OVERLAP.en.md). **Neither the official evaluation runner nor GPU is being executed.**
+
 ## Verification status
 
 - **Completed:** 16/16 new download/selector CPU unit tests plus the existing 15 planner tests: **31/31 passed in an isolated local environment**. Download success and SHA-256 failure cases used mocked network I/O.
