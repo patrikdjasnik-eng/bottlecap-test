@@ -42,6 +42,6 @@ Budoucí GPU cesta technicky existuje, ale vyžaduje **oba** explicitní přepí
 
 Při pozdějším odsouhlaseném spuštění vytvoří nový, Git ignorovaný adresář `runs/safe-start/<UTC>/` s `config.json`, postupnými `records.jsonl` a `summary.json` pouze při dokončení všech 36 odpovědí. Nepřepisuje předchozí pokusy; neúspěšný běh se automaticky neobnoví. Vše zůstává `review_only` — nikoli schválené trénovací příklady.
 
-**Ověřeno dříve v Kali:** 79/79 CPU testů za 0,832 s. **Nová sada:** 24 nových testů je v repozitáři, celý běh **103/103 na Kali čeká**. Dřívější izolovaný lokální prototyp podobného kódu prošel 23 CPU testy; **nejde o GPU test ani potvrzení aktuální celé větve**.
+**Nově skutečně ověřeno v Kali (10. 10. 2026):** kompletní sada **103/103 testů za 0,917 s** (`Ran 103 tests in 0.917s`, `OK`). Spuštěný `python -m diagnostics.safe_start_generate --dry-run` potvrdil **12 otázek, 36 plánovaných generací a 3 seedy**, všechny tři vstupní SHA-256 a `gpu_used=false`, `model_loaded=false`, `model_downloaded=false`, `training_performed=false`, `model_generations_performed=0`. Vstupní hashe: otázky `ebb3595c677ec6a660da3ff8731448182674967beab4d5e7f5256347541d32bc`, výběrový report `0760c4825de4e18bbbfcb6429dd543dcfa7fcc9e18dae83a118bccdf2b3cb89a`, audit `7b9443abf9e2960084bfaf6472ddf049ff057d4f4e1c889a4c01902a2ccc7ca4`. **Nejde o GPU experiment ani o naměřenou úsporu tokenů.**
 
 Na projektu spolupracuji s **ChatGPT (OpenAI, GPT-6)** a lokální AI agentkou **Mášou**. Neověřené experimenty nikomu nepřisuzuji.
