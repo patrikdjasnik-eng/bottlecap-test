@@ -13,6 +13,20 @@
 
 ## Diary
 
+### 2026-10-09 — RHAR approved as a unified modular organism
+
+**Owner's approval:** when asked whether to adopt a single connected organism composed of RPS, RPD, and TPC, the owner explicitly answered **"yes"**. Working name: **RHAR — Rabbit Hollow Adaptive Reasoning**.
+
+**Approval scope:** unified **research direction and modular concept**. RPS investigates information progress, RPD investigates recoverability of crucial information, and TPC protects other capabilities. Each module must be independently assessable; combining them remains a hypothesis. The concept does not require inefficient chaining of additional models during inference.
+
+**Documentation:** updated `IDEA.md` and `CZ docs/IDEA.md` with matching bilingual structure. The previous LoRA-distillation proposal remains a possible baseline, **not** a selected algorithm.
+
+**NOT approved:** a specific RPS/RPD/TPC computation, loss, dataset choice, new model modification, training, GPU spending, large-scale evaluation, or claims of scientific novelty.
+
+**Measurement status:** previously reported single inference of 371 tokens / correct answer 43; `reasoning_probe.py` still awaits the first owner-run GPU output. No RHAR improvement or model metrics exist yet.
+
+**Next item to discuss:** run the already prepared baseline diagnostic first, then specify and test RPS, RPD, and TPC hypotheses one by one, requesting approval before each implementation.
+
 ### 2026-10-09 — Three research hypotheses shortlisted (preferred, not approved for implementation)
 
 **Owner's preference:** three research directions are of interest: **Reasoning Progress Signature (RPS)**, **Reversible Proof Distillation (RPD)**, and **Transfer-Protected Compression (TPC)**.
