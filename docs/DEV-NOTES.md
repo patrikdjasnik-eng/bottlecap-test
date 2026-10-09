@@ -13,6 +13,21 @@
 
 ## Deník
 
+### 2026-10-09 — CUDA výpočet ověřen na lokální GPU
+
+**Stav:** ověřeno uživatelem v Kali Linux / WSL2.
+
+**Provedeno:** v aktivovaném `.venv` (Python 3.11) byl spuštěn jednoduchý PyTorch CUDA test s `torch.ones(256, device="cuda")` a součtem `(tensor * 2).sum()`.
+
+**Výsledek:** PyTorch `2.6.0+cu118`, CUDA runtime `11.8`, `torch.cuda.is_available(): True`, GPU `NVIDIA GeForce GTX 1070 Ti`, compute capability `(6, 1)`, výsledek GPU výpočtu `512.0`.
+
+**Upozornění:** při importu se objevilo `Failed to initialize NumPy: No module named 'numpy'`; tento warning test CUDA nezastavil.
+
+**Co to neprokazuje:** model Qwen3-0.6B nebyl spuštěn ani trénován, oficiální benchmark nebyl proveden.
+
+**Další návrh (čeká na schválení):** doinstalovat kompatibilní NumPy, znovu ověřit běh a poté projednat první inferenční pokus s Qwen3-0.6B.
+
+
 ### 2026-10-09 — Pravidla spolupráce a jazykové klony
 
 **Stav:** pravidla potvrzena vlastníkem projektu; dokumentace se doplňuje na vývojové větvi.
