@@ -13,6 +13,21 @@
 
 ## Diary
 
+### 2026-10-09 — Three research hypotheses shortlisted (preferred, not approved for implementation)
+
+**Owner's preference:** three research directions are of interest: **Reasoning Progress Signature (RPS)**, **Reversible Proof Distillation (RPD)**, and **Transfer-Protected Compression (TPC)**.
+
+**Working scope:**
+- **RPS:** measure whether reasoning steps convey useful progress or mainly repeat earlier content.
+- **RPD:** verify whether a concise reasoning trace preserves sufficient information to derive the correct answer.
+- **TPC:** protect capabilities across maths, coding, function calling, and instruction following while shortening reasoning.
+
+**Proposal for discussion (not yet approved):** investigate the mechanisms independently and consider combining them only once results justify it. RPS → RPD → TPC is a possible sequence based on instrumentation → information preservation → capability robustness, not an implementation decision.
+
+**Constraints:** Do not claim proven global novelty without evidence; unpublished work cannot be excluded. Prompt-only shortening, turning thinking off, and training on the held-out official evaluation benchmarks remain prohibited.
+
+**Status:** preference recorded only; **no new algorithm, training, or experiment is authorized by this selection**. The first owner-run GPU diagnostics are still pending.
+
 ### 2026-10-09 — Read-only reasoning diagnostic (approved)
 
 **Approval:** the project owner explicitly approved development of the diagnostic tool and reiterated the ban on prompt-only shortening and turning off thinking.
