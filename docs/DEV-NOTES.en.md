@@ -13,6 +13,19 @@
 
 ## Diary
 
+### 2026-10-10 — ✅ Safe Start generator: 103/103 CPU tests green on Kali
+
+**Actually verified on my Kali/WSL2:** the combined `tests.test_offline_selector`, `tests.test_reasoning_probe`, `tests.test_safe_start_plan`, `tests.test_safe_start_data`, `tests.test_safe_start_overlap`, and `tests.test_safe_start_generate` suite reported `Ran 103 tests in 0.917s`, `OK`. This closes the CPU test gate, **not** an actual GPU experiment.
+
+**Actual command:** `python -m diagnostics.safe_start_generate --dry-run` confirmed `status=plan_only`, model `Qwen/Qwen3-0.6B` at revision `c1899de289a04d12100db370d81485cdf75e47ca`, `thinking_enabled=true`, 12 existing pinned GSM8K train candidates × 3 seeds (`9001,9002,9003`) = **36 planned generations**, temperature 0.6 / top_p 0.95 / top_k 20, and `max_new_tokens=512`.
+
+**SHA-256 of the three existing local inputs from the verified dry run:** `questions=ebb3595c677ec6a660da3ff8731448182674967beab4d5e7f5256347541d32bc`; `selection_report=0760c4825de4e18bbbfcb6429dd543dcfa7fcc9e18dae83a118bccdf2b3cb89a`; `overlap_audit=7b9443abf9e2960084bfaf6472ddf049ff057d4f4e1c889a4c01902a2ccc7ca4`. These bind the dry run to the local inputs and screen but cannot prove semantic-paraphrase contamination is absent.
+
+**Explicit boundaries:** `gpu_used=false`, `model_loaded=false`, `model_downloaded=false`, `training_performed=false`, `training_approved=false`, `official_benchmark=false`, `model_generations_performed=0`. **No new model output or token-saving measurement has occurred.**
+
+**Next decision requires separate approval:** review the time/GPU budget, local model-cache preflight, and stop conditions before any 36-sample CUDA run, potentially allowing only a small canary if expressly approved. Do not execute GPU yet; candidates remain `review_only`.
+
+
 ### 2026-10-10 — 🐇 RHAR Safe Start: GPU runner prepared, execution NOT authorized
 
 **My approval:** after `Ran 79 tests in 0.832s` / `OK` and the 12-candidate screen against 2,759 official evaluation prompts (zero heuristic text matches but semantic paraphrases not ruled out), I approved **only implementing a future GPU runner and CPU unit tests**. **No new GPU inference, model downloads, or training were authorized or performed.**
