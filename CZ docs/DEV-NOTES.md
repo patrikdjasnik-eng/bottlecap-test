@@ -13,6 +13,25 @@
 
 ## Deník
 
+### 🌙 2026-10-10 — Konec dne / Co jsme se dnes naučili
+
+**Stav dne: práce pro dnešek končí.** Dnešní cíl nebyl trénovat Qwen, ale postavit bezpečnou, reprodukovatelnou přípravu výzkumu **RHAR — Rabbit Hollow Adaptive Reasoning**. Začali jsme CPU plánovačem a skončili plně zelenou sadou **103/103 testů** (`Ran 103 tests in 0.917s`, `OK`) a ověřeným generovacím `--dry-run`. To je skutečný výsledek dne, **ne** naměřená úspora tokenů.
+
+**Co jsme dnes reálně zvládli:** z připnuté revize `openai/gsm8k` jsme na Kali ověřili SHA-256 trénovacího Parquet souboru, načetli **7 473** záznamů a deterministicky vybrali **12 kandidátních matematických úloh**. Připravili jsme přesný plán **12 × 3 = 36** budoucích generací modelu `Qwen/Qwen3-0.6B`, seedy `9001, 9002, 9003`, zapnutý thinking, temperature `0.6`, top_p `0.95`, top_k `20` a limit `512` nových tokenů. Před skutečným během generátor ověřuje vybraných 12 ID, hashe lokálních vstupů a dokončený audit překryvu. Naše testovací brány dnes postupně narostly z **45 → 61 → 79 → 103** a každá kompletní sada byla po dokončení příslušného kroku zelená.
+
+**Co jsme se naučili z chyb:** 
+- **Reprodukovatelnost není detail.** Bez připnuté revize datasetu/modelu, SHA-256, pevných seedů a přesného promptu by výsledky nešly férově porovnat. Gold odpovědi patří do kontroly správnosti, **nikoli do promptu**.
+- **Závislosti mohou zablokovat i zdánlivě jednoduchý CPU krok.** `pyarrow` nejprve chybělo a pak jeho novější verze vyžadovala NumPy 2.x, zatímco Kali mělo NumPy `1.26.4`. Naučili jsme se řešit konflikt cíleně: kompatibilní `pyarrow==16.1.0`, ne nekontrolovaný upgrade celé AI sestavy.
+- **Nulový počet nalezených shod neznamená dokonalý důkaz čistoty.** Samostatně jsme porovnali našich 12 GSM8K otázek s **2 759** texty ze šesti připnutých zdrojových souborů SVAMP, MBPP+, BFCL a IFEval. Audit našel **0 přesných či výrazně podobných textových shod**, ale **nevylučuje sémantické parafráze**, a proto výsledné kandidáty ponecháváme jen jako `review_only`.
+- **U reasoning modelu rozhodují skutečně vygenerované tokeny.** Rozlišujeme reasoning a final, správně pracujeme s předvyplněným `<think>`, hranicemi `</think>` a ukončovacími tokeny. `reasoning_tokens + final_tokens` musí odpovídat celkovému počtu vygenerovaných tokenů. Neznámý rozpad není nula; useknutý nebo nesprávný výstup nesmíme vydávat za úspěšný.
+- **Zelené CPU testy ověřují přípravu, ne kvalitu modelu.** `--dry-run` ověřil všechny tři lokální vstupy i plán, ale **nenačetl model, nepoužil GPU, negeneroval odpovědi a nic netrénoval**. Zatím nemáme srovnání efektivity ani důkaz zlepšení RHAR. Nezaměňujeme krátkou odpověď za správnou.
+
+**Technické poučení pro další vývoj:** malý, auditovatelný experiment s jasnými stop podmínkami je lepší než drahý běh bez kontroly. Důležitá jsou oddělená oprávnění pro **přípravu → CPU validaci → GPU inferenci → případné trénování**. Vytvořené skripty umí budoucí GPU běh jen po dvou explicitních přepínačích; bez mého samostatného schválení se nic nespouští.
+
+**Zítra / příště (plán, nikoli provedená práce):** nejprve pouze CPU kontrola dostupnosti lokální cache Qwenu, kompatibility CUDA/FP16, volné VRAM a návrh časového limitu, ukládání průběžných dat a podmínek zastavení. Teprve potom se samostatně rozhodnu, zda dovolit krátký canary test nebo celých **36 generací**. **GPU inference, LoRA/trénování a oficiální benchmark dnes neproběhly ani nejsou pro další krok automaticky schválené.**
+
+**Dnešní bilance:** **103/103 CPU testů OK · 12 ověřených kandidátů · 2 759 porovnaných evaluačních zadání · 0 heuristických shod · 36 pouze naplánovaných generací · 0 GPU běhů · 0 trénování.** 🐇🛡️
+
 ### 2026-10-10 — ✅ Safe Start generátor: 103/103 CPU testů zelených v Kali
 
 **Skutečně ověřeno v mém Kali/WSL2:** společná sada `tests.test_offline_selector`, `tests.test_reasoning_probe`, `tests.test_safe_start_plan`, `tests.test_safe_start_data`, `tests.test_safe_start_overlap` a `tests.test_safe_start_generate` skončila `Ran 103 tests in 0.917s`, `OK`. Tím je potvrzena nová regresní brána, nikoli skutečný GPU experiment.
