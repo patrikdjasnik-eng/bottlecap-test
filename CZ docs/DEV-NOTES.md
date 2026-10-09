@@ -13,6 +13,18 @@
 
 ## Deník
 
+### 2026-10-10 — ✅ GSM8K Safe Start: potvrzen skutečný CPU výběr 12 úloh na Kali
+
+**Skutečný výstup terminálu:** `Ran 16 tests in 0.512s`, `OK` pro `tests.test_safe_start_data`. `python -m diagnostics.safe_start_data --download` úspěšně zpracoval **7473 záznamů** z GSM8K `main/train`, zafixovaná revize `740312add88f781978c0658806c59bc2815b9866`; report uvedl `download_status=verified_cached` a kontrolní SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`.
+
+**Vybrané identifikátory (v pořadí):** `gsm8k-train-06982, gsm8k-train-01136, gsm8k-train-06866, gsm8k-train-02829, gsm8k-train-01500, gsm8k-train-01015, gsm8k-train-01832, gsm8k-train-03268, gsm8k-train-06657, gsm8k-train-06089, gsm8k-train-02730, gsm8k-train-01217`. Výstup `selection-report.json` obsahuje rovněž SHA-256 každé otázky, ale skutečné znění otázek a gold answers ponechávám v lokálním ignorovaném `data/safe-start/questions.jsonl`.
+
+**Ověřený dry run:** `python -m diagnostics.safe_start_plan --dry-run --questions data/safe-start/questions.jsonl` úspěšně validoval 12 otázek a naplánoval **36 pokusů** (`9001/9002/9003`; Qwen3-0.6B, thinking=true). **V tomto kroku se neprovedla žádná inference, GPU ani trénování**; výběr stále hlásí `review_only` a `training_approved=false`.
+
+**Neuzavřená kontrola:** `overlap_audit_status=pending_local_eval_corpus`, `local_eval_audit_performed=false`, `overlap_audit_exhaustive=false`. Nulové počty vyřazených kandidátů **neznamenají ověřenou čistotu vůči oficiálním benchmarkům**. Bez dalšího odsouhlasení nestahuji evaluační data ani nespouštím GPU.
+
+**Opravená závislost:** nejprve selhal import PyArrow kvůli NumPy 1.26.4 a novější nekompatibilní verzi. Po doporučené instalaci kompatibilní verze už skutečný CPU výběr fungoval. Do `requirements.txt` jsem proto připnul `pyarrow==16.1.0`. Celou kombinovanou sadu **61/61 na Kali ještě nemám doloženou**; doložené jsou dřívějších 45/45 a nynějších 16/16 jako dva samostatné běhy.
+
 ### 2026-10-10 — 🐇 Schváleno CPU stažení GSM8K train a výběr 12 úloh
 
 **Moje rozhodnutí:** po úspěšném **45/45 testů za 0,045 s** na Kali a výstupu `safe_start_plan --dry-run` (`plan_only`, 12 otázek, 36 plánovaných pokusů, `gpu_used=false`) jsem schválil další krok: **pouze CPU stažení GSM8K main/train a deterministický výběr 12 kandidátů**. Neschválil jsem GPU sampling, LoRA, trénování ani použití zvolených otázek bez další revize.
