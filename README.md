@@ -38,6 +38,7 @@ Details, limitations, and an external-GPU plan: [docs/HARDWARE.en.md](docs/HARDW
 
 ## 🔬 Research files
 
+- [🐇 RHAR Safe Start — prepare 36 generations safely](docs/SAFE-START-GENERATION.en.md) — explicit-gated future Qwen3 runner, 24 new CPU tests, no GPU execution. [Czech](CZ%20docs/SAFE-START-GENERATION.md).
 - [🛡️ Safe Start — CPU-only official evaluation overlap audit](docs/SAFE-START-OVERLAP.en.md) — six pinned source objects, 18 new tests, no GPU. [Czech](CZ%20docs/SAFE-START-OVERLAP.md).
 - [🐇 RHAR Safe Start GSM8K CPU intake](docs/SAFE-START-DATA.en.md) — SHA-256 pinned main/train, 12 deterministic review candidates and 16 new unit tests. [Czech](CZ%20docs/SAFE-START-DATA.md).
 - [🐇 RHAR Safe Start — implementation plan and CPU tests](docs/SAFE-START.en.md) — 12 math questions × 3 planned generations; no GPU used. [Czech](CZ%20docs/SAFE-START.md).
