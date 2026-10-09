@@ -13,6 +13,21 @@
 
 ## Diary
 
+### 2026-10-09 — CUDA calculation verified on local GPU
+
+**Status:** verified by the user on Kali Linux / WSL2.
+
+**Completed:** inside the active Python 3.11 `.venv`, ran a simple PyTorch CUDA test creating `torch.ones(256, device="cuda")` and computing `(tensor * 2).sum()`.
+
+**Result:** PyTorch `2.6.0+cu118`, CUDA runtime `11.8`, `torch.cuda.is_available(): True`, GPU `NVIDIA GeForce GTX 1070 Ti`, compute capability `(6, 1)`, GPU computation result `512.0`.
+
+**Warning:** importing PyTorch emitted `Failed to initialize NumPy: No module named 'numpy'`; this did not stop the CUDA test.
+
+**Not established:** Qwen3-0.6B has not been run or trained, and the official benchmark has not been executed.
+
+**Next proposal (awaiting approval):** install a compatible NumPy version, verify the environment, then discuss the first Qwen3-0.6B inference experiment.
+
+
 ### 2026-10-09 — Collaboration rules and language mirrors
 
 **Status:** rules confirmed by the project owner; bilingual documentation is being added on the development branch.
