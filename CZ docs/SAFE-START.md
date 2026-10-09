@@ -57,6 +57,10 @@ Až budou data schválena, jediný lokální JSONL soubor musí mít **přesně 
 
 Po zelené sadě 45/45 na Kali jsem schválil **stažení GSM8K main/train a výběr 12 otázek výhradně na CPU**. Implementoval jsem nový pinovaný downloader a 16 dalších CPU testů. **Přesný postup je v [SAFE-START-DATA.md](SAFE-START-DATA.md).** Výběr zůstane jen k revizi, nikoliv automaticky pro trénování. Kompletní sada má nyní 61 definovaných testů; aktuální běh 61/61 na Kali zatím čeká.
 
+## 🧪 Jak ověřím CPU přípravu## 🐇 Další schválená fáze — pouze příprava generování (10. 10. 2026)
+
+Po dokončení auditu (0 nalezených heuristických shod v 2 759 oficiálních zadáních) a **79/79 zelených CPU testech v Kali** jsem schválil **jen implementaci budoucího GPU generátoru a jeho CPU unit testů**. Skript s explicitními bezpečnostními přepínači je v `diagnostics/safe_start_generate.py`; související plán, stop podmínky a příkazy **výhradně pro CPU dry-run** jsou v [SAFE-START-GENERATION.md](SAFE-START-GENERATION.md). Nová sada je navržena na **103 testů**, Kali ji musí teprve společně potvrdit. **GPU ani trénování ještě nejsou schválené.**
+
 ## 🧪 Jak ověřím CPU přípravu
 
 V Kali po `git pull`:
