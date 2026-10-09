@@ -52,6 +52,10 @@ Skript ukládá pouze do Git ignorovaného `data/safe-start/`:
 
 Existující výstup se **nepřepíše**; opakované spuštění bez předchozího vyřešení výsledků se zastaví. **Nedávat raw data ani gold answers veřejně do repozitáře.**
 
+## 🛡️ Následná prověrka evaluačního překryvu
+
+Po 61/61 zelených CPU testech na Kali jsem samostatně schválil stažení oficiálních evaluačních textů **pouze pro kontrolu překryvu**. Nový bezpečný postup a 18 nových testů jsou v [SAFE-START-OVERLAP.md](SAFE-START-OVERLAP.md). **Oficiální evaluace a GPU zůstávají nespouštěné.**
+
 ## Stav ověření
 
 - **Provedeno:** 16/16 nových CPU unit testů stahovacího/výběrového modulu + dosavadních 15 testů plánovače, dohromady **31/31 OK v izolovaném prostředí**. Stažení bylo v testech simulováno, včetně správného a nesprávného SHA-256.
