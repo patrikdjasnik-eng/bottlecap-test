@@ -13,6 +13,18 @@
 
 ## Deník
 
+### 2026-10-09 — Diagnostický skript pro reasoning (schváleno)
+
+**Schválení:** uživatel výslovně souhlasil s vytvořením diagnostického skriptu; znovu připomněl zákaz nahrazovat algoritmus prompt engineeringem a zákaz vypínání uvažování.
+
+**Implementace:** `diagnostics/reasoning_probe.py` a `tests/test_reasoning_probe.py`. Diagnostika má 6 ručně vytvořených otázek ze tří oblastí, defaultně měří první 3. Fixuje revizi původního `Qwen/Qwen3-0.6B`, používá `enable_thinking=True`, standardní sampling (temperature 0.6, top-p 0.95, top-k 20), jen požaduje formát `Final answer: ...`. Změny vah, adaptérů a oficiální evaluace: **žádné**.
+
+**Výstupy:** `runs/diagnostics/<UTC>/config.json`, `records.jsonl`, `summary.json`. Měření: počet celkových/reasoning/final tokenů, správnost, čas, tokeny/s, PyTorch alokace a orientační opakování. Při chybných reasoning značkách se počty nezamlčují jako nula, ale vrací se neznámá hodnota.
+
+**Ověření:** **9/9 nových CPU jednotkových testů úspěšných** v odděleném lokálním testovacím prostředí; `--dry-run` ověřen. **Nový skript ještě nebyl spuštěn na uživatelově GTX 1070 Ti; počet 9 se netýká plné oficiální sady testů.**
+
+**Stav:** implementováno a popsáno CZ/EN. Čeká na první lokální GPU měření od uživatele; o trénovacím algoritmu se dosud nerozhodovalo.
+
 ### 2026-10-09 — První inference Qwen3-0.6B (baseline průzkum)
 
 **Stav:** ověřeno uživatelem (Kali Linux / WSL2; GTX 1070 Ti); zatím **nejde** o oficiální evaluaci BottleCap AI.
@@ -76,7 +88,7 @@
 - [x] Zprovozněn izolovaný Python **3.11.17** v `.venv` na Kali Linux / WSL2; ověřil uživatel 9. 10. 2026.
 - [x] `nvidia-smi` ve WSL2 detekuje **NVIDIA GeForce GTX 1070 Ti (8192 MiB)**, driver 582.78, nvidia-smi 580.178.01; v okamžiku kontroly 882 MiB obsazeno. Zobrazené `CUDA Version: 13.0` udává schopnost driveru, nikoli funkčnost PyTorch.
 - [x] Ověřeny CUDA výpočty v **PyTorch 2.6.0 + cu118** na GPU (GTX 1070 Ti, compute capability 6.1, testovací výsledek 512.0).
-- [ ] Doinstalovat knihovny Transformers/Accelerate až po zeleném PyTorch CUDA testu.
+- [x] Připraveny knihovny Transformers/Accelerate pro první úspěšnou inferenci Qwen3-0.6B (ověřeno uživatelským během).
 - [ ] Prověřit bubblewrap sandbox před evaluací MBPP+ (varování: dostupný jen slabší fallback s resource limity).
 - [ ] Připravit tréninková data mimo eval benchmarky.
 - [ ] Provést baseline smoke test a uložit run artefakty.
