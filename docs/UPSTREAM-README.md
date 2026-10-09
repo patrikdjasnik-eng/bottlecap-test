@@ -1,6 +1,6 @@
 # ThinkingCap Test
 
-![logo](img/logo.png)
+![logo](https://raw.githubusercontent.com/BottleCapAI/ThinkingCap-Test/main/img/logo.png)
 Hey there! You may have heard of our [ThinkingCap](https://huggingface.co/bottlecapai/ThinkingCap-Qwen3.8-27B) models, which shorten the reasoning of LLMs. Now we're looking for people to help us build what comes next.
 
 This is our second open test for people interested in joining [BottleCapAI](https://www.bottlecapai.com). This time it focuses on post-training.
@@ -60,7 +60,7 @@ We're interested in your own ideas, not how well you can copy other's. These ide
 
 ## Getting started
 
-[`train.py`](train.py) loads the model from Hugging Face and hands it over to you; everything after that is up to you.
+[`train.py`](../train.py) loads the model from Hugging Face and hands it over to you; everything after that is up to you.
 ```bash
 git clone https://github.com/BottleCapAI/ThinkingCap-Test && cd ThinkingCap-Test
 curl -LsSf https://astral.sh/uv/install.sh | sh    # skip if you already have uv
@@ -82,9 +82,9 @@ You can train on whatever you like (see the [Rules](#rules)). To make it easier 
 | [CommonsenseQA](https://huggingface.co/datasets/tau/commonsense_qa) | Question answering | 9,741 |
 | [ARC Easy](https://huggingface.co/datasets/allenai/ai2_arc) | Question answering | 2,251 |
 
-The [`utils/train/`](utils/train/) folder has two helpers for them. Using them is not compulsory, but they save you the boring part.
+The [`utils/train/`](../utils/train/) folder has two helpers for them. Using them is not compulsory, but they save you the boring part.
 
-**[`utils/train/prepare_data.py`](utils/train/prepare_data.py)** downloads all four and writes them in one format to `data/train.jsonl` and `data/val.jsonl` (200 held-out questions per dataset):
+**[`utils/train/prepare_data.py`](../utils/train/prepare_data.py)** downloads all four and writes them in one format to `data/train.jsonl` and `data/val.jsonl` (200 held-out questions per dataset):
 ```bash
 python utils/train/prepare_data.py
 ```
@@ -95,9 +95,9 @@ Every row looks like this:
 ```
 `prompt` is a chat conversation you can pass straight to the tokenizer's chat template, `answer` and `task` are what the grader needs, and `source` tells you which dataset a row came from, e.g. if you want to balance them. A list of chat messages in a `prompt` column plus extra columns is also what most training libraries expect, so the same file works whichever method you pick.
 
-**[`utils/train/rewards.py`](utils/train/rewards.py)** checks whether an answer is right. Give it the model's replies, the correct answers and the task types, and it returns 1.0 for each right answer and 0.0 for each wrong one. It expects the reply to end with a line `Final answer: <answer>`, which the prepared prompts ask for. It follows TRL's reward-function interface, so it should work with most TRL trainers.
+**[`utils/train/rewards.py`](../utils/train/rewards.py)** checks whether an answer is right. Give it the model's replies, the correct answers and the task types, and it returns 1.0 for each right answer and 0.0 for each wrong one. It expects the reply to end with a line `Final answer: <answer>`, which the prepared prompts ask for. It follows TRL's reward-function interface, so it should work with most TRL trainers.
 
-[`train.py`](train.py) shows how they fit together: it loads a prepared question, generates a reply with `rollout()`, and prints the reply's reward and its length in tokens, the two numbers this task is about.
+[`train.py`](../train.py) shows how they fit together: it loads a prepared question, generates a reply with `rollout()`, and prints the reply's reward and its length in tokens, the two numbers this task is about.
 
 ---
 
