@@ -13,6 +13,19 @@
 
 ## Deník
 
+### 2026-10-10 — ✅ Safe Start generátor: 103/103 CPU testů zelených v Kali
+
+**Skutečně ověřeno v mém Kali/WSL2:** společná sada `tests.test_offline_selector`, `tests.test_reasoning_probe`, `tests.test_safe_start_plan`, `tests.test_safe_start_data`, `tests.test_safe_start_overlap` a `tests.test_safe_start_generate` skončila `Ran 103 tests in 0.917s`, `OK`. Tím je potvrzena nová regresní brána, nikoli skutečný GPU experiment.
+
+**Skutečný příkaz:** `python -m diagnostics.safe_start_generate --dry-run` potvrdil `status=plan_only`, model `Qwen/Qwen3-0.6B` revize `c1899de289a04d12100db370d81485cdf75e47ca`, `thinking_enabled=true`, 12 přesně původních GSM8K train kandidátů × 3 seedy (`9001,9002,9003`) = **36 plánovaných generací**, sampling temperature 0.6 / top_p 0.95 / top_k 20 a `max_new_tokens=512`.
+
+**SHA-256 lokálních vstupů z ověřeného dry-runu:** `questions=ebb3595c677ec6a660da3ff8731448182674967beab4d5e7f5256347541d32bc`; `selection_report=0760c4825de4e18bbbfcb6429dd543dcfa7fcc9e18dae83a118bccdf2b3cb89a`; `overlap_audit=7b9443abf9e2960084bfaf6472ddf049ff057d4f4e1c889a4c01902a2ccc7ca4`. Tyto hashe vážou dry-run na konkrétní lokální soubory a obsah auditu, ale nejsou důkazem absence všech sémantických parafrází.
+
+**Výslovné hranice:** `gpu_used=false`, `model_loaded=false`, `model_downloaded=false`, `training_performed=false`, `training_approved=false`, `official_benchmark=false`, `model_generations_performed=0`. **Nebyly vyrobeny nové modelové odpovědi ani změřena tokenová úspora.**
+
+**Další rozhodnutí čeká na mé schválení:** před skutečnými 36 CUDA generacemi samostatně probrat časový/GPU rozpočet, předběžné ověření lokální cache a stop podmínky, případně krátký canary běh jen po výslovném povolení. Nic nyní nespouštět; záznamy zůstávají `review_only`.
+
+
 ### 2026-10-10 — 🐇 RHAR Safe Start: GPU skript připraven, spuštění NEschváleno
 
 **Moje schválení:** po `Ran 79 tests in 0.832s` / `OK` a kontrolním auditu 12 GSM8K train kandidátů proti 2 759 oficiálním zadáním (0 nalezených heuristických textových shod, parafráze nevyloučené) jsem odsouhlasil **výhradně implementaci budoucího GPU skriptu a jednotkových CPU testů**. **Žádný nový GPU běh, inference, download modelu ani trénování nebyly povoleny nebo provedeny.**
