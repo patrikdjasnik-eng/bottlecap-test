@@ -38,6 +38,7 @@ Podrobnosti, limity a plán práce s externí GPU: [HARDWARE.md](HARDWARE.md). G
 
 ## 🔬 Výzkumné soubory
 
+- [🛡️ Safe Start — CPU kontrola evaluačního překryvu](SAFE-START-OVERLAP.md) — šest připnutých zdrojových souborů, 18 nových testů, žádné GPU. [English](../docs/SAFE-START-OVERLAP.en.md).
 - [🐇 GSM8K Safe Start — CPU stažení a výběr](SAFE-START-DATA.md) — ověření SHA-256, 12 kandidátů, 16 nových testů. [English](../docs/SAFE-START-DATA.en.md).
 - [🐇 RHAR Safe Start — plán a CPU testy](SAFE-START.md) — 12 matematických úloh × 3 plánované generace; bez GPU. [English](../docs/SAFE-START.en.md).
 - [Offline filtr RHAR v0.1](OFFLINE-SELECTOR.md) — načítání starých generací, kontrola správnosti, srovnání a CPU testy. [Anglicky](../docs/OFFLINE-SELECTOR.en.md).
