@@ -13,6 +13,20 @@
 
 ## Deník
 
+### 2026-10-09 — Diagnostika 002: první výstup na GTX 1070 Ti
+
+**Stav:** měření provedeno uživatelem v Kali / WSL2; **neoficiální diagnostika**, nikoli benchmark BottleCap AI.
+
+**Artefakty na uživatelově stroji:** `runs/diagnostics/20261009T210123Z/`. Surové soubory asistent nemá; uživatel poskytl pouze souhrn.
+
+**Výsledek jedné odpovědi:** `responses=1`, `correct_responses=0`, `exploratory_accuracy=0.0`, `reasoning_split_successes=1`, `mean_total_tokens=325`, `mean_reasoning_tokens=317`, `mean_final_tokens=8`, `mean_seconds=51.3`, `mean_tokens_per_second=6.33`, `official_benchmark=false`. Podíl reasoning tokenů: **317/325 = přibližně 97,54 %**.
+
+**Co nevíme:** bez `final_text`, `grading_error`, `truncated` a `split_status` v jednotlivém záznamu nelze rozlišit chybné číslo, chybný formát nebo chybu v detekci ukončení. Úspěšné rozdělení reasoning/final neznamená správnost odpovědi; jeden vzorek nedokládá 0% skutečnou přesnost modelu.
+
+**Podezření ze zdrojového kódu:** `prompt_for()` používá u číselných úloh formátový příklad `Final answer: 42`, avšak u první otázky s jablky je správná odpověď `43`. Možný matoucí vliv ilustrativní hodnoty, **zatím nepotvrzená příčina**.
+
+**Další krok:** přečíst metadata uloženého záznamu bez dalšího generování. Poté případně navrhnout opravu formátové ukázky a opakovaný kontrolní běh. Bez změny trénování, modelu nebo oficiální evaluace.
+
 ### 2026-10-09 — Návrh HRM zapsán, implementace odložena
 
 **Souhlas vlastníka:** „dobry napad zapsal bych to do md“ — schválen **zápis** nápadu **Hallucination Risk Monitor (HRM)** do obou verzí `IDEA.md`, nikoli jeho implementace nebo definitivní rozšíření RHAR na čtyři moduly.
@@ -24,8 +38,6 @@
 **Kontrola dosavadního stavu:** aktuální `reasoning_probe.py` tuto predikci neprovádí. Výstupy HRM ani validace zatím neexistují. Kód, váhy modelu, prompty benchmarků i trénování beze změn.
 
 **Stav:** pouze zdokumentovaný kandidát. O formálním čtvrtém modulu, implementaci a experimentu musí vlastník rozhodnout zvlášť.
-
-## Deník
 
 ### 2026-10-09 — RHAR schváleno jako jeden modulární organismus
 
