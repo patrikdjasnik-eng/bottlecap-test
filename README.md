@@ -39,6 +39,7 @@ Details, limitations, and an external-GPU plan: [docs/HARDWARE.en.md](docs/HARDW
 - [IDEA.md](IDEA.md) — hypothesis, method, measurement plan, and experiment log. [Czech](CZ%20docs/IDEA.md).
 - [docs/DEV-NOTES.en.md](docs/DEV-NOTES.en.md) — development diary, progress and approval decisions. [Czech](CZ%20docs/DEV-NOTES.md).
 - [docs/UPSTREAM-README.md](docs/UPSTREAM-README.md) — original challenge. [Czech translation](CZ%20docs/UPSTREAM-README.md).
+- [docs/REASONING-DIAGNOSTIC.en.md](docs/REASONING-DIAGNOSTIC.en.md) — read-only Qwen3 reasoning diagnostic, with CPU unit tests. [Czech](CZ%20docs/REASONING-DIAGNOSTIC.md).
 - `train.py`, `evaluate.py`, `compare.py` — official BottleCapAI tools.
 
 ## ✅ Experiment principles
