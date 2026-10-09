@@ -13,6 +13,18 @@
 
 ## Diary
 
+### 2026-10-09 — Read-only reasoning diagnostic (approved)
+
+**Approval:** the project owner explicitly approved development of the diagnostic tool and reiterated the ban on prompt-only shortening and turning off thinking.
+
+**Implemented:** `diagnostics/reasoning_probe.py` and `tests/test_reasoning_probe.py`. The diagnostic uses six hand-written problems across three domains, measuring three by default. It pins the original `Qwen/Qwen3-0.6B` revision, uses `enable_thinking=True`, standard sampling (temperature 0.6, top-p 0.95, top-k 20), and requests only the `Final answer: ...` format. Model weights, adapters, and official evaluation settings are **unchanged**.
+
+**Outputs:** `runs/diagnostics/<UTC>/config.json`, `records.jsonl`, and `summary.json`. Collected fields: total/reasoning/final tokens, correctness, time, tokens/s, PyTorch memory, and a rough repetition indicator. Malformed or absent reasoning boundaries yield an unknown value rather than an invented zero.
+
+**Verification:** **9/9 new CPU unit tests passed** in a separate local test environment; `--dry-run` was exercised. **The new tool has not yet run on the owner's GTX 1070 Ti; the nine tests are not the full upstream test suite.**
+
+**Status:** code and CZ/EN documentation implemented. Awaiting the owner's first GPU measurement; the training algorithm remains undecided.
+
 ### 2026-10-09 — First Qwen3-0.6B inference (baseline exploration)
 
 **Status:** user-verified on Kali Linux / WSL2 with a GTX 1070 Ti; **not** an official BottleCap AI evaluation.
@@ -76,7 +88,7 @@
 - [x] Set up isolated **Python 3.11.17** in `.venv` on Kali Linux / WSL2; user verified on October 9, 2026.
 - [x] `nvidia-smi` in WSL2 detects **NVIDIA GeForce GTX 1070 Ti (8192 MiB)**, driver 582.78, nvidia-smi 580.178.01; 882 MiB in use at the time of checking. The reported `CUDA Version: 13.0` is the driver's capability, not proof that PyTorch works.
 - [x] Verified CUDA calculations with **PyTorch 2.6.0 + cu118** on GTX 1070 Ti (compute capability 6.1; calculated result 512.0).
-- [ ] Install Transformers/Accelerate only after a successful PyTorch CUDA test.
+- [x] Transformers/Accelerate installed for the first successful Qwen3-0.6B inference (verified by user-run inference).
 - [ ] Verify the bubblewrap sandbox before MBPP+ evaluation (warning: only a weaker fallback with resource limits is available).
 - [ ] Prepare training data without using evaluation benchmarks.
 - [ ] Run the baseline smoke test and save run artifacts.
