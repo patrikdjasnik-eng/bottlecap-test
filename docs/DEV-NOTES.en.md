@@ -25,13 +25,13 @@
 
 **Single-response results:** `responses=1`, `correct_responses=0`, `exploratory_accuracy=0.0`, `reasoning_split_successes=1`, `mean_total_tokens=325`, `mean_reasoning_tokens=317`, `mean_final_tokens=8`, `mean_seconds=51.3`, `mean_tokens_per_second=6.33`, `official_benchmark=false`. Reasoning share: **317/325 = approximately 97.54%**.
 
-**Unknown:****Follow-up from the owner's inspection of `records.jsonl`:** `id=arithmetic_apples`, `expected=43`, `final_text="\n\nFinal answer: 42"`, `correct=false`, `grading_error=null`, `truncated=false`, `split_status=generated_think_block`. This confirms **an incorrect numeric final answer**, not a format failure or truncation. The connection to the illustrative `42` in the prompt remains **a hypothesis, not established causation**.
+**Follow-up from the owner's inspection of `records.jsonl`:** `id=arithmetic_apples`, `expected=43`, `final_text="\n\nFinal answer: 42"`, `correct=false`, `grading_error=null`, `truncated=false`, `split_status=generated_think_block`. This confirms **an incorrect numeric final answer**, not a format failure or truncation. The connection to the illustrative `42` in the prompt remains **a hypothesis, not established causation**.
 
 **Known now:** inspection confirmed the incorrect numerical answer 42, with valid formatting and normal termination. **Still unknown:** whether the model made an arithmetic mistake or copied the example 42 from the prompt; one sample does not establish the model's overall accuracy.
 
 **Source-code concern:** `prompt_for()` uses numeric formatting example `Final answer: 42`, while the first apples problem expects `43`. This might bias the generated answer but **has not been confirmed as the failure cause**.
 
-**Next:** inspect the saved record metadata without generating again, then consider a format-example fix and a repeat control run. No changes to training, model, or official evaluation.
+**Next (awaiting approval):** the saved record metadata has been inspected. Propose a fix for the potentially misleading formatting example and possibly a repeat control run; no changes to training, model, or official evaluation.
 
 ### 2026-10-09 — HRM proposal documented; implementation deferred
 
