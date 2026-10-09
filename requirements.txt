@@ -14,6 +14,8 @@ vllm>=0.6,<1
 # imports datasets inside the sandbox. The floor matters: uv resolves a newer
 # fsspec first and backtracks to datasets 2.14, which crashes on current pyarrow.
 datasets>=3
+# Required directly by diagnostics/safe_start_data.py to read pinned Parquet.
+pyarrow>=15
 
 # evalplus runs MBPP+ inside the sandbox and imports these at module load.
 # Missing any of them fails only MBPP+, which the run reports rather than
