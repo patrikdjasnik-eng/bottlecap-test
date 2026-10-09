@@ -13,6 +13,20 @@
 
 ## Deník
 
+### 2026-10-09 — RHAR schváleno jako jeden modulární organismus
+
+**Schválení vlastníka:** na dotaz, zda zvolit jeden propojený organismus složený z RPS, RPD a TPC, vlastník výslovně odpověděl **„ano“**. Přijatý pracovní název: **RHAR — Rabbit Hollow Adaptive Reasoning**.
+
+**Rozsah schválení:** společný **výzkumný směr a modulární koncept**. RPS má zkoumat informační pokrok, RPD zachování rekonstruovatelné informace a TPC ochranu ostatních schopností. Každý modul musí jít vyhodnotit samostatně; jejich kombinace je zatím hypotéza. Koncept nezavazuje k neefektivnímu řetězení dalších modelů během inference.
+
+**Dokumentace:** aktualizovány `IDEA.md` a `CZ docs/IDEA.md` na shodnou dvojjazyčnou strukturu. Původní nápad LoRA destilace zůstává možnou výchozí metodou, **ne** zvoleným algoritmem.
+
+**Co NENÍ schváleno:** konkrétní RPS/RPD/TPC výpočet, loss funkce, volba dat, nová změna modelu, trénování, GPU rozpočet, spuštění velké evaluace ani tvrzení o vědecké novosti.
+
+**Stav měření:** už dříve zaznamenaná jedna inference 371 tokenů / správná odpověď 43; diagnostika `reasoning_probe.py` dosud čeká na první výstup z uživatelovy GPU. Žádné RHAR modelové metriky nemáme.
+
+**Další krok k projednání:** nejdřív provést již připravenou diagnostiku baseline; potom samostatně upřesnit design a testovatelné hypotézy RPS, RPD a TPC, před každou implementací vyžádat souhlas.
+
 ### 2026-10-09 — Výběr tří výzkumných hypotéz (preferované, neschválené pro realizaci)
 
 **Podnět vlastníka:** pro další výzkum preferuje tři směry: **Reasoning Progress Signature (RPS)**, **Reversible Proof Distillation (RPD)** a **Transfer-Protected Compression (TPC)**.
