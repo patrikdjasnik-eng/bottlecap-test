@@ -13,6 +13,23 @@
 
 ## Deník
 
+### 2026-10-09 — První inference Qwen3-0.6B (baseline průzkum)
+
+**Stav:** ověřeno uživatelem (Kali Linux / WSL2; GTX 1070 Ti); zatím **nejde** o oficiální evaluaci BottleCap AI.
+
+**Postup:** načten originální `Qwen/Qwen3-0.6B` pomocí Transformers na GPU ve `torch.float16`. Jedna jednoduchá matematická úloha: 5 krabic × 12 jablek − 17 prodaných. Režim uvažování zapnut; předchozí připravený skript používal seed 9001, temperature 0.6, top-p 0.95, top-k 20 a max_new_tokens 512.
+
+**Naměřeno podle terminálového výstupu uživatele:**
+- Finální odpověď: `Final answer: 43` (**správně**).
+- Celkem vygenerováno **371 tokenů** (včetně odpovědi a případného reasoning).
+- Doba generování **61,45 s**.
+- Průměrná rychlost **6,04 tokenu/s**.
+- `torch.cuda.memory_allocated()`: **1,12 GiB** (alokace PyTorch, nikoli celková VRAM nebo peak).
+
+**Omezení:** pouze jedna otázka a jeden běh. Uživatel poskytl koncovou část odpovědi a metriky, ne úplný reasoning trace; délku čistě reasoning úseku proto nemáme změřenou. Nejde o výsledky benchmarků SVAMP/MBPP+/BFCL/IFEval ani o výsledek trénování či optimalizace modelu.
+
+**Další návrh (čeká na schválení):** vytvořit reprodukovatelné měření rozdělené na reasoning/finální odpověď pro několik různých tréninkově nezávislých příkladů. Neměnit zatím model ani benchmarková pravidla.
+
 ### 2026-10-09 — Uspořádání jazykových souborů
 
 **Schválený rozsah:** na výslovnou žádost vlastníka přesunout všechny české MD dokumenty do `CZ docs/`. Anglické `README.md` ponechat v kořeni pro snadné čtení při posuzování BottleCap AI. Python, model a evaluační nastavení beze změn.
