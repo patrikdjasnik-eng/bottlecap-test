@@ -55,8 +55,8 @@ Existující výstup se **nepřepíše**; opakované spuštění bez předchozí
 ## Stav ověření
 
 - **Provedeno:** 16/16 nových CPU unit testů stahovacího/výběrového modulu + dosavadních 15 testů plánovače, dohromady **31/31 OK v izolovaném prostředí**. Stažení bylo v testech simulováno, včetně správného a nesprávného SHA-256.
-- **Dříve ověřeno na Kali:** původních **45/45** CPU testů. Současná celá sada **61/61 na Kali zatím čeká** na skutečný výpis.
+- **Kompletní sada nyní ověřena na Kali:** **61/61 OK za 0,600 s** (`Ran 61 tests in 0.600s`, `OK`). Předchozí běhy 45/45 a 16/16 zůstávají doloženou historií.
 - **Nově potvrzeno na Kali:** 16/16 testů nového modulu za 0,512 s; ověřená cache GSM8K main/train s SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`; **7473 načtených train řádků, 12 skutečně vybraných ID, 36 validovaných plánovaných pokusů**. Přesné identifikátory jsou v `selection-report.json` a CZ/EN DEV-NOTES.
-- **Stále chybí:** společný Kali běh 61/61, kontrola překryvu s oficiálními evaluačními otázkami (`pending_local_eval_corpus`; `local_eval_audit_performed=false`), GPU generování, LoRA i měření úspor. Dataset je `review_only` a neschválený pro trénování.
+- **Stále chybí:** `questions/questions.jsonl` neexistuje (`Eval otázky chybí`), takže nebyla provedena kontrola překryvu s oficiálními evaluačními otázkami (`pending_local_eval_corpus`; `local_eval_audit_performed=false`). GPU generování, LoRA a měření úspor nejsou schválené ani provedené. Dataset je stále `review_only`.
 
 Na projektu spolupracuji s **ChatGPT (OpenAI, GPT-6)** a vlastní agentkou **Mášou**; všechny výsledky uvádím jen tehdy, když jsou doložené.
