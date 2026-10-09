@@ -13,6 +13,16 @@
 
 ## Diary
 
+### 2026-10-09 — Approved diagnostic answer-example correction
+
+**Owner approval:** explicitly approved removing the misleading `Final answer: 42` example from the diagnostic prompt after reviewing Experiment 002.
+
+**Change:** `prompt_for()` in `diagnostics/reasoning_probe.py` no longer suggests an example answer. All diagnostic cases now use the neutral last-line instruction `On the last line, write 'Final answer:' followed by your answer.`. A regression test was added to prevent answer leakage. **Thinking is neither shortened by prompt instruction nor disabled; official BottleCap AI prompts are untouched.**
+
+**Verification:** one focused isolated test of the revised format instruction **passed (1/1)**. Source changes and documentation links were inspected. The full repository test suite and follow-up inference on the owner's Kali GPU **have not yet been rerun**.
+
+**History:** original Experiment 002 data remain unchanged (325 tokens; 42 returned rather than 43). **The illustrative 42's causal influence is unproven.** A follow-up control run needs a new output directory and must not be presented as a trained-model improvement.
+
 ### 2026-10-09 — Diagnostic 002: first GTX 1070 Ti output
 
 ![RHAR — Experiment 002 graphical report](../assets/reports/rhar-exp-002-en.svg)

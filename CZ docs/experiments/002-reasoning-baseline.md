@@ -54,3 +54,5 @@ Po schválení vlastníkem odstranit zavádějící ilustrační hodnotu z diagn
 ## 📐 Jednotný vzhled budoucích reportů
 
 Každé další měření zapisujeme v **CZ/EN dvojici**: grafický panel s metrikami, poměr reasoning/final tokenů, přiznaný stav správnosti, tabulku skutečných hodnot, identifikátor běhu, chyby a omezení. Graf musí vždy vycházet z reálně doložených dat. Pokud je rozdělení tokenů neznámé, žádné procento nedopočítáváme. SVG je jen vizuální vrstva; tabulka zůstává čitelná i bez obrázku.
+
+**Aktualizace 9. 10. 2026:** vlastník schválil opravu zavádějícího formátového příkladu. Kód diagnostiky nově používá neutrální instrukci bez čísla `42`. **Tato změna nemění žádné historické údaje v Experimentu 002.** Kontrolní běh po opravě zatím neproběhl.

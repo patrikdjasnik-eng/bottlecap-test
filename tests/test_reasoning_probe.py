@@ -15,6 +15,18 @@ class ProbeTests(unittest.TestCase):
             self.assertNotIn("skip reasoning", content)
             self.assertNotIn("disable", content)
 
+    def test_prompt_has_no_example_answer_or_answer_leakage(self):
+        expected_instruction = (
+            "\n\nOn the last line, write 'Final answer:' followed by your answer."
+        )
+        for case in CASES:
+            content = prompt_for(case)[0]["content"]
+            self.assertEqual(content, case["question"] + expected_instruction)
+            instruction = content[len(case["question"]):]
+            self.assertNotIn("Final answer: 42", instruction)
+            self.assertNotIn("Final answer: A", instruction)
+            self.assertNotIn(case["answer"] if case["kind"] == "number" else "Final answer: " + case["answer"], instruction)
+
     def test_generated_thinking_block_counts_markers_and_eos(self):
         r = split_reasoning([10, 31, 32, 11, 40, 99], 10, 11, {99})
         self.assertEqual(r["reasoning_tokens"], 4)

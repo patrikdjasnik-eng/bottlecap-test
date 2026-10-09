@@ -58,11 +58,24 @@ The `runs/` directory is ignored by Git: raw generated output (including reasoni
 - `pytorch_allocated_gib` and `pytorch_peak_allocated_gib`: PyTorch-tracked allocation only, not total GPU VRAM occupancy.
 - `exploratory_accuracy`: fraction correct on only these diagnostic cases. **Not official BottleCap AI accuracy.**
 
+## Controlled answer-format correction (2026-10-09)
+
+Experiment 002 revealed that the diagnostic prompt contained a literal example `Final answer: 42`, while the correct answer was `43`. The model returned `42`, but causation by the example **has not been established**.
+
+**The owner approved** removing the potentially misleading example from `diagnostics/reasoning_probe.py`. The diagnostic now asks only: `On the last line, write 'Final answer:' followed by your answer.` It contains no sample number or choice and **does not request shorter reasoning**.
+
+- Other parameters, `enable_thinking=True`, cases, and grading remain unchanged.
+- A new regression test in `tests/test_reasoning_probe.py` checks the exact neutral instruction across all diagnostic cases, without revealing the expected answer.
+- **Pre-commit verification:** one focused isolated exercise of the replacement function passed against selected known cases. Full project tests following this change **still need to run on Kali**; no new GPU inference has run.
+- The Experiment 002 record **must not be overwritten**. Its `42` output remains an incorrect historical observation; a new measurement receives a distinct run ID.
+
 ## Status
 
 - [x] Diagnostic CPU unit tests: **9/9** passed locally.
 - [x] `--dry-run` tested locally.
-- [ ] First diagnostic GPU run on GTX 1070 Ti: **awaiting user's output**.
+- [x] First GPU diagnostic: **Experiment 002** completed (one incorrect numeric reply of 42, 325 tokens).
+- [x] Neutral diagnostic prompt corrected with owner approval; regression test added.
+- [ ] Run updated unit tests on Kali and then perform a **new control GPU measurement**.
 - [ ] Decision on further experiments: **requires owner's approval**.
 
 Record measurements and decisions in the [development diary](DEV-NOTES.en.md).

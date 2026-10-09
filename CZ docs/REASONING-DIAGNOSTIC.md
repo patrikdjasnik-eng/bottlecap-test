@@ -58,11 +58,24 @@ Složka `runs/` je ignorována Gitem: surové výstupy modelu (včetně uvažov�
 - `pytorch_allocated_gib` a `pytorch_peak_allocated_gib`: pouze alokace sledované PyTorchem, ne celkové obsazení VRAM.
 - `exploratory_accuracy`: podíl správných odpovědí pouze v těchto diagnostických úlohách. **Není to oficiální přesnost BottleCap AI.**
 
+## Kontrolovaná oprava formátu (2026-10-09)
+
+Po diagnostickém běhu Experimentu 002 jsme zjistili, že prompt obsahoval doslovný příklad `Final answer: 42`, přestože správná odpověď byla `43`. Model odpověděl `42`; příčinná souvislost s ukázkou **není prokázaná**.
+
+**Vlastník schválil** odstranění zavádějícího příkladu z `diagnostics/reasoning_probe.py`. Diagnostika nyní instruuje pouze: `On the last line, write 'Final answer:' followed by your answer.` Neobsahuje vzorové číslo ani možnost výběru a **nevyžaduje kratší uvažování**.
+
+- Ostatní parametry, `enable_thinking=True`, otázky i vyhodnocení zůstávají beze změn.
+- Nový regresní test v `tests/test_reasoning_probe.py` kontroluje přesnou neutrální instrukci pro všechny diagnostické otázky, bez prozrazení očekávané odpovědi.
+- **Ověření před commitem:** jedna cílená izolovaná zkouška nové funkce sadu předem známých příkladů prošla. Kompletní projektové testy po změně **čekají na spuštění v Kali**; nový GPU běh také ještě nebyl proveden.
+- Experiment 002 se **nepřepisuje**. Výstup `42` je historicky správně zaznamenán jako nesprávná odpověď; po opravě se zakládá nový běh s novým identifikátorem.
+
 ## Stav
 
 - [x] Jednotkové testy diagnostiky: **9/9** úspěšných v lokálním CPU testovacím prostředí.
 - [x] Režim `--dry-run` lokálně ověřen.
-- [ ] Spuštění nové diagnostiky na GTX 1070 Ti: **čeká na výstup uživatele**.
+- [x] První GPU diagnostika: **Experiment 002** dokončen (1 odpověď, nesprávné číslo 42, 325 tokenů).
+- [x] Neutrální diagnostický prompt po schválení opraven; regresní test přidán.
+- [ ] Spuštění aktualizovaných jednotkových testů na Kali a následný **nový kontrolní GPU běh**.
 - [ ] Rozhodnutí o dalších experimentech: **čeká na souhlas vlastníka**.
 
 Poznámky a výsledky ukládáme také do [vývojového deníku](DEV-NOTES.md).

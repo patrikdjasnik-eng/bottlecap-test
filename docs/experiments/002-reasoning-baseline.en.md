@@ -54,3 +54,5 @@ With owner approval, remove the potentially misleading example number from the d
 ## 📐 Visual style for future reports
 
 Document each subsequent run in a matched **CZ/EN pair**: metric panel, reasoning/final token ratio, explicit correctness status, table of grounded values, run identifier, errors, and limitations. Every chart must come from actual evidence. If token splitting is unknown, do not invent a percentage. SVG is the visual layer; the Markdown table remains readable without the image.
+
+**Update 2026-10-09:** the owner approved removing the potentially misleading example from the diagnostic prompt. The code now uses a neutral formatting instruction without the example number `42`. **This does not change any historical Experiment 002 data.** No post-fix control inference has run yet.

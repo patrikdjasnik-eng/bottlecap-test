@@ -44,10 +44,11 @@ NUMBER = re.compile(r"[+-]?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?")
 
 
 def prompt_for(case):
-    """Only request the evaluation-friendly output format; never ask for shorter thought."""
-    suffix = "A" if case["kind"] == "choice" else "42"
-    return [{"role": "user", "content":
-             f'{case["question"]}\n\nPut the final answer on the last line, like: Final answer: {suffix}'}]
+    """Request only a parseable final answer, without suggesting a value or shorter reasoning."""
+    return [{"role": "user", "content": (
+        f'{case["question"]}\n\n'
+        "On the last line, write 'Final answer:' followed by your answer."
+    )}]
 
 
 def split_reasoning(token_ids, open_id, close_id, eos_ids, prefilled_open=False):

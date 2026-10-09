@@ -13,6 +13,16 @@
 
 ## Deník
 
+### 2026-10-09 — Schválená oprava formátové ukázky (diagnostika)
+
+**Schválení vlastníka:** výslovně odsouhlasena úprava zavádějícího příkladu `Final answer: 42` v diagnostickém promptu, po analýze Experimentu 002.
+
+**Změna:** `prompt_for()` v `diagnostics/reasoning_probe.py` už neuvádí žádnou vzorovou odpověď a pro všechny diagnostické příklady stanovuje pouze neutrální formát finálního řádku: `On the last line, write 'Final answer:' followed by your answer.`. Přidán regresní test bez prozrazování odpovědí. **Nijak se nezkracuje thinking, nevypíná reasoning a nemění oficiální BottleCap AI prompty.**
+
+**Ověření:** cílený izolovaný lokální test nové formátové instrukce **1/1 prošel**. Kontrola zdrojových změn a odkazů dokumentace proběhla. Celá sada testů repozitáře a kontrolní GPU inference na uživatelově Kali **zatím nebyly zopakovány**.
+
+**Historie:** původní Experiment 002 zůstává nedotčen (325 tokenů, finální odpověď 42 místo 43). **Hypotéza o ovlivnění hodnotou 42 není potvrzena**. Následující kontrolní běh musí vytvořit nový výstupní adresář a nesmí být vydáván za trénovací zlepšení.
+
 ### 2026-10-09 — Diagnostika 002: první výstup na GTX 1070 Ti
 
 ![RHAR — grafický report Experimentu 002](../assets/reports/rhar-exp-002-cz.svg)
