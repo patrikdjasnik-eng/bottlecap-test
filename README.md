@@ -38,6 +38,7 @@ Details, limitations, and an external-GPU plan: [docs/HARDWARE.en.md](docs/HARDW
 
 ## 🔬 Research files
 
+- [🛡️ Safe Start — CPU-only official evaluation overlap audit](docs/SAFE-START-OVERLAP.en.md) — six pinned source objects, 18 new tests, no GPU. [Czech](CZ%20docs/SAFE-START-OVERLAP.md).
 - [🐇 RHAR Safe Start GSM8K CPU intake](docs/SAFE-START-DATA.en.md) — SHA-256 pinned main/train, 12 deterministic review candidates and 16 new unit tests. [Czech](CZ%20docs/SAFE-START-DATA.md).
 - [🐇 RHAR Safe Start — implementation plan and CPU tests](docs/SAFE-START.en.md) — 12 math questions × 3 planned generations; no GPU used. [Czech](CZ%20docs/SAFE-START.md).
 - [RHAR v0.1 offline selector](docs/OFFLINE-SELECTOR.en.md) — review existing generations, strict correctness checks, selection and CPU tests. [Czech](CZ%20docs/OFFLINE-SELECTOR.md).
