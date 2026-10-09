@@ -13,6 +13,16 @@
 
 ## Deník
 
+### 2026-10-10 — ✅ Skutečný CPU audit překryvu: 0 shod v 2 759 evaluačních otázkách
+
+**Skutečně provedeno na Kali / WSL2:** `python -m diagnostics.safe_start_overlap --download` doběhl úspěšně a vypsal `audit_result=no_matches_in_screened_sources`. Porovnal **12 původních GSM8K train kandidátů** (připnutá revize `740312add88f781978c0658806c59bc2815b9866`) s texty **2 759 zadání** ze všech šesti deklarovaných souborů a čtyř rodin benchmarků.
+
+**Rozpad skutečného auditu:** SVAMP 1 000, MBPP+ 378, BFCL simple_python 400, BFCL multiple 200, BFCL irrelevance 240, IFEval 541. **Nalezeno 0 potenciálních přesných nebo heuristicky podobných shod**, `potential_matches=[]`. Zdrojové soubory SVAMP a MBPP+ prošly předem známou kontrolou SHA-256. Skutečné SHA-256 připnutých BFCL souborů: `82dd63ba502eb2520c6b5d1d9a5c4b590e03ff261565175561f6228a367d1991`, `aef168155ebd74b7ac2401198b201343bc7d16d7a3d7e0d4e6d8ee82c6969b2a`, `2b6ed4c2e992cdcf5f1678a701851f944bef7550ee026ed1ddb89efed5be01a6`; IFEval: `67ffeee0fcb87c317c5b08a2de85557b4a7e96ada6178aa645b4954fe4b53d49`. U BFCL/IFEval jsou tyto hashe pouze **zaznamenané**, bez nezávislé předem fixované kontroly (`known_sha256_pin_checked=false`).
+
+**Interpretace:** výsledek platí **jen pro šest deklarovaných souborů a dané pravidlo podobnosti**. `semantic_paraphrases_ruled_out=false` a `overlap_audit_exhaustive=false`: neprokazuje nulovou kontaminaci ani nevylučuje sémantické parafráze. `status=review_only`, `training_approved=false`; dataset ani původní výběr nebyly změněny. **Žádná inference, GPU, trénování ani oficiální evaluace** (`gpu_used=false`, `model_generations_performed=0`, `training_performed=false`, `official_benchmark_run=false`).
+
+**Testovací brána:** předchozích 61/61 testů bylo potvrzeno, ale **samostatný kombinovaný běh 79/79 v uživatelově novém terminálovém výstupu zatím není doložen**. O schválení generování ani trénování nyní nerozhoduji. Nejprve získám zelený výstup všech 79 CPU testů, pak se zvlášť rozhodnu o další experimentální fázi.
+
 ### 2026-10-10 — 🛡️ Schválena CPU kontrola překryvu 12 GSM8K kandidátů vůči oficiálním otázkám
 
 **Rozhodnutí:** po úspěšném **61/61 CPU testů v Kali (`Ran 61 tests in 0.600s`, `OK`)** a zjištění, že nemám lokální `questions/questions.jsonl`, jsem výslovně schválil **pouze přípravu a stažení připnutých oficiálních evaluačních textů kvůli decontamination screeningu**. Nepovolil jsem inference, GPU, trénování ani oficiální evaluační běh.
