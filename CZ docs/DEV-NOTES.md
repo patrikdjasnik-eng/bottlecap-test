@@ -15,13 +15,19 @@
 
 ### 2026-10-09 — Diagnostika 002: první výstup na GTX 1070 Ti
 
+![RHAR — grafický report Experimentu 002](../assets/reports/rhar-exp-002-cz.svg)
+
+[📊 Kompletní grafický report a tabulky](experiments/002-reasoning-baseline.md)
+
 **Stav:** měření provedeno uživatelem v Kali / WSL2; **neoficiální diagnostika**, nikoli benchmark BottleCap AI.
 
 **Artefakty na uživatelově stroji:** `runs/diagnostics/20261009T210123Z/`. Surové soubory asistent nemá; uživatel poskytl pouze souhrn.
 
 **Výsledek jedné odpovědi:** `responses=1`, `correct_responses=0`, `exploratory_accuracy=0.0`, `reasoning_split_successes=1`, `mean_total_tokens=325`, `mean_reasoning_tokens=317`, `mean_final_tokens=8`, `mean_seconds=51.3`, `mean_tokens_per_second=6.33`, `official_benchmark=false`. Podíl reasoning tokenů: **317/325 = přibližně 97,54 %**.
 
-**Co nevíme:** bez `final_text`, `grading_error`, `truncated` a `split_status` v jednotlivém záznamu nelze rozlišit chybné číslo, chybný formát nebo chybu v detekci ukončení. Úspěšné rozdělení reasoning/final neznamená správnost odpovědi; jeden vzorek nedokládá 0% skutečnou přesnost modelu.
+**Co nevíme:****Doplnění po kontrole `records.jsonl` uživatelem:** `id=arithmetic_apples`, `expected=43`, `final_text="\n\nFinal answer: 42"`, `correct=false`, `grading_error=null`, `truncated=false`, `split_status=generated_think_block`. Tím se potvrdila **nesprávná číselná odpověď**, nikoli chyba formátu či předčasné ukončení. Souvislost s formátovým příkladem `42` v promptu zůstává **hypotézou, nikoli prokázanou příčinou**.
+
+**Co již víme:** kontrola záznamu potvrdila nesprávné číslo 42 a validní formát i konec generování. **Co nevíme:** zda model chyboval výpočtem nebo převzal příklad 42 z promptu; jediný vzorek nedokládá 0% skutečnou přesnost modelu.
 
 **Podezření ze zdrojového kódu:** `prompt_for()` používá u číselných úloh formátový příklad `Final answer: 42`, avšak u první otázky s jablky je správná odpověď `43`. Možný matoucí vliv ilustrativní hodnoty, **zatím nepotvrzená příčina**.
 
