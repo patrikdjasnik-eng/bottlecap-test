@@ -55,8 +55,8 @@ Existing output is **never overwritten**. Avoid publicly committing raw data or 
 ## Verification status
 
 - **Completed:** 16/16 new download/selector CPU unit tests plus the existing 15 planner tests: **31/31 passed in an isolated local environment**. Download success and SHA-256 failure cases used mocked network I/O.
-- **Previously confirmed on Kali:** **45/45** existing CPU tests. **The combined current 61/61 suite has not yet been run on Kali.**
+- **Combined suite now confirmed on Kali:** **61/61 OK in 0.600 s** (`Ran 61 tests in 0.600s`, `OK`). Previous separate 45/45 and 16/16 runs remain documented historical checkpoints.
 - **Newly confirmed on Kali:** 16/16 tests for the new module passed in 0.512 s; GSM8K main/train was loaded from a verified cached file with SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`; **7,473 real train records, 12 actually selected question IDs and 36 validated planned attempts**. IDs are preserved in `selection-report.json` and both DEV-NOTES.
-- **Still pending:** one combined 61/61 Kali run, an evaluation-question overlap check (`pending_local_eval_corpus`, `local_eval_audit_performed=false`), GPU sampling, LoRA, or token savings measurements. Selected data remain `review_only` and not authorized for training.
+- **Still pending:** `questions/questions.jsonl` does not exist (`Eval otázky chybí`), so evaluation-question overlap screening has **not** run (`pending_local_eval_corpus`, `local_eval_audit_performed=false`). GPU sampling, LoRA and token savings measurements are neither authorized nor completed. Selected data remain `review_only`.
 
 I collaborate on this project with **ChatGPT (OpenAI, GPT-6)** and my local GGUF agent **Máša**; only verified work is credited.
