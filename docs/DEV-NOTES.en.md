@@ -13,6 +13,20 @@
 
 ## Diary
 
+### 2026-10-09 — 🩹 First offline run: legacy diagnostic compatibility
+
+**Actually run on my Kali:** `python -m diagnostics.offline_selector runs/diagnostics/20261009T210123Z/records.jsonl`. It created `runs/offline/20261009T214125471552Z/`; input SHA-256 `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`.
+
+**Exact summary:** `records=1`, `correct_final_answers=0`, `training_eligible_candidates=0`, `selected_for_review=0`, `reasons={"invalid_question_metadata":1}`, `no_training_performed=true`, `official_benchmark=false`, `review_only=true`.
+
+**Root cause:** the earlier `reasoning_probe.py` recorded `id/category/expected` but did **not** write `task` or `kind`. The offline selector required that field and rejected the record before it could grade the known incorrect answer, **42 rather than 43**. Zero selected candidates was appropriate, but **the rejection reason was not sufficiently informative**.
+
+**Fix on the development branch:** only for the six fixed hand-written diagnostic cases, infer the missing `kind` from the original `CASES` definitions when `id`, `category` and `expected` match exactly and there is no `source` field. Unknown records are never guessed. Legacy diagnostic records still lack `source_revision`, `split=train` and `prompt_hash`; **they remain ineligible for training selection**.
+
+**New regression tests:** cases cover the real legacy schema and variations, logic/coding examples, mismatched identity and attempts with an attached source. **Current defined tests: 20 selector + 10 reasoning probe = 30. A fresh post-fix test run on Kali is still pending; there is no new offline run summary yet.**
+
+**Expected on rerun (not yet measured):** `records=1`, `correct_final_answers=0`, `selected_for_review=0`, `reasons={"incorrect_answer":1}`. The old `runs/offline/20261009T214125471552Z/` is retained for provenance and **will not be overwritten**.
+
 ### 2026-10-09 — 🧪 RHAR v0.1: offline correctness gate implemented
 
 **My approval:** I authorized the first implementation step of RHAR v0.1: **offline-only** review of existing `records.jsonl` and selection of shorter correct candidates, with no generation, training or GPU use.

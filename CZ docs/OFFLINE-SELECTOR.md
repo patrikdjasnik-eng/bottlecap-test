@@ -17,6 +17,16 @@
 
 **Pozor:** správný výsledek neznamená nutně správný každý mezikrok. **RPD ani RPS zatím nejsou implementovány**; vybrané stopy jsou pouze `review_only` a vyžadují další prověření.
 
+## Kompatibilita starší diagnostiky — oprava 9. 10. 2026
+
+Při prvním skutečném offline běhu jsem získal `records=1`, `selected_for_review=0` a `invalid_question_metadata=1`. Stará diagnostika totiž zapisovala `id`, `category` a `expected`, ale nikoli `kind` / `task`. Selektor proto neuměl rozeznat, že výstup obsahuje **nesprávnou odpověď 42 místo 43**.
+
+**Opravil jsem to pouze pro svých šest přesně definovaných `CASES`:** musí se shodovat `id`, `category` a `expected`, pole `source` nesmí být uvedené. Pro takový historický záznam doplním typ odpovědi pouze pro **offline hodnocení** a nastavím `legacy_diagnostic_kind_inferred=true`. Nejde o doplnění trénovacího původu. Neznámé úlohy a data se `source` tímto pravidlem neprojdou.
+
+**Skutečný první běh**: `runs/offline/20261009T214125471552Z/`, SHA-256 vstupu `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`. Výsledky zachovávám beze změny.
+
+**Očekávám po opakování:** `reasons={"incorrect_answer":1}`, stále **0 vybraných kandidátů**. Očekávání není naměřený výsledek. Aktuální kód má **20 selector testů a 10 diagnostických testů**; čerstvý testovací běh musí teprve proběhnout.
+
 ## Spuštění v Kali / WSL2
 
 Po stažení změn nejprve spustím CPU testy, bez načítání LLM:

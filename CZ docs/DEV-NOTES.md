@@ -13,6 +13,20 @@
 
 ## Deník
 
+### 2026-10-09 — 🩹 První offline běh: kompatibilita staré diagnostiky
+
+**Skutečně spuštěno na mém Kali:** `python -m diagnostics.offline_selector runs/diagnostics/20261009T210123Z/records.jsonl`. Běh vytvořil `runs/offline/20261009T214125471552Z/`; SHA-256 vstupu `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`.
+
+**Doslovný souhrn:** `records=1`, `correct_final_answers=0`, `training_eligible_candidates=0`, `selected_for_review=0`, `reasons={"invalid_question_metadata":1}`, `no_training_performed=true`, `official_benchmark=false`, `review_only=true`.
+
+**Co jsme našli:** původní `reasoning_probe.py` do záznamů ukládal `id/category/expected`, ale **neukládal `task` ani `kind`**. Offline selektor tuto informaci vyžadoval, takže řádek zamítl dříve, než dokázal vyhodnotit známou nesprávnou odpověď **42 místo 43**. Nulový počet vybraných kandidátů je správný, ale **důvod odmítnutí nebyl dost přesný**.
+
+**Oprava ve vývojové větvi:** pouze pro šest známých ručně vytvořených diagnostických úloh odvozuji chybějící `kind` z původního seznamu `CASES`, a to jen při přesné shodě `id`, `category` a `expected` a při absenci pole `source`. U jiných dat nic nehádám. Staré diagnostické záznamy tím **nezískávají `source_revision`, `split=train` ani `prompt_hash`**, takže je nelze zařadit do trénovacího výběru.
+
+**Nové regresní testy:** přidány testy skutečného starého schématu a jeho variant, logické/kódové otázky, nesouladu identity i pokusů s uvedeným zdrojem. **Počet definovaných testů nyní: 20 selektor + 10 reasoning probe = 30. Čerstvý testovací běh po opravě ještě čeká na ověření na Kali; nový offline souhrn zatím neexistuje.**
+
+**Očekávání po opakování (nikoli již naměřený výsledek):** `records=1`, `correct_final_answers=0`, `selected_for_review=0`, `reasons={"incorrect_answer":1}`. Starý `runs/offline/20261009T214125471552Z/` zůstane jako historický důkaz a **nebude přepsán**.
+
 ### 2026-10-09 — 🧪 RHAR v0.1: offline correctness gate hotový
 
 **Moje schválení:** odsouhlasil jsem první implementační krok RHAR v0.1: **výhradně offline** kontrolu už vytvořených `records.jsonl` a výběr kratších správných kandidátů, bez generování, trénování nebo čerpání GPU.

@@ -17,6 +17,16 @@
 
 **Important:** a correct final answer does not guarantee every reasoning step is valid. **RPD and RPS are not yet implemented**; all selections are `review_only` and require further examination.
 
+## Legacy diagnostic compatibility — 2026-10-09 fix
+
+My first actual offline run reported `records=1`, `selected_for_review=0` and `invalid_question_metadata=1`. The earlier diagnostic recorded `id`, `category` and `expected` but neither `kind` nor `task`. This prevented the selector from identifying the **incorrect final answer 42 instead of 43**.
+
+**I fixed this only for my six fixed `CASES` definitions:** `id`, `category` and `expected` must all match; there must be no `source` field. The result gets `legacy_diagnostic_kind_inferred=true` and is classified **for offline inspection only**. This does not create training provenance; unknown records and any record with `source` cannot use the fallback.
+
+**Historical first run:** `runs/offline/20261009T214125471552Z/`, source SHA-256 `bf9360243279dd0a6636111c955492018521b00e18a390f3770ae36caab25de0`. The original result remains unchanged.
+
+**Expected after rerun:** `reasons={"incorrect_answer":1}` and still **zero selected candidates**. This is a prediction, not a measured new result. Current source defines **20 selector tests plus 10 diagnostic tests**; a fresh test run is still required.
+
 ## Running on Kali / WSL2
 
 First run the CPU-only test suite; it loads no LLM:

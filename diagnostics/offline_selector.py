@@ -13,6 +13,12 @@ import json
 from pathlib import Path
 import re
 
+# This is a small, CPU-only import: CASES contains six fixed hand-written questions.
+# Legacy probe records omit task/kind, so only known cases may be inferred.
+from .reasoning_probe import CASES as DIAGNOSTIC_CASES
+
+LEGACY_DIAGNOSTIC_CASES = {case["id"]: case for case in DIAGNOSTIC_CASES}
+
 FINAL_LINE = re.compile(r"^Final answer:[ \t]*([^\n]+?)[ \t]*$", re.MULTILINE)
 NUMBER = re.compile(r"[+-]?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?")
 OFFICIAL_PREFIXES = ("svamp", "mbpp", "bfcl", "ifeval")
@@ -50,6 +56,17 @@ def assess_record(record):
     gold = record.get("gold_answer", record.get("expected"))
     task = record.get("task", record.get("kind"))
     kind = KINDS.get(task)
+    legacy_kind_inferred = False
+    # The earlier reasoning_probe records id/category/expected, but not task/kind.
+    # Infer type ONLY for exact built-in diagnostics with no source metadata.
+    # This fallback can never turn historical probes into training examples.
+    if kind is None and task is None and "source" not in record:
+        known = LEGACY_DIAGNOSTIC_CASES.get(record.get("id"))
+        if (known is not None and record.get("category") == known["category"]
+                and gold == known["answer"]):
+            kind = known["kind"]
+            task = kind
+            legacy_kind_inferred = True
     raw = record.get("generated_text", record.get("full_generated_text"))
     final = record.get("final_text")
     split_status = record.get("reasoning_split_status", record.get("split_status"))
@@ -58,8 +75,9 @@ def assess_record(record):
     conclusion = record.get("final_tokens")
     outcome = {
         "question_id": label, "sample": record.get("sample"), "seed": record.get("seed"),
-        "source": record.get("source"), "task": task, "correct": False,
-        "valid_generation": False, "training_eligible": False,
+        "source": record.get("source"), "task": task,
+        "legacy_diagnostic_kind_inferred": legacy_kind_inferred,
+        "correct": False, "valid_generation": False, "training_eligible": False,
         "selected": False, "reason": None, "total_generated_tokens": total,
     }
 
