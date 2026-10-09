@@ -11,7 +11,7 @@
 - Only downloaded object: `main/train-00000-of-00001.parquet` (about 2.31 MB).
 - Expected full-file SHA-256: `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`.
 - The `diagnostics/safe_start_data.py` script refuses modified or corrupt files and never uses GPU. **It does not download the test split.**
-- Reading the cached file uses `pyarrow`, already a dependency of the project's `datasets` package.
+- Reading the cached Parquet **directly requires `pyarrow`**. The first actual Kali download attempt reached Parquet parsing but failed because `pyarrow` was missing from `.venv`. I added `pyarrow>=15` to `requirements.txt`; install only this dependency with `uv pip install --python .venv/bin/python pyarrow` (no need to pull the full CUDA/vLLM requirements). The downloader validates and reuses the existing cached file.
 
 ## Selection protocol
 
