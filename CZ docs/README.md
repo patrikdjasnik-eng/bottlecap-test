@@ -40,6 +40,7 @@ Podrobnosti, limity a plán práce s externí GPU: [HARDWARE.md](HARDWARE.md). G
 - [DEV-NOTES.md](DEV-NOTES.md) — vývojový deník, postup a schvalování rozhodnutí. [Anglicky](../docs/DEV-NOTES.en.md).
 - [UPSTREAM-README.md](UPSTREAM-README.md) — kompletní český překlad zadání. [Anglický originál](../docs/UPSTREAM-README.md).
 - [HARDWARE.md](HARDWARE.md) — hardware a jeho omezení. [Anglicky](../docs/HARDWARE.en.md).
+- [REASONING-DIAGNOSTIC.md](REASONING-DIAGNOSTIC.md) — diagnostika reasoning tokenů bez zásahu do modelu, včetně jednotkových testů. [Anglicky](../docs/REASONING-DIAGNOSTIC.en.md).
 - `train.py`, `evaluate.py`, `compare.py` — oficiální nástroje BottleCapAI.
 
 ## ✅ Zásady experimentů
