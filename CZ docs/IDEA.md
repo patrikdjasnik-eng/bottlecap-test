@@ -51,7 +51,11 @@ Tyto mechanismy mají v ideálním případě ovlivňovat **učení samotného m
 
 **Čeká na další schválení:** architektura HRM, výběr signálů, prahy, kalibrační data, kontrola zdrojů, trénovací integrace a změny kódu. Nápad nevydávat za světovou novinku, naměřené zlepšení ani funkční predikční systém.
 
-## Modulární výzkumný plán (navržené experimenty, dosud neschválené)
+## RHAR v0.1 — schválený směr a navržený protokol
+
+První zvolený trénovací směr je **Correctness-Gated Reasoning Compression**. Znamená to nejprve hledat **správné, úplné a relativně krátké reasoning traces**, teprve po dalších rozhodnutích zkoušet, zda se model tento vzor naučí. **Směr jsem schválil, ale konkrétní implementaci, sběr dat, GPU rozpočet a trénování zatím ne.** Podrobnosti mám v [RHAR-V01-PLAN.md](RHAR-V01-PLAN.md). Samotný jednoduchý výběr nejkratší správné odpovědi není ověřenou vědeckou novinkou.
+
+## Modulární výzkumný plán (další experimenty zatím neschválené)
 
 1. Změřit nezměněný model: správnost, počet reasoning/final/celkových tokenů, čas, variabilitu a selhání.
 2. Zkoumat **RPS samostatně** a ověřit, zda jsou signály pokroku/redundance spolehlivé i mimo jedinou úlohu.

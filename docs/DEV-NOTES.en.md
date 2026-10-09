@@ -13,6 +13,18 @@
 
 ## Diary
 
+### 2026-10-09 — 🧬 RHAR v0.1 research direction approved
+
+**My decision:** I approved **RHAR v0.1 — Correctness-Gated Reasoning Compression** as my first training-oriented research direction. I want to learn from **shorter correct reasoning traces** and eventually test whether that behavior can be learned by the base Qwen model without sacrificing accuracy. This does **not** automatically authorize a particular loss function, dataset acquisition, GPU pilot length or weight training.
+
+**Design documented:** [RHAR v0.1 — detailed protocol](RHAR-V01-PLAN.en.md) describes possible permitted sources, 20–30 questions and 2–3 generations per question (all **proposed**, not run), correctness gating, data provenance, train/val isolation, LoRA as an option, measurements and stop rules. **No pilot or training has happened.**
+
+**Technical findings:** upstream `train.py` is a rollout demonstration and defaults to bf16 on CUDA, unsupported natively by my Pascal GTX 1070 Ti. Upstream `prepare_data.py` embeds example answers `42` / `B` in suggested training prompts, a possible confound unrelated to our corrected standalone diagnostic. The provided reward helper may not enforce exactly the same output requirements as the official grader.
+
+**Limits:** at previously measured generation rates, 40–90 samples could take approximately 35–90 minutes of inference. Compute budget is **not yet approved**. Official benchmarks, model weights and the existing diagnostic script were not changed; the latest set of 10 diagnostic tests still awaits a confirmed fresh Kali run.
+
+**Proposed next approval:** implement **only an offline answer-verification / candidate-selection schema with CPU unit tests**, without model sampling, loading Qwen or changing weights. Approve GPU sampling and LoRA separately later.
+
 ### 2026-10-09 — 🐇 RHAR: complete research checkpoint, evidence and next steps
 
 **Purpose:** I consolidated what I have proposed, approved, measured and corrected. This is my first-person engineering diary, not a third-party audit. **Older entries below are historical snapshots and may contain pending statuses now superseded by this checkpoint.** Updating Markdown itself does not run inference, training or evaluation.

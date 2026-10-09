@@ -51,7 +51,11 @@ These mechanisms should ideally affect **what the model learns**, not require co
 
 **Explicitly deferred:** HRM architecture, feature extraction, thresholds, calibration dataset, source checking, training integration and code changes require **my separate decision**. The idea must not be described as a verified novelty, measured improvement, or accurate prediction system.
 
-## Modular research plan (proposed experiments, not yet authorized)
+## RHAR v0.1 — approved direction and proposed protocol
+
+I approved **Correctness-Gated Reasoning Compression** as the first training-oriented research direction: search for **correct, complete, relatively short reasoning traces** before testing whether the model can learn from them. **The direction is approved, but implementation, dataset acquisition, GPU budget and training are not yet authorized.** I documented the details in [RHAR-V01-PLAN.en.md](docs/RHAR-V01-PLAN.en.md). Simple shortest-correct selection by itself is not an established novel algorithm.
+
+## Modular research plan (further experiments not yet authorized)
 
 1. Measure the unchanged base model: exact answers, reasoning/final/total token counts, time, variance and failures.
 2. Investigate **RPS separately** and determine whether progress/redundancy signals are reliable beyond one problem.

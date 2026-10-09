@@ -38,6 +38,7 @@ Details, limitations, and an external-GPU plan: [docs/HARDWARE.en.md](docs/HARDW
 
 ## 🔬 Research files
 
+- [RHAR v0.1 — research protocol](docs/RHAR-V01-PLAN.en.md) — approved direction, proposed data pipeline, metrics and approval boundaries. [Czech](CZ%20docs/RHAR-V01-PLAN.md).
 - [IDEA.md](IDEA.md) — hypothesis, method, measurement plan, and experiment log. [Czech](CZ%20docs/IDEA.md).
 - [docs/DEV-NOTES.en.md](docs/DEV-NOTES.en.md) — development diary, progress and approval decisions. [Czech](CZ%20docs/DEV-NOTES.md).
 - [docs/UPSTREAM-README.md](docs/UPSTREAM-README.md) — original challenge. [Czech translation](CZ%20docs/UPSTREAM-README.md).

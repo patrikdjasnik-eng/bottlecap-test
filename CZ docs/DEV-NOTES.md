@@ -13,6 +13,18 @@
 
 ## Deník
 
+### 2026-10-09 — 🧬 Schválení výzkumného směru RHAR v0.1
+
+**Moje rozhodnutí:** schválil jsem **RHAR v0.1 — Correctness-Gated Reasoning Compression** jako první směr pro trénovací výzkum: chci se učit z **kratších správných reasoning traces** a později testovat, zda tuto schopnost lze přenést do vah původního Qwenu bez zhoršení přesnosti. Schválení není automatický souhlas s konkrétní loss funkcí, sběrem datasetu, délkou GPU pilotu ani trénováním.
+
+**Sepsaná příprava:** [RHAR v0.1 — detailní protokol](RHAR-V01-PLAN.md) popisuje navržené povolené zdroje, 20–30 různých úloh, 2–3 generace na úlohu (zatím **pouze odhad**), correctness gate, záznam dat, oddělení train/val, LoRA jako jednu z možností, metriky a stop podmínky. **Nic z pilotu ani tréninku neproběhlo.**
+
+**Technické nálezy:** původní `train.py` je demonstrační rollout a implicitně používá bf16 na CUDA, které moje Pascal GTX 1070 Ti nativně nepodporuje. Původní `prepare_data.py` přidává do trénovacích promptů ukázkové odpovědi `42` / `B`; tento možný zdroj zkreslení nechci zaměnit s opravou našeho nezávislého diagnostického promptu. Původní reward helper nemusí být stejně přísný jako oficiální evaluační grader.
+
+**Omezení:** dle naměřené rychlosti může 40–90 generací řádově trvat 35–90 minut čisté inference. Výpočetní rozpočet **zatím neodsouhlasen**. Oficiální benchmarky, modelové váhy a diagnostický Python kód zůstaly beze změn; posledních 10 diagnostických testů stále čeká na potvrzený lokální běh.
+
+**Následující návrh ke schválení:** začít **pouze offline sběrným schématem a filtrem správnosti s CPU unit testy** (bez generování, bez načítání Qwenu a bez změn vah). Později si samostatně schválím GPU pilot a LoRA.
+
 ### 2026-10-09 — 🐇 RHAR: kompletní checkpoint výzkumu, výsledků a dalších kroků
 
 **Proč tento zápis:** shrnul jsem do jednoho místa vše, co jsem zatím navrhl, schválil, změřil a opravil. Tento deník píšu **z pohledu vývojáře v první osobě**; starší záznamy níže ponechávám jako historii. Jejich „čeká na GPU běh“ nebo „čeká na schválení“ může být mezitím překonané. **Sepsání dokumentace není nový experiment.**
