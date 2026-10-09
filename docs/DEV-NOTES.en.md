@@ -13,6 +13,23 @@
 
 ## Diary
 
+### 2026-10-09 — First Qwen3-0.6B inference (baseline exploration)
+
+**Status:** user-verified on Kali Linux / WSL2 with a GTX 1070 Ti; **not** an official BottleCap AI evaluation.
+
+**Procedure:** loaded the original `Qwen/Qwen3-0.6B` via Transformers on GPU in `torch.float16`. One simple math task: 5 boxes × 12 apples − 17 sold. Thinking enabled; the previously provided script used seed 9001, temperature 0.6, top-p 0.95, top-k 20 and max_new_tokens 512.
+
+**Measured from the user-provided terminal output:**
+- Final reply: `Final answer: 43` (**correct**).
+- **371 generated tokens** in total (including final answer and any reasoning).
+- Generation time: **61.45 s**.
+- Mean throughput: **6.04 tokens/s**.
+- `torch.cuda.memory_allocated()`: **1.12 GiB** (PyTorch allocated memory, not full GPU VRAM use or peak).
+
+**Limitations:** one question and one run only. The user shared the answer ending and metrics but not the full reasoning trace, so reasoning-only token count has not been measured. This is not an SVAMP/MBPP+/BFCL/IFEval benchmark result, nor evidence of model training or improvement.
+
+**Next proposal (awaiting approval):** create reproducible per-segment measurements for reasoning vs. final answer on several independent sample questions; do not alter the model or official evaluation rules yet.
+
 ### 2026-10-09 — Language file reorganization
 
 **Approved scope:** at the owner's explicit request, move all Czech Markdown documents into `CZ docs/`. Keep the root `README.md` in English for BottleCap AI reviewers. Python code, model, and evaluation settings remain unchanged.
