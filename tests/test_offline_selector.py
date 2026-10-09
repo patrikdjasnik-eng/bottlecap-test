@@ -93,8 +93,8 @@ class GraderTests(unittest.TestCase):
         row = {"id": "arithmetic_apples", "category": "arithmetic",
                "expected": "43", "sample": 0, "seed": 9001, "correct": False,
                "split_status": "generated_think_block",
-               "full_generated_text": "<think>60-17=42</think>\\n\\nFinal answer: 42<|im_end|>",
-               "final_text": "\\n\\nFinal answer: 42", "truncated": False,
+               "full_generated_text": "<think>60-17=42</think>\n\nFinal answer: 42<|im_end|>",
+               "final_text": "\n\nFinal answer: 42", "truncated": False,
                "total_tokens": 325, "reasoning_tokens": 317, "final_tokens": 8}
         outcomes, selected = select_records([row])
         self.assertEqual(outcomes[0]["reason"], "incorrect_answer")
@@ -104,9 +104,9 @@ class GraderTests(unittest.TestCase):
         self.assertEqual(selected, [])
 
     def test_legacy_known_choice_and_code_case(self):
-        cases = [("logic_triangle", "logic", "A", "number", "choice"),
-                 ("code_output", "code_comprehension", "9", "choice", "number")]
-        for identifier, category, expected, _, inferred in cases:
+        cases = [("logic_triangle", "logic", "A", "choice"),
+                 ("code_output", "code_comprehension", "9", "number")]
+        for identifier, category, expected, inferred in cases:
             row = {"id": identifier, "category": category, "expected": expected,
                    "correct": True, "split_status": "generated_think_block",
                    "full_generated_text": f"<think>ok</think>Final answer: {expected}<|im_end|>",
