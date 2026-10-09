@@ -13,6 +13,21 @@
 
 ## Deník
 
+### 2026-10-09 — Výběr tří výzkumných hypotéz (preferované, neschválené pro realizaci)
+
+**Podnět vlastníka:** pro další výzkum preferuje tři směry: **Reasoning Progress Signature (RPS)**, **Reversible Proof Distillation (RPD)** a **Transfer-Protected Compression (TPC)**.
+
+**Pracovní význam:**
+- **RPS:** měřit, zda jednotlivé kroky reasoning procesu přinášejí informační pokrok, nebo jen opakování.
+- **RPD:** ověřovat, zda krátký reasoning stále zachovává dost důkazní informace pro odvození správného výsledku.
+- **TPC:** hlídat, že komprese nezhoršuje výrazně matematiku, práci s kódem, funkcemi ani dodržování instrukcí.
+
+**Návrh k diskusi (dosud neschválený):** samostatně vyhodnotit tři mechanismy a teprve podle výsledků zvažovat společný prototyp. Možné pořadí RPS → RPD → TPC vyjadřuje závislost měření → zachování informace → robustnost, nikoli rozhodnutí o implementaci.
+
+**Omezení:** Nesmíme vydávat nepodloženou světovou novost za ověřený fakt; nelze vyloučit neveřejný výzkum. Zůstává zákaz zkracování pomocí promptu, vypínání thinking režimu a trénování na oficiálních evaluačních datech.
+
+**Stav:** pouze zapsaná preference, **žádný nový algoritmus, trénink ani experiment tímto není schválen**. Na GPU měření z diagnostického skriptu se stále čeká.
+
 ### 2026-10-09 — Diagnostický skript pro reasoning (schváleno)
 
 **Schválení:** uživatel výslovně souhlasil s vytvořením diagnostického skriptu; znovu připomněl zákaz nahrazovat algoritmus prompt engineeringem a zákaz vypínání uvažování.
