@@ -13,6 +13,16 @@
 
 ## Deník
 
+### 2026-10-10 — 🐇 Schváleno CPU stažení GSM8K train a výběr 12 úloh
+
+**Moje rozhodnutí:** po úspěšném **45/45 testů za 0,045 s** na Kali a výstupu `safe_start_plan --dry-run` (`plan_only`, 12 otázek, 36 plánovaných pokusů, `gpu_used=false`) jsem schválil další krok: **pouze CPU stažení GSM8K main/train a deterministický výběr 12 kandidátů**. Neschválil jsem GPU sampling, LoRA, trénování ani použití zvolených otázek bez další revize.
+
+**Implementoval jsem:** `diagnostics/safe_start_data.py` a `tests/test_safe_start_data.py` (16 nových jednotkových testů). Dataset je připnut k revizi `740312add88f781978c0658806c59bc2815b9866`; stahuji jen `main/train-00000-of-00001.parquet` s očekávaným SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`. Výběr používá zafixované řazení podle SHA-256, odmítá nečíselné výsledky, duplicity a zjevné překryvy s případným lokálním evaluačním souborem. Žádné oficiální benchmarky neupravuji. Artefakty pod `data/safe-start/` jsou `review_only`, nikdy automatická trénovací sada.
+
+**Ověření:** 16/16 nových CPU testů a předchozích 15 testů plánovače (**31/31**) prošlo v izolovaném lokálním prostředí. Síťové stahování bylo při unit testech simulováno; **reálné stažení GSM8K v mém Kali a společná sada 61/61 zatím nejsou doložené**. GitHub obsah dvou nových Python souborů jsem ověřil proti lokálně testované verzi.
+
+**Přesný postup:** [SAFE-START-DATA.md](SAFE-START-DATA.md) / [English](../docs/SAFE-START-DATA.en.md). První příkaz v Kali je společná CPU sada testů. Teprve po její zelené kontrole smím spustit `python -m diagnostics.safe_start_data --download`, zkontrolovat `selection-report.json` a potvrdit 12 skutečných identit úloh. Pokud nemám k dispozici lokální evaluační otázky, kontrola překryvu zůstane `pending_local_eval_corpus`; **nesmím tvrdit, že byla prokázána absence kontaminace**.
+
 ### 2026-10-10 — 🐇 Schválen RHAR Safe Start, CPU plán a testy
 
 **Moje rozhodnutí:** schválil jsem první bezpečný malý pilot **12 matematických úloh × 3 generace**. Zatím jsem však povolil **pouze implementační plán, CPU validaci a jednotkové testy**, nikoli stažení dat, GPU inferenci nebo trénování.
