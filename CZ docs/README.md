@@ -11,7 +11,9 @@
 ![RAM](https://img.shields.io/badge/RAM-16_GB-475569)
 ![License](https://img.shields.io/badge/Upstream-Apache_2.0-2563EB)
 
-> 🐇 Rabbit Hollow Research: učení kratšího reasoning procesu u **Qwen3-0.6B** bez znatelné ztráty přesnosti.
+> 🐇 Rabbit Hollow Research: výzkum **RHAR — Rabbit Hollow Adaptive Reasoning**, modulárního přístupu k efektivnějšímu uvažování modelu Qwen3-0.6B bez ztráty přesnosti.
+
+**Výzkumný směr schválený vlastníkem:** RPS (Reasoning Progress Signature) + RPD (Reversible Proof Distillation) + TPC (Transfer-Protected Compression). Schválená je koncepce; žádný algoritmus učení RHAR ani zlepšení dosud nebyly implementovány či prokázány.
 
 ## 🎯 Zadání
 
