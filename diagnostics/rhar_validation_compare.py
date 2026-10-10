@@ -1,8 +1,9 @@
 """Paired RHAR SFT 003 vs CEP 001 evaluation on disjoint GSM8K TRAIN validation.
 
-No official benchmark scores. The same deterministic validation split used for
-both models' loss measurement, not their weight updates. This is NOT a novel
-independent test set and must not be used for further training or model selection.
+No official benchmark scores. A third deterministic GSM8K train partition, after the 1000 training AND
+100 loss-validation examples used for both prior LoRA runs. This partition
+is unseen in both training and loss-validation, but still only a local
+research diagnostic, not an official competition benchmark.
 """
 import argparse
 import hashlib
@@ -18,10 +19,10 @@ SEED=9001
 SAMPLING={"temperature":0.6,"top_p":0.95,"top_k":20}
 
 def pick_validation(raw,train_size=1000,val_size=100,seed=42,count=20):
-    if not 1<=count<=val_size:
-        raise ValueError("count must be between 1 and val-size")
-    _,validation=prepare_pool(raw,train_size,val_size,seed)
-    return validation[:count]
+    if not 1<=count<=200:
+        raise ValueError("count must be between 1 and 200")
+    _,validation=prepare_pool(raw,train_size,val_size+count,seed)
+    return validation[val_size:]
 
 def summarize(records):
     if not records or len(records)%2:
@@ -65,7 +66,7 @@ def run(args,validation,out):
     elif isinstance(ceos,(tuple,list)):eos.update(int(x) for x in ceos)
     out.mkdir(parents=True,exist_ok=False)
     plan={"status":"running","official_benchmark":False,"train_source":"GSM8K/main/train",
-          "validation_is_train_split_holdout":True,"model":BASE_MODEL,
+          "untouched_research_holdout_after_training_and_loss_validation":True,"model":BASE_MODEL,
           "model_revision":BASE_REVISION,"n":len(validation),"seed":SEED,
           "cap":args.cap,"sampling":SAMPLING,
           "sft_adapter":str(args.sft),"cep_adapter":str(args.cep)}
@@ -126,13 +127,14 @@ def main(argv=None):
         raise ValueError("verified pinned train parquet required")
     if not args.eval_questions.is_file():
         raise FileNotFoundError("evaluation prompts required for screening")
-    train,val=prepare_pool(read_parquet(args.raw_parquet),1000,100,42)
-    reject_overlap(train,val,read_eval_prompts(args.eval_questions))
-    validation=pick_validation(read_parquet(args.raw_parquet),count=args.count)
+    source_rows=read_parquet(args.raw_parquet)
+    train,extended=prepare_pool(source_rows,1000,100+args.count,42)
+    reject_overlap(train,extended,read_eval_prompts(args.eval_questions))
+    validation=extended[100:]
     if args.dry_run:
         print(json.dumps({"status":"plan_only","n":len(validation),"planned_generations":2*len(validation),
           "seed":SEED,"cap":args.cap,"training_performed":False,"gpu_used":False,
-          "official_benchmark":False,"validation_used_for_loss_in_prior_trainings":True,
+          "official_benchmark":False,"validation_used_for_loss_in_prior_trainings":False,
           "train_and_validation_ids_disjoint":True,"first_id":validation[0]["question_id"]},indent=2))
         return 0
     run(args,validation,args.out)
