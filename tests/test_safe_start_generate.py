@@ -189,6 +189,46 @@ class SafeStartGenerateTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as err:g.main(["--dry-run","--confirm-gpu-36"])
         self.assertEqual(err.exception.code,2)
 
+
+    def test_small_pilot_keeps_full_audit_but_plans_three(self):
+        with tempfile.TemporaryDirectory() as folder:
+            q, selection, audit = fixtures(folder)
+            output = Path(folder) / "unused"
+            with patch.object(g, "execute", side_effect=AssertionError("GPU forbidden")):
+                with contextlib.redirect_stdout(StringIO()) as stdout:
+                    code = g.main(["--dry-run", "--pilot-3", "--questions", str(q),
+                                   "--selection-report", str(selection),
+                                   "--overlap-audit", str(audit), "--out", str(output)])
+            self.assertEqual(code, 0)
+            report = json.loads(stdout.getvalue())
+            self.assertEqual(report["question_count"], 1)
+            self.assertEqual(report["planned_generations"], 3)
+            self.assertEqual(report["full_audit_question_count"], 12)
+            self.assertEqual(report["seeds"], [9001, 9002, 9003])
+            self.assertFalse(report["gpu_used"])
+            self.assertFalse(output.exists())
+
+    def test_small_pilot_confirmation_is_required(self):
+        with contextlib.redirect_stderr(StringIO()):
+            with self.assertRaises(SystemExit) as err:
+                g.main(["--execute", "--pilot-3"])
+        self.assertEqual(err.exception.code, 2)
+
+    def test_confirmation_flags_cannot_be_mixed(self):
+        for args in (["--dry-run", "--confirm-gpu-3", "--pilot-3"],
+                     ["--execute", "--pilot-3", "--confirm-gpu-36"],
+                     ["--execute", "--confirm-gpu-3"]):
+            with self.subTest(args=args):
+                with contextlib.redirect_stderr(StringIO()):
+                    with self.assertRaises(SystemExit) as err:
+                        g.main(args)
+                self.assertEqual(err.exception.code, 2)
+
+    def test_pilot_rejects_partial_full_plan(self):
+        rows = candidates()
+        with self.assertRaises(ValueError):
+            g.pilot_three(rows[:1], g.plan_attempts(rows[:1]))
+
     def test_generated_thinking_counts_all_tokens(self):
         r=g.build_record(candidates()[0],attempt(),[10,21,11,22,99],10,11,{99},
                          False,ToyTokenizer(),1.0)
