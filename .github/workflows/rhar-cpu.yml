@@ -62,4 +62,5 @@ jobs:
             tests.test_bottlecap_compliance \
             tests.test_rhar_evaluation_001 \
             tests.test_training_002_preflight \
+            tests.test_dataset_builder_002 \
             -v
