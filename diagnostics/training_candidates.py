@@ -14,6 +14,7 @@ FORBIDDEN = {"svamp", "mbpp", "mbpp+", "bfcl", "ifeval"}
 def select(records):
     groups = {}
     rejected = {}
+    fingerprints = {}
     for row in records:
         source = str(row.get("source", "")).lower()
         source_family = source.replace("-", "").replace("_", "")
@@ -35,8 +36,9 @@ def select(records):
             json.dumps(row["prompt"], sort_keys=True).encode()
         ).hexdigest()
         prev = groups.get(key)
-        if prev and prev["prompt_fingerprint"] != prompt_fingerprint:
+        if key in fingerprints and fingerprints[key] != prompt_fingerprint:
             raise ValueError("question ID reused for different prompt")
+        fingerprints[key] = prompt_fingerprint
         accepted = (row["correct"] is True and row["truncated"] is False and
                     row["split_status"] == "generated_think_block" and
                     isinstance(row["total_tokens"], int) and row["total_tokens"] > 0 and
