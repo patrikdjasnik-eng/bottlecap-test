@@ -38,6 +38,7 @@ Details, limitations, and an external-GPU plan: [docs/HARDWARE.en.md](docs/HARDW
 
 ## 🔬 Research files
 
+- [🧠 RHAR-CEP 002 — VPS + XP + REC algorithm (research proposal)](docs/CEP-002.en.md) — verified procedural steps, up to three real strategies, proven retroactive corrections and a small controlled experiment; **documentation only, no new GPU/training**. [Czech](CZ%20docs/CEP-002.md).
 - [🐇 RHAR Safe Start — prepare 36 generations safely](docs/SAFE-START-GENERATION.en.md) — explicit-gated future Qwen3 runner, 24 new CPU tests, no GPU execution. [Czech](CZ%20docs/SAFE-START-GENERATION.md).
 - [🛡️ Safe Start — CPU-only official evaluation overlap audit](docs/SAFE-START-OVERLAP.en.md) — six pinned source objects, 18 new tests, no GPU. [Czech](CZ%20docs/SAFE-START-OVERLAP.md).
 - [🐇 RHAR Safe Start GSM8K CPU intake](docs/SAFE-START-DATA.en.md) — SHA-256 pinned main/train, 12 deterministic review candidates and 16 new unit tests. [Czech](CZ%20docs/SAFE-START-DATA.md).
