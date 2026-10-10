@@ -87,5 +87,7 @@ Příklad: neukládat odpověď `20`, ale postup `floor(celkem * (1-rezervovaný
 
 **Soulad s původním BottleCapAI zadáním:** REC funguje **offline před trénováním / při přípravě dat**, ne během oficiálního evaluate.py. Odevzdaný Qwen3-0.6B nebo LoRA musí zůstat načitatelný standardními Transformers i vLLM bez vlastního runtime orchestrátoru či externí paměti; thinking zůstává zapnutý, oficiální prompty, sampling i limity se nemění. Neučit se z SVAMP, MBPP+, BFCL a IFEval. **60 již prohlédnutých otázek Evaluation 006 není nový nezávislý holdout**; pokud je někdy použijeme pro trénink, musíme je z nezávislých validačních nároků vyřadit. Vhodnější je stavět REC na jiných povolených trénovacích úlohách.
 
-**Stav:** pouze dokumentace a testovatelná hypotéza. Žádná implementace REC, nové GPU spuštění, trénování CEP 002 ani prokázaná úspora. Implementace, data a rozpočet čekají na zvláštní schválení.
+**Verified Lock (CEP 002 v0.3):** model smí navrhnout podezření na starou chybu, ale nesmí sám rozhodnout, že dříve nezávisle ověřený postup je neplatný. VPS uzamkne pouze kompletní, kontrolovatelný postup s důvěryhodným zadáním, ověřenými mezikroky a final; REC pak může pouze žádat nové ověření původních podmínek. Falešnou opravu zamítnout a počítat; při konfliktu kontraktů/verifierů vyhlásit LOCK_DISPUTED, zabránit automatickému zahrnutí do nového tréninku a vyžádat audit. Původní záznam vždy zachovat. Zámek **není důkaz neomylnosti verifieru**. Celý jednoduchý návrh: [RHAR-CEP 002 v0.3](CEP-002.md).
+
+**Stav:** pouze dokumentace a testovatelná hypotéza. Žádná implementace REC/Verified Lock, nové GPU spuštění, trénování CEP 002 ani prokázaná úspora. Implementace, data a rozpočet čekají na zvláštní schválení.
 
