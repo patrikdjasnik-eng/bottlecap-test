@@ -801,3 +801,21 @@ Druhá varianta: **negative procedural memory** — zaznamenat chybný postup v�
 Třetí varianta: **multi-path selection / synthesis** — v trénovací fázi navrhnout více postupů, nezávisle je ověřit, vybrat až tři nejlepší podle correctness, nutných závislostí a délky a slučovat pouze kompatibilní a ověřené mezikroky. Výslednou krátkou správnou proceduru použít k distilaci do vah. Není bezpečné slepit části tří odpovědí bez ověření; tři generování při oficiální inferenci mohou zvýšit spotřebu tokenů a jejich použití by změnilo evaluační režim.
 
 Hypotéza: zkušenosti ze správných i nesprávných *postupů* mohou zlepšit přesnost při menším počtu tokenů, ale jen když model prokáže přenos na nové úlohy. Pořadí: dokončit Evaluation 006 beze změny; poté návrh jednoho kontrolovaného CEP 002 experimentu. Nejde o implementaci, naměřený přínos ani prokázanou světovou originalitu.
+
+
+## 2026-10-10 — RHAR Evaluation 006: dokončený lokální párový test (60 otázek)
+
+**Zdroj:** uživatelem dodaný kompletní výstup `diagnostics.rhar_validation_compare --execute --approve-gpu --skip 20 --count 60` z místního stroje. Skript načítá každý LoRA adapter na samostatném čistém Qwen3-0.6B backbone. Dataset tvoří 60 dosud nepoužitých otázek z povolené části GSM8K train za předchozím 20otázkovým výběrem, seed 9001, max 512 tokenů, thinking zapnutý. **Nejde o oficiální BottleCapAI benchmark; jeden seed, pouze matematické otázky.**
+
+| Metrika | SFT 003 | CEP Pilot 001 |
+| --- | ---: | ---: |
+| Strict correct | 19/60 (31,67 %) | 23/60 (38,33 %) |
+| Complete | 59/60 | 59/60 |
+| Průměr tokenů | 96,15 | 87,77 |
+| Celkové vygenerované tokeny | 5 769 | 5 266 |
+
+**Rozdíl CEP vs. SFT:** +4 správné odpovědi (+6,67 procentního bodu), -503 tokenů (o 8,72 % méně vzhledem k SFT). Párově CEP **opravil** otázky č. **8, 10, 12, 18, 19, 22, 35, 36**; **pokazil** původně správné otázky **1, 23, 29, 57**. Jedno generování od každého modelu narazilo na 512tokenový limit (SFT č. 47, CEP č. 34).
+
+**Interpretace:** Pozitivní průběžný výsledek pro CEP 001 na tomto konkrétním vzorku; není prokázáno zachování přesnosti vůči originálnímu Qwenu, statisticky spolehlivý přínos algoritmu, generalizace do kódu/funkcí/instrukcí ani soutěžní skóre. Na dřívějším 20otázkovém testu byly oba modely 9/20 a CEP spotřeboval o 19 tokenů více; výsledky mezi výběry kolísají. `summary.json` výslovně hlásí `quality_preservation_demonstrated: false` a `generalization_demonstrated: false`.
+
+**Pro příští výzkumný cyklus:** nedotýkat se již prohlédnutých 60 příkladů jako nového „nezávislého“ holdoutu ani je nepoužít k tréninku. CEP 002 je zatím návrh: ověřené přenositelné postupy („XP“), dokumentované příčiny chybných postupů a kontrolované skládání kompatibilních částí řešení do trénovacích vzorů; netvrdit, že je implementován nebo že zaručí zlepšení.
