@@ -15,6 +15,8 @@
 
 **Můj zvolený výzkumný směr:** RPS (Reasoning Progress Signature) + RPD (Reversible Proof Distillation) + TPC (Transfer-Protected Compression). Schválená je koncepce; žádný algoritmus učení RHAR ani zlepšení dosud nebyly implementovány či prokázány.
 
+- [🧠 Moje hypotézy a zjištění](HYPOTEZY-A-ZJISTENI.md) — osobní přehled výsledků RHAR 002–007, chyb, hypotéz a dalších kroků.
+
 ## 🎯 Zadání
 
 Zvýšit efektivitu reasoning modelu **změnou jeho chování v modelu**, ne přepnutím na `enable_thinking=false` nebo pouhým promptem.
