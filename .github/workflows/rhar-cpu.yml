@@ -1,0 +1,50 @@
+name: RHAR CPU Tests
+
+on:
+  push:
+    branches:
+      - main
+      - feat/reasoning-compression
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rhar-cpu-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpu-tests:
+    name: CPU tests (Python 3.11)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile Python sources
+        run: python -m compileall -q diagnostics tests utils
+
+      - name: Run RHAR CPU regression tests
+        env:
+          CUDA_VISIBLE_DEVICES: ""
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_DATASETS_OFFLINE: "1"
+        run: |
+          python -m unittest \
+            tests.test_offline_selector \
+            tests.test_reasoning_probe \
+            tests.test_safe_start_plan \
+            tests.test_safe_start_data \
+            tests.test_safe_start_overlap \
+            tests.test_safe_start_generate \
+            -v
