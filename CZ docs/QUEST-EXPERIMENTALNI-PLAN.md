@@ -80,3 +80,23 @@ Dokumentuji všechny meziverze a můžu předat více checkpointů, pokud ukazuj
 - [ ] Načitatelný LoRA adapter, tokenové stopy a kontrola integrity.
 - [ ] Férová baseline/adapter validace.
 - [ ] Schválená oficiální evaluace nebo zdokumentované limity.
+
+
+### 2026-10-10 — 🐇 RHAR Pilot 001: tři skutečné generace na GSM8K
+
+**Provedeno a doloženo lokálními výstupy:** po 241 zelených testech (`OK (skipped=2)`) jsem spustil schválený GPU pilot `--execute --pilot-3 --confirm-gpu-3` na jedné otázce `gsm8k-train-06982`, se třemi seedy, do `runs/rhar-pilot-001/`. CPU dry-run předtím ověřil kompletní vstupní plán 12 otázek / 36 pokusů; audit překryvu hlásil `potential_match_count=0`, ale zůstává `review_only`, `overlap_audit_exhaustive=false`, `training_approved=false`.
+
+| Seed | Správná odpověď | Celkové tokeny | Reasoning tokeny | Dokončeno |
+| --- | --- | ---: | ---: | --- |
+| 9001 | Ne, generace useknutá | 512 | Neurčeno | Ne |
+| 9002 | Ano | 433 | 425 | Ano |
+| 9003 | Ano | 374 | 366 | Ano |
+
+**Souhrn:** 3 generování, 2 správné a dokončené, 1 truncation na limitu 512; průměr 439,667 celkových tokenů a 76,854 s na generaci. U dokončených výstupů bylo průměrně 395,5 reasoning tokenů a 8 final tokenů.
+
+**Moje zjištění:** mezi dvěma správnými řešeními stejné otázky je rozdíl **59 tokenů**, tedy **13,63 % vůči delšímu správnému běhu (433 tokenů)**. Jde o přirozenou variabilitu samplingů původního Qwenu, **nikoliv naměřenou úsporu způsobenou RHAR**. Jedna otázka a dvě správné odpovědi nestačí k hodnocení generalizace ani kvality trénovaného modelu.
+
+**Co zatím není hotové:** úplný ruční audit reasoning trace 9003, kompatibilní převod polí z `safe_start_generate.py` (`generated_text`, `total_generated_tokens`, `reasoning_split_status`, `gold_answer`) pro `training_candidates.py` (`full_generated_text`, `total_tokens`, `split_status`, `prompt`), větší různorodý trénovací soubor, LoRA běh a baseline/candidate porovnání. Formát záznamů nesmím pouze domýšlet; je třeba ho otestovat proti skutečnému artefaktu. Žádné trénování ani oficiální benchmark neproběhlo.
+
+**Další rozhodnutí:** nejdřív ověřit úplnost kandidáta 9003, bezpečně sjednotit datový formát a otestovat selektor. Až po dostatečném rozšíření povolených dat schválit konkrétní trénovací běh.
+
