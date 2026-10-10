@@ -627,3 +627,25 @@ U seedu **9003 při limitu 1024** ve zobrazeném závěru model výslovně rozpo
 Nový modul `diagnostics/rhar_evaluation_001.py` a pět CPU testů `tests/test_rhar_evaluation_001.py`. Cíl: exploratorně porovnat nezměněný Qwen3-0.6B s LoRA `runs/rhar-training-001`, ve shodném promptu, seedu 9001, sampling temperature 0.6/top_p 0.95/top_k 20, `max_new_tokens=512`, thinking zapnut. Výchozí úloha je **holdout task-index 2** (řidič, 180 km při 60 km/h + 120 km při 40 km/h, správně 6 hodin), nikoliv první trénovací GSM8K vzorek. Obě varianty proběhnou sériově nad stejným modelem, nikoli se dvěma kopiemi VRAM. Výstup `records.jsonl`, `summary.json` a `plan.json`. Truncation znamená nesprávný výsledek; do celkových tokenů se započítává i thinking. Výsledek je pouze orientační **jeden párový vzorek**, není to oficiální skóre ani důkaz generalizace; za jediný běh nelze připsat zásluhu RHAR.
 
 Bezpečné CPU plánování: `python -m diagnostics.rhar_evaluation_001 --dry-run --adapter runs/rhar-training-001 --task-index 2 --out runs/rhar-evaluation-001`. Volitelné GPU měření vyžaduje výslovný souhlas a CLI přepínače `--execute --approve-gpu-2`; nepouštět automaticky. Pro oficiální BottleCapAI porovnání nadále vyžadujeme jejich `evaluate.py` a `compare.py` na kompatibilním hardware. GTX 1070 Ti compute capability 6.1 nestačí pro podporované aktuální vLLM.
+
+
+## 2026-10-10 — RHAR Evaluation 001: skutečné první srovnání baseline a LoRA; plán Training 002
+
+**Zdroj důkazů:** uživatelem poskytnutý lokální výpis `runs/rhar-evaluation-001/summary.json` a koncové úseky obou `records.jsonl` traces (posledních 1 500 znaků každé). Celé generované traces zatím nebyly nezávisle přezkoumány. Test spuštěn v prostředí GTX 1070 Ti (Transformers/PyTorch), `diagnostics.rhar_evaluation_001`, `--execute --approve-gpu-2`, `--task-index 2`, adapter `runs/rhar-training-001`. `official_benchmark=false`.
+
+**Párové nastavení:** nemodifikovaný Qwen3-0.6B vs Qwen3-0.6B + natrénovaný LoRA pilot; stejná diagnostická holdout úloha `rhar003-math-02`, stejný prompt, seed 9001, teplota 0,6 / top_p 0,95 / top_k 20, limit 512 generovaných tokenů, thinking zapnutý. Úloha: 180 km / 60 km/h + 120 km / 40 km/h; kontrolní výsledek **6 hodin**.
+
+| Metrika | Baseline | LoRA |
+| --- | ---: | ---: |
+| Celkové vygenerované tokeny | 512 | 512 |
+| Strict correct | false | false |
+| Truncated | true | true |
+| Split status | unclosed_think_block | unclosed_think_block |
+| Výpočet správných 6 hodin v zobrazeném thinking | ano | ano |
+| Uzavřená finální odpověď | ne | ne |
+
+`token_difference_base_minus_adapter=0`, `token_reduction_pct=0.0`, `quality_preservation_demonstrated=false`, `generalization_demonstrated=false`. Koncové úryvky nejsou doslova stejné (`IDENTICKÝ TEXT: False`), ale **odlišný sampling text není sám o sobě kauzálním důkazem vlivu LoRA**. Obě varianty uvnitř thinking vypočítaly 3 + 3 = 6, opakovaly kontrolu přes průměrnou rychlost 300/6 = 50 km/h a narazily na limit před uzavřením a finální odpovědí. Tento test tedy **neprokázal úsporu tokenů ani dokončenou správnost**; 1 párový vzorek nemůže prokázat generalizaci. Zásadní je přestat zaměňovat správné mezivýsledky za `correct=True`.
+
+**Training 001 je technický pilot:** 1 povolený GSM8K příklad, 20 LoRA kroků, rank 8, uložený a strukturově ověřený `adapter_model.safetensors` (112 tensorů); pokles trénovacího lossu není generalizační důkaz. Cíl Training 002: sestavit *více různorodých správných a kompletních* povolených trénovacích příkladů; zachovat thinking + uzavření + finální odpověď, označit původ a revision, odmítnout duplicity, chybné a zkrácené traces; nezahrnout SVAMP/BFCL/MBPP+/IFEval ani šest RHAR Stress Test 003 holdoutů. Kratší odpověď bez správnosti není úspěch. Důsledná kontrola leakage a oddělení evaluace.
+
+**Následující milníky (zatím plán):** (1) pouze CPU inspekce dostupných povolených dat a schématu kandidátů; (2) návrh Training 002 datasetu a kontrol jeho kvality; (3) zelené unit testy / kontrola overlap; (4) samostatně schválený GPU Training 002; (5) vývojové párové ověření na větším počtu úloh; (6) oficiální `evaluate.py` na kompatibilním vLLM hardwaru, nebo transparentně uvést omezení v odevzdání. **Tento zápis nespouští trénování, stahování dat ani GPU.**
