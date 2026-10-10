@@ -58,7 +58,7 @@ def analyze(record):
         previous.append(operation["occurrence"])
     gold = record.get("expected")
     first_answer_step = None
-    if isinstance(gold, str):
+    if isinstance(gold, str) and gold.strip():
         for step in baseline["steps"]:
             if re.search(rf"(?<![\w.]){re.escape(gold)}(?![\w.])", step["excerpt"]):
                 first_answer_step = step["step"]
