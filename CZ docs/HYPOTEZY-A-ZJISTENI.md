@@ -58,3 +58,16 @@ Podrobnou historii testů, pomocných skriptů, limitů GTX 1070 Ti a negativní
 Žádné samostatné RPS/RPD/TPC/HRM moduly, honeynety, dashboardy, další sérii plánovačů ani „50 experimentů“. Historické názvy jsou *archivní nápady*, dokud se neprokáže jejich nezbytnost pro tuto jedinou hypotézu.
 
 **Jediné další kroky:** ověřit kontrolní SFT → přesně navrhnout a implementovat malý CEP mechanismus → provést párové měření → podle výsledků pokračovat nebo směr zamítnout. Trénink/GPU vyžaduje výslovné spuštění; nic se nespouští automaticky.
+
+
+## Hypotéza H-CEP-002: model získává „XP“ za ověřené přenositelné postupy (2026-10-10)
+
+**Hypotéza:** Verifikace a zobecnění *postupů*, nikoliv memorování číselných odpovědí, může při následném učení vah Qwen3-0.6B podpořit přenos na neviděné úlohy a zkrátit zbytečný reasoning při stejné nebo lepší správnosti.
+
+**Měřitelná predikce:** Proti standardnímu SFT 003 a CEP 001 na zcela novém, předem odděleném holdoutu musí kandidát CEP 002 vykázat příznivější párový poměr správnosti a **celkového** počtu generovaných tokenů; porovnat také úlohy se stejnou strukturou a změněnými údaji a úlohy se záměrně pozměněnou podmínkou, kde se uložený postup použít **nesmí**.
+
+**Mechanismus k otestování:** z povolených trénovacích úloh vytvořit ověřenou zkušenost `{typ_problému, vstupy, vztahy, podmínky_použití, stručný_validovaný_postup, původ}`; použít k dalšímu LoRA tréninku, nikoli k doslovnému lookupu při oficiální inferenci. Výsledná inference nemá vyžadovat externí cache ani změnu oficiálního prompting/generation režimu.
+
+**Alternativní vysvětlení:** případný zisk může být důsledkem kvalitnějších dat, většího trénovacího rozpočtu, náhody seedu nebo memorování vzorů, ne samotné „procedurální paměti“. Potřebujeme srovnatelný kontrolní trénink a nezávislá měření. Ukládání údajně správného postupu bez kontroly mezikroků může chyby upevnit.
+
+**Stav důkazů:** Pouze formulovaný návrh, dosud žádné CEP 002 trénování ani evaluace. Průběžné hodnoty Evaluation 006 nejsou finální ani podkladem pro nový trénink. Neslibovat originality 1:1; related work existuje.
