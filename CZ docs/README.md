@@ -40,6 +40,7 @@ Podrobnosti, limity a plán práce s externí GPU: [HARDWARE.md](HARDWARE.md). G
 
 ## 🔬 Výzkumné soubory
 
+- [🧠 RHAR-CEP 002 — VPS + XP + REC (návrh algoritmu)](CEP-002.md) — ověřitelné kroky, nejvýše tři existující postupy, důkazem podložené zpětné opravy a malý kontrolovaný experiment; **pouze dokumentace, bez nového GPU/trénování**. [English](../docs/CEP-002.en.md).
 - [🐇 RHAR Safe Start — CPU příprava 36 generací](SAFE-START-GENERATION.md) — budoucí Qwen3 GPU skript s dvojitým potvrzením, 24 nových CPU testů, bez spuštění GPU. [English](../docs/SAFE-START-GENERATION.en.md).
 - [🛡️ Safe Start — CPU kontrola evaluačního překryvu](SAFE-START-OVERLAP.md) — šest připnutých zdrojových souborů, 18 nových testů, žádné GPU. [English](../docs/SAFE-START-OVERLAP.en.md).
 - [🐇 GSM8K Safe Start — CPU stažení a výběr](SAFE-START-DATA.md) — ověření SHA-256, 12 kandidátů, 16 nových testů. [English](../docs/SAFE-START-DATA.en.md).
