@@ -65,3 +65,9 @@ Na projektu pracuji společně s **ChatGPT (OpenAI, GPT-6)** a se svou vlastní 
 O důležitých technických rozhodnutích, nových experimentech a zásadních změnách se nejprve společně poradíme, konečné rozhodnutí provedu já. Pravidla a zápisy najdeš ve [vývojovém deníku](DEV-NOTES.md).
 
 Zdrojové zadání: [BottleCapAI/ThinkingCap-Test](https://github.com/BottleCapAI/ThinkingCap-Test). Původní kód je distribuován s licencí Apache-2.0; viz [LICENSE](../LICENSE).
+
+## 🏁 BottleCapAI — plán dokončení questu
+
+- [🗺️ Roadmapa dokončení](QUEST-DOKONCENI-PLAN.md)
+- [🔬 Experimentální plán: první LoRA a evaluace](QUEST-EXPERIMENTALNI-PLAN.md)
+- [📦 Checklist odevzdání](QUEST-ODEVZDANI-CHECKLIST.md)
