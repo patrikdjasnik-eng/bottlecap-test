@@ -79,3 +79,12 @@ U seedu **9003 při limitu 1024** ve zobrazeném závěru model výslovně rozpo
 4. Nové GPU generování nebo LoRA trénink až po CPU testech a **samostatném výslovném souhlasu**. Základní model nebyl změněn.
 
 **Stav pro předání / poradu:** stress task 01 uzavřena jako negativní výsledek v přísné metrice; hypotéza aktualizována, další experiment ani trénování se nespouští.
+
+
+## 2026-10-10 — BottleCapAI compliance-first test gate
+
+**Pravidla z `docs/UPSTREAM-README.md`:** start z Qwen3-0.6B, skutečně naučená změna vah nebo LoRA, thinking zůstane zapnutý, nepoužít SVAMP/MBPP+/BFCL/IFEval k tréninku. Testovat pouze oficiálním `evaluate.py` bez změny promptů, vzorkování, token capů; férově totožné nastavení base a kandidáta, porovnat `compare.py`. Výstupy: `.safetensors`, `results.json`, `IDEA.md`, `git bundle`; přiznat neúplná nebo negativní měření.
+
+**Nový CPU preflight:** `python -m diagnostics.bottlecap_compliance --base runs/base --candidate runs/mine --adapter runs/lora-pilot-001 --idea IDEA.md --bundle vystup.bundle`. Kontroluje existenci artefaktů a shodu klíčových polí oficiálního `results.json`, včetně povinné plné evaluace 8 vzorků pro kompletní běh. Neprovádí inference, netrénuje, neprokazuje správnost výsledků a nenahrazuje `compare.py`, test úniků evaluačních dat ani ruční audit dodávky. Stav `incomplete` je před vytvořením výstupů očekávaný.
+
+**Pořadí kroků:** (1) skutečný LoRA technický pilot na povolených datech, až po výslovném souhlasu; (2) širší trénovací data; (3) oficiální evaluace base a adapteru se stejným nastavením (může začít smoke / menší vývojovou podmnožinou, neprezentovat ji jako plný výsledek); (4) `compare.py`; (5) `IDEA.md` a balíček. Všechny interní RHAR Stress Test 003 úlohy jsou diagnostický holdout; nepoužívat pro trénování. **Není možné zaručit 100% úspěšnost modelu před měřením; lze zajistit pouze kontrolu souladu procesu s pravidly.**
