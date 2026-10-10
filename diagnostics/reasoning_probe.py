@@ -167,6 +167,7 @@ def main(argv=None):
         print(json.dumps({"config": config, "cases": selected}, indent=2))
         return 0
 
+    from .token_trace import build_token_trace
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -242,7 +243,9 @@ def main(argv=None):
                        if args.device == "cuda" else None,
                        "repeated_reasoning_fourgrams": repeated_fourgrams(reason)
                        if split["reasoning_tokens"] is not None else None,
-                       "final_text": final, "full_generated_text": raw}
+                       "final_text": final, "full_generated_text": raw,
+                       "token_trace": build_token_trace(ids, tokenizer, raw,
+                                                        model_revision=BASE_REVISION)}
                 fp.write(json.dumps(rec, ensure_ascii=False) + "\n")
                 fp.flush()
                 results.append(rec)
