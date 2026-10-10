@@ -20,7 +20,7 @@
 #### 🖥️ Preflight a první správná inference
 
 - V Kali/WSL2 prošlo `Ran 190 tests`, `OK (skipped=2)`. Později po opravách RHAR 006 prošlo `Ran 213 tests in 1.255s`, `OK (skipped=2)`. Dva skipy nejsou dvě chyby, jejich důvod je vhodné před oficiální evaluací samostatně prověřit.
-- GTX 1070 Ti 8 GB: PyTorch `2.6.0+cu118`, CUDA dostupná, compute capability `6.1`, skutečný FP16 výpočet OK. Lokální cache má připnutý Qwen3-0.6B snapshot `c1899de289a04d12100db370d81485cdf75e47ca4` — **POZOR: správná plná revize používaná skripty je `c1899de289a04d12100db370d81485cdf75e47ca`**.
+- GTX 1070 Ti 8 GB: PyTorch `2.6.0+cu118`, CUDA dostupná, compute capability `6.1`, skutečný FP16 výpočet OK. Lokální cache obsahuje připnutý Qwen3-0.6B snapshot `c1899de289a04d12100db370d81485cdf75e47ca`.
 - GPU Canary 002 (`runs/canary-002/20261010T102914Z/`) doběhl s exit code 0: `arithmetic_apples`, seed 9001, správná odpověď 43, `correct=true`, `truncated=false`, **423 tokenů = 415 reasoning + 8 final**, 82,552 s, 5,124 tok/s, PyTorch peak 1,185 GiB. Dřívější Experiment 002 měl chybných 42, 325 tokenů a 51,3 s; nelze z nich vyvozovat zlepšení nebo zhoršení za nesrovnatelných podmínek.
 - Když po spuštění nebyl hned výstup, kontrolovali jsme `nvidia-smi`; pozdější klidová VRAM sama neprokazovala zaseknutí. Rozhodující byl uložený report a exit code 0. Poučení: neinterpretovat jeden snapshot GPU ani ticho terminálu jako selhání.
 
