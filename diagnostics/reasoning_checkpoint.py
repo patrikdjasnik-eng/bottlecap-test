@@ -25,7 +25,7 @@ def check_operations(text):
     output = []
     for item in normalized_operations(text):
         tail = text[item["end"]:item["end"] + 35]
-        match = re.match(rf"\s*(?:is|equals|=|gives|would be)\s*({NUMBER})(?![\w.])", tail, re.I)
+        match = re.match(rf"\s*(?:is|equals|=|gives|would be)\s*({NUMBER})(?!\w)", tail, re.I)
         claimed = match.group(1) if match else None
         canonical = item["canonical"]
         try:
