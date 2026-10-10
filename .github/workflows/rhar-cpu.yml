@@ -65,4 +65,5 @@ jobs:
             tests.test_dataset_builder_002 \
             tests.test_dataset_batch_002 \
             tests.test_rhar_teacher_train_002 \
+            tests.test_rhar_train_003 \
             -v
