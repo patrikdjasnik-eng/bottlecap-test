@@ -747,3 +747,10 @@ Další rozhodnutí pouze podle párového měření správnosti a celkových to
 - **Pracovní interpretace:** jednoduchá lexikální 2× váha čísel a operátorů nezlepšila na tomto vzorku kvalitu rozhodnutí. **Nenazývat to ověřenou kauzální ochranou informací.** Alternativní příčiny, včetně náhodnosti inference a rozptylu malého vzorku, nejsou vyloučeny.
 
 **Dohodnutý bezprostřední krok:** porovnat celý skutečně generovaný reasoning SFT 003 pro Task 4 s CEP 001. Soubor SFT je lokálně `runs/rhar-evaluation-004-task-4/records.jsonl`; v GitHubu není k dispozici. Dokud z něj nedostaneme výpis, **netvrdit, jak konkrétně SFT přišel ke správné odpovědi 536**. Zatím žádný další trénink.
+
+
+### 2026-10-10 — Doplněn skutečný reasoning SFT 003, Task 4
+
+Uživatel lokálně vytiskl `runs/rhar-evaluation-004-task-4/records.jsonl`: **SFT 003, 139 tokenů, strict correct**. Model přímo spojil vztahy `X=Y+2`, `Z=2Y` a `X+Y+Z=14`, dosadil `(Y+2)+3Y=14`, odvodil `Y=3`, `X=5`, `Z=6` a ukončil `Final answer: 536`. Naproti tomu **CEP 001, 244 tokenů, incorrect**, vyjmenovával kandidátní číslice, uvedl mimo jiné správnou trojici `X=5,Y=3,Z=6`, ale následně vybral `312` (součet 6 namísto 14). 
+
+**Interpretace omezená důkazy:** v tomto *jednom páru* model SFT zachoval a vyřešil vazby symbolicky, kdežto CEP změnil strategii na enumeraci s chybným výběrem. Nelze prohlásit, že vážení tokenů přímo způsobilo přechod strategií; inference je stochastická (jediný seed) a šest diagnostických otázek je již prohlédnutých. Nezvyšovat boost naslepo. Další skutečně nezávislé vyhodnocení musí být na dosud neviděných povolených validačních úlohách; srovnat identické prompty/seeds/cap a vyhodnotit correctness i total tokens. CEP 001 není prokázaný přínos.
