@@ -44,7 +44,7 @@ class TokenBoundaryTests(unittest.TestCase):
         # Single token covers the entire string, crossing the checkpoint.
         class SingleToken:
             def __call__(self, text, **kwargs):
-                return {"input_ids": [7, 8, 9], "offset_mapping": [(0, 19), (19, 30), (30, len(text))]}
+                return {"input_ids": [7, 8, 9], "offset_mapping": [(0, 20), (20, 30), (30, len(text))]}
         r = audit_record(record, SingleToken())
         self.assertEqual(r["boundary_status"], "checkpoint_inside_token")
 
