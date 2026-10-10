@@ -552,3 +552,14 @@ Po vývoji na feature větvi otevřít PR do `main` až po validaci.
 **Návrh Experimentu 003 — POUZE PLÁN:** porovnat na téže otázce se psy stejný pinned Qwen3-0.6B, stejné tři seedy a stejné sampling parametry; změnit pouze `max_new_tokens` z **512 na 768**. Zaznamenat u každé generace řádné ukončení, správnost finální odpovědi, reasoning/final tokeny a čas. Vyšší limit může prodloužit výstup; správnost není zaručena. Před pokusem připravit oddělený režim, CPU testy, čerstvý výstupní adresář a získat **samostatný výslovný souhlas s GPU**.
 
 **Stav na konci zápisu:** Experiment 003 nebyl implementován ani spuštěn. Žádné nové GPU generování, trénink ani změna modelu. O dalším směru rozhodne porada.
+
+
+## 2026-10-10 — 🧠 RHAR Stress Test 003: implementovaná CPU příprava
+
+Po zeleném uživatelském běhu **258 testů, OK (skipped=2)** byla vytvořena samostatná diagnostika `diagnostics/stress_test_003.py` s testy `tests/test_stress_test_003.py` (zapojeno také do GitHub CI). Šest ručně připravených úloh: 2 vícekrokové matematické, 2 logické, 2 zavádějící. Jsou **výhradně diagnostické / holdout**, nesmí být zařazeny do LoRA trénovacích dat.
+
+Experiment plánuje 6 úloh × 2 seedy (9001, 9003) × 2 limity (512, 1024) = **24 generování**, avšak **každá samostatná dávka obsahuje jen 4 generování na jedné úloze**. Měníme token budget, ne původní váhy. Přepínač `--dry-run --task-index 1` je CPU-only a bez vedlejších efektů; skutečný běh vyžaduje kombinaci `--execute --task-index N --confirm-gpu-4`, samostatné odsouhlasení uživatelem a nové umístění výstupu. Při existujícím adresáři nepřepisuje data. Inference načítá pouze lokálně cachované váhy.
+
+Vyhodnocení: pouze dokončené výstupy lze označit za správné, vždy přes striktní `Final answer: <číslo>`; ukládáme přesný počet generovaných tokenů, stav thinking splitu, dobu běhu i celé traces. Párové srovnání 512 vs 1024 není deterministický replay prefixu a nemusí zcela izolovat vliv limitu na vysamplovaný průběh; interpretovat opatrně.
+
+**Stav při zápisu:** implementace a testy commitnuté na `feat/reasoning-compression`; pro lokální ověření ještě spustit kompletní testy a CPU dry-run. **Žádné GPU, LoRA ani oficiální benchmark v této fázi.**
