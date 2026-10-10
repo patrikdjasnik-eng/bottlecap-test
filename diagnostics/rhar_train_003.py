@@ -55,10 +55,28 @@ def reject_overlap(train, validation, audit_questions):
     # Screen against the available local official prompt corpus, where present.
     from .safe_start_data import normalize_question, close_match
     normalized=[normalize_question(q) for q in audit_questions]
+    # Exact matches first; only near-sized texts with shared vocabulary merit
+    # expensive near-duplicate scoring. This remains heuristic, not exhaustive.
+    exact=set(normalized)
+    index={}
+    for j,q in enumerate(normalized):
+        for word in set(q.split()):
+            if len(word)>4:
+                index.setdefault(word,set()).add(j)
     for row in train+validation:
         current=normalize_question(row["question"])
-        if any(close_match(current,check) for check in normalized):
-            raise ValueError("possible evaluation prompt overlap: "+row["question_id"])
+        if current in exact:
+            raise ValueError("exact evaluation prompt overlap: "+row["question_id"])
+        candidates=set()
+        for word in set(current.split()):
+            if len(word)>4:
+                candidates.update(index.get(word,()))
+        for j in candidates:
+            other=normalized[j]
+            if min(len(current),len(other))/max(len(current),len(other)) < 0.75:
+                continue
+            if close_match(current,other):
+                raise ValueError("possible evaluation prompt overlap: "+row["question_id"])
 
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
