@@ -670,3 +670,27 @@ Lokální CPU příkaz: `python -m diagnostics.dataset_batch_002 --worklist runs
 Po zpětné vazbě uživatele: **prioritou není psaní dalších plánovačů, ale modelová intervence**. Přidán `diagnostics/rhar_teacher_train_002.py` — přímo trénovatelný LoRA SFT program na **skutečných GSM8K train referenčních řešeních** pro 12 dříve auditovaných otázek, typicky 11 s vyloučením již použitého pilotu `gsm8k-train-06982`. Použije pouze lokální ověřený `data/safe-start/raw/gsm8k-train.parquet` s pinned SHA-256 a existující overlap audit; žádná data z SVAMP/MBPP+/BFCL/IFEval. Vstupní `answer` rozdělí na výpočetní referenční zdůvodnění a `####` gold final; zruší interní anotace `<<...>>`, ale neupravuje smysl výpočtu. Tréninková completion obsahuje `<think>`, výpočet, `</think>`, `Final answer: číslo`, a EOS; při prefilled think markeru šablony se jeho duplicita odstraní. Na rozdíl od dřívějšího jednoho náhodného Qwen rollout se nyní přímo učí uzavření reasoningu a správný závěr ze zdrojových referenčních řešení. **Nejde o záruku zlepšení** a pořád málo vzorků pro robustní generalizaci.
 
 CPU preflight příkaz (žádné GPU): `python -m diagnostics.rhar_teacher_train_002 --dry-run --exclude-id gsm8k-train-06982 --out runs/rhar-teacher-sft-002`. Pouze po samostatném výslovném souhlasu GPU: změnit `--dry-run` na `--approve-training`, přidat `--max-steps 60 --max-length 1024`. Bez automatického běhu, bez přepsání starších dat; úlohy s délkou nad limit budou vyřazeny a pokud zůstane méně než 8, trénink se nespustí. Po tréninku **nezávisle** porovnat na nenatrénovaných otázkách a neoznačovat žádná data za oficiální BottleCapAI benchmark.
+
+
+---
+
+## 🐇🛡️ 2026-10-10 — Milník: konec přípravné fáze, přechod k samotnému zlepšování Qwen3-0.6B
+
+### Co jsme dosud skutečně udělali
+
+- Prošli zadání BottleCapAI: zmenšit **celkový počet generovaných tokenů včetně thinking**, zachovat správnost a ponechat thinking zapnutý. Oficiální evaluace sleduje SVAMP, MBPP+, BFCL a IFEval; tyto benchmarky nepoužívat k trénování a neměnit oficiální `evaluate.py` / `compare.py`.
+- Vytvořili RHAR diagnostiku, zápisy, kontrolu provenance GSM8K-train dat a ochrany proti záměně evaluačních a trénovacích příkladů. Připravili párové porovnání přes PyTorch/Transformers, protože lokální GTX 1070 Ti (8 GB, compute capability 6.1) nepodporuje běžnou moderní cestu přes vLLM.
+- **Training 001: první opravdový LoRA trénink** Qwen3-0.6B úspěšně doběhl na GTX 1070 Ti: 1 správný GSM8K trénovací příklad, rank 8, 20 kroků; uložen `runs/rhar-training-001/adapter_model.safetensors`. To dokazuje funkčnost trénovacího postupu, **nikoli** zlepšení modelu.
+- **RHAR Evaluation 001: první skutečné srovnání**, na oddělené matematické úloze (6 hodin), seed 9001, 512 tokenů: baseline i LoRA spotřebovaly 512 tokenů, obě generace byly uříznuté v neuzavřeném thinking bloku. Obě v textu spočítaly 6 hodin, ale nedaly hotovou finální odpověď; strict correct = false u obou. **Úspora = 0 %, zlepšení neprokázáno.** Rozdílný text generací sám o sobě nedokazuje efekt adaptéru.
+- Pro Dataset 002 vznikl auditovaný GSM8K-train worklist: **11 otázek, 33 plánovaných generování, 0 nově získaných kandidátů**. Dávka 01 obsahuje otázky `gsm8k-train-01136` a `gsm8k-train-06866`, 6 plánovaných generování. To byly **plány, nikoli měření či trénink**. Lokální uživatel ohlásil 295 úspěšných CPU unit testů; testy ověřují software, nikoli dosažení cíle BottleCapAI.
+- Následně vznikl **`diagnostics/rhar_teacher_train_002.py`**, první konkrétní přímý krok k dalšímu zlepšování modelu: používá pouze ověřenou trénovací část GSM8K a její referenční správná řešení, učí průchod od uvažování k `</think>`, `Final answer:` a EOS, LoRA SFT s explicitním schválením GPU. **Training 002 ještě není potvrzen jako proběhlý a jeho přínos dosud není změřený.** Výchozích nejvýše 11 různých řešení je jen omezený pilot, ne dostatečný důkaz generalizace.
+
+### 🔁 Změna priorit — rozhodnutí týmu
+
+Přiznáváme chybnou prioritizaci: nadměrně jsme řešili pomocnou infrastrukturu, plánovače, validátory a dokumentaci, přestože zadání vyžaduje především **funkční zlepšení vah/chování modelu a nezávislé změření výsledku**. Od tohoto milníku **nepřidávat další pomocné systémy bez konkrétního důkazu, že jsou nezbytné pro trénink, evaluaci nebo odevzdání**.
+
+**Jediná hlavní výzkumná smyčka:** povolená trénovací data → skutečná úprava modelu (LoRA/jiná opodstatněná metoda) → párové měření baseline vs. candidate na oddělených úlohách → vyhodnocení *správnost + celkové tokeny + dokončenost* → další cílená změna. Trénovací loss, počet testů ani samotná délka reasoning nejsou metrikou úspěchu. Nespoléhat na promptové zkracování, vypnutí thinking ani trénink na evaluačních benchmarkových datech.
+
+**Bezprostřední úkol:** zelené CPU ověření existujícího Training 002 skriptu, zkontrolovat dostupnost ověřeného lokálního GSM8K train Parquetu, teprve po samostatném schválení spustit první přímý teacher-SFT LoRA experiment na GTX 1070 Ti. Následně otestovat dokončené odpovědi a tokeny na více neviděných příkladech a rozhodnout podle čísel, zda metoda funguje. Pro oficiální BottleCapAI použít beze změn předepsaný runner na kompatibilním hardwaru; neoficiální lokální měření označovat pravdivě.
+
+**Pravidlo:** 🛡️ „Bez zelené ani krok“ platí pro relevantní kontrolu funkčnosti, nikoli jako záminka k nekonečnému budování infrastruktury. **Odteď je hlavní výslednicí měřitelné zlepšení modelu.**
