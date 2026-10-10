@@ -512,3 +512,21 @@ This is **a proposal, not a completed test or a confirmed incident**. It does **
 The full project benchmarks use eight samples per question. The complete suite contains 2,759 tasks. Do not confuse synthetic metrics with official evaluation results.
 
 After developing on the feature branch, open a PR to `main` only after validation.
+
+
+### 2026-10-10 — 🐇 RHAR Pilot 001: three real GSM8K generations
+
+**Observed locally:** after 241 passing tests (two skipped), I ran the explicitly approved GPU pilot with `--execute --pilot-3 --confirm-gpu-3` on the single `gsm8k-train-06982` training question, saving results in `runs/rhar-pilot-001/`. The preceding CPU dry-run screened the full 12-question/36-attempt plan. Overlap screening reported zero matches but remains review-only and non-exhaustive; training approval is false.
+
+| Seed | Correct | Total generated tokens | Reasoning tokens | Complete |
+| --- | --- | ---: | ---: | --- |
+| 9001 | No (truncated) | 512 | Unknown | No |
+| 9002 | Yes | 433 | 425 | Yes |
+| 9003 | Yes | 374 | 366 | Yes |
+
+**Summary:** three generations, two correct and complete, one truncated at 512; mean total generated tokens 439.667 and mean generation time 76.854 s; among complete traces mean reasoning tokens 395.5 and final tokens 8.
+
+**Finding:** the correct samples differ by **59 total tokens**, or **13.63% relative to the longer correct sample (433)**. This is natural sampling variability of the unchanged base model, **not demonstrated RHAR savings**. One question cannot establish generalization.
+
+**Next blockers:** manually inspect the complete 9003 reasoning, reconcile the real generation fields (`generated_text`, `total_generated_tokens`, `reasoning_split_status`, `gold_answer`) with training selector inputs (`full_generated_text`, `total_tokens`, `split_status`, `prompt`), test the mapping against real artifacts, collect more distinct permitted training questions, and only then separately approve training. No model weights changed and no official benchmark ran.
+
