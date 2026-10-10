@@ -40,11 +40,11 @@ class TokenBoundaryTests(unittest.TestCase):
 
     def test_inside_token_fails_closed(self):
         raw = "<think>Answer is 43.</think>Final answer: 43"
-        record = sample(raw, 1)
+        record = sample(raw, 3)
         # Single token covers the entire string, crossing the checkpoint.
         class SingleToken:
             def __call__(self, text, **kwargs):
-                return {"input_ids": [7], "offset_mapping": [(0, len(text))]}
+                return {"input_ids": [7, 8, 9], "offset_mapping": [(0, 19), (19, 30), (30, len(text))]}
         r = audit_record(record, SingleToken())
         self.assertEqual(r["boundary_status"], "checkpoint_inside_token")
 
