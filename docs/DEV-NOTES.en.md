@@ -548,3 +548,27 @@ The arithmetic shown in the shared trace tails is 4 dogs × 250 g/day × 14 days
 **Research hypothesis (not proof):** redundant verbal rechecking of correct arithmetic may exhaust generation budget without yielding a complete final answer. The observation does not establish token savings or generalization.
 
 **Proposed Experiment 003 — PLAN ONLY:** same dog-food question, pinned base model, seeds 9001/9002/9003, and sampling; change only max_new_tokens **512 → 768**. Track termination, final-answer correctness, reasoning/final token counts, and duration. Requires a dedicated implementation, CPU tests, fresh output directory and separately explicit GPU approval. No new generation, training, model update or official benchmark was performed in this documentation change. Await team review before proceeding.
+
+
+## 2026-10-10 — 🧠 RHAR Stress Test 003 / task 01 — detailed observed GPU analysis
+
+**Status:** completed diagnostic, not successful evaluation or training. Local files: `runs/stress-003-task-01/records.jsonl`, `summary.json`, and `config.json`. Findings below use the returned summary and the **last 1,200 characters** of each generation; the entire reasoning bodies have not been independently reviewed. Six handcrafted stress questions are **diagnostic holdout only, never training data**.
+
+**Configuration:** unchanged `Qwen/Qwen3-0.6B`, revision `c1899de289a04d12100db370d81485cdf75e47ca`; thinking on; temperature 0.6, top_p 0.95, top_k 20; seeds 9001/9003, both with max_new_tokens 512/1024. This adjusts **generation budget, not n_ctx**. Task: of 240 devices, 3/8 are reserved; 20% of unreserved devices are defective; pack remaining devices in sixes. Correct result: `240 × 3/8 = 90` reserved; `240 − 90 = 150`; `20% × 150 = 30`; `150 − 30 = 120`; `120 / 6 = 20` packs.
+
+| Seed | Budget | Tokens | Complete | Correct completed answer | Observed tail |
+| --- | ---: | ---: | --- | --- | --- |
+| 9001 | 512 | 512 | No | No | Repeated incorrect 28; unclosed thinking |
+| 9003 | 512 | 512 | No | No | Incorrect 28; repeated verification; unclosed thinking |
+| 9001 | 1024 | 1024 | No | No | Extended alternate calculations and confusion; unclosed thinking |
+| 9003 | 1024 | 1024 | No | No | Corrects earlier 28 to 20 inside reasoning, but continues; unclosed thinking |
+
+Run summary: responses=4, correct_responses=0, complete_responses=0, training_performed=false, training_data_allowed=false, official_benchmark=false; **3,072 generated tokens** in total. The four reported split statuses were `unclosed_think_block`; unknown reasoning/final token counts are **None, not zero**.
+
+**Failure origin:** `240 / 8 = 30` correctly gives one eighth; the model incorrectly treats this as all three eighths, yielding `240 − 30 = 210`, `20% × 210 = 42`, `210 − 42 = 168`, and the wrong `168/6 = 28`. In the 1024-token seed 9003 tail, it notices `3/8 × 240 = 3 × 30 = 90`, corrects the answer to **20**, and nonetheless keeps rechecking until truncation. At seed 9001/1024 the shown tail includes confused alternatives such as 210/6=35, omitting defectives.
+
+**Observed vs unproven:** four strict failures to terminate, an arithmetic/fraction reasoning error, repeated checking, and one self-correction in the longer trace are observed. No improvement in completed-answer correctness, token savings, safe-to-remove reasoning, or broader generality is established. Paired seeds at different max_new_tokens do **not automatically guarantee identical sampled prefixes**.
+
+**Revised research hypothesis (not a demonstrated method):** *Correctness-Preserving Adaptive Reasoning*: keep verification that fixes reasoning errors; target only checking that brings no new information. Stopping at the first calculated number could freeze the wrong answer **28**.
+
+**Next only after review:** CPU-only trace analyzer for first occurrences of 28 and 20, correction sequences and repetitions; human review of full trace; careful separation of stress holdout from permissible training sources; a new separately approved GPU run only after CPU tests. No model or training changes were made in this documentation step.
