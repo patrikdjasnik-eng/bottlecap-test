@@ -1,101 +1,60 @@
-# IDEA.md — RHAR: Rabbit Hollow Adaptive Reasoning
+# 🐇 RHAR — jediná aktivní hypotéza a ověřovací plán
 
-**Stav (9. 10. 2026):** **rozhodl jsem se pro RHAR jako společný modulární výzkumný směr**. Schválení se týká koncepce, nikoli konkrétního trénování, změn architektury v kódu, finančních nákladů nebo úprav vah modelu.
+**Stav: výzkumná hypotéza; nikoliv prokázaný nový algoritmus. Aktualizace: 10. 10. 2026.**
 
-[🇬🇧 Anglická verze](../IDEA.md) · [Vývojový deník](DEV-NOTES.md)
+[📔 Historie a surové výsledky](DEV-NOTES.md) · [📋 Soutěžní požadavky](QUEST-ODEVZDANI-CHECKLIST.md) · [🌍 IDEA (EN)](../IDEA.md)
 
-## Motivace
+## 🎯 Zadání BottleCapAI, nikoliv naše vedlejší projekty
 
-Původní Qwen3-0.6B může generovat mnoho nepotřebných reasoning tokenů. Chceme snížit **celkový počet generovaných tokenů (uvažování + finální odpověď)** bez významné ztráty přesnosti napříč různými úlohami. Zkracování pouze promptem nebo vypnutí uvažování jsou výslovně nepřípustné metody.
+Vycházíme z `Qwen/Qwen3-0.6B`. Učíme **kratší skutečné generování tokenů včetně thinking** bez ztráty správnosti. Thinking zůstává zapnutý; nespoléháme na promptový trik. Finální hodnotící protokol `evaluate.py`/`compare.py` se nemění. **SVAMP, MBPP+, BFCL a IFEval jsou výhradně evaluace, nikdy trénink.**
 
-## Hypotéza
+## Jediná aktivní výzkumná hypotéza: RHAR-CEP
 
-**RHAR** zkoumá, zda se model může naučit efektivnějšímu uvažování, pokud trénink společně zohlední **informační pokrok (RPS)**, **rekonstruovatelnost zásadních informací (RPD)** a **ochranu obecných schopností (TPC)**.
+**RHAR-CEP — Causal Evidence Preservation**, pracovní označení:
 
-Jde o *neověřenou výzkumnou hypotézu*. Příbuzné metody již existují; netvrdíme světové prvenství ani prokázané zlepšení.
+> U malého reasoning modelu lze omezit zbytečné pokračování uvažování, pokud během učení upřednostníme zkrácené úplné postupy, které zachovávají **údaje ze zadání, nezbytné odvozovací kroky a správný závěr**, před pouhým zkracováním délky.
 
-## Tři moduly
+Jde o *testovatelný návrh*, nikoli tvrzení o světové originalitě nebo hotové implementaci.
 
-| Modul | Předpokládaná funkce | Výzkumná otázka | Stav |
-| --- | --- | --- | --- |
-| **RPS — Reasoning Progress Signature** | Měřit informační pokrok oproti opakování v krocích uvažování, případně i pomocí skrytých stavů modelu | Dokáže se model naučit omezit neproduktivní uvažování? | Koncepce schválena, implementace neurčena |
-| **RPD — Reversible Proof Distillation** | Prověřovat, zda zkrácené uvažování zachovává dost informací pro nezávislou rekonstrukci nebo ověření | Zachová stručné řešení zásadní důkazní informace? | Koncepce schválena, implementace neurčena |
-| **TPC — Transfer-Protected Compression** | Sledovat a omezovat zhoršení schopností v matematice, programování, volání funkcí a dodržování instrukcí | Bude komprese obecně použitelná, nebo se přeučí na jednu oblast? | Koncepce schválena, implementace neurčena |
+**V čem by se hypotéza mohla lišit od běžné distilace:** nevybírat řešení jen podle správné poslední řádky a délky; odůvodnit zachování konkrétních závislostí vstup → výpočet → výsledek. Kandidátní trénovací signál bude odvozován od zásadních kroků. Mechanismus a jeho nezávislá verifikace **ještě nejsou implementovány ani ověřeny**. Nelze považovat pouhou heuristiku podobnosti nebo vymazání slov za důkaz kauzální důležitosti.
 
-Tyto mechanismy mají v ideálním případě ovlivňovat **učení samotného modelu**, nikoli vyžadovat drahé dodatečné kontrolní agenty při každé inferenci. Proveditelnost a režijní náklady jsou otevřené otázky.
+### Konkrétní chyba, kterou řešíme
 
-## HRM — Hallucination Risk Monitor (výzkumný kandidát)
+Na úloze 180 km při 60 km/h + 120 km při 40 km/h je správně 6 hodin. LoRA 002 zvládla uzavřít thinking za 137 tokenů, ale bez opory v zadání změnila 180 km na 90 km a odpověděla 4,5 hodiny. Baseline skončila u limitu 512 tokenů s neuzavřeným thinking, přestože ve svém reasoning spočítala šest hodin.
 
-**Stav:** dne 9. 10. 2026 jsem **schválil zápis nápadu do Markdown dokumentace**. HRM je **navržené rozšíření pro diagnostiku rizika**, **nikoli zatím formálně schválený čtvrtý modul RHAR**, trénovací komponenta nebo provedený experiment.
+**Naměřených 73,24 % kratší generování není splněné zadání**: chyba v odpovědi, jeden vzorek a baseline na stropu tokenů. Tenhle negativní výsledek je motivace pro zachování důkazních závislostí.
 
-**Výzkumná otázka:** Mohou signály sledované v RHAR předpovídat riziko chybné nebo nepodložené odpovědi **ještě před** nezávislým ověřením správnosti? Chyba v numerické úloze nemusí být faktická halucinace; při měření oba jevy odlišovat.
+## Jeden výzkumný experiment se dvěma trénovanými kontrolami
 
-**Navržené signály (dosud neimplementované):**
+1. **Kontrola — obyčejný SFT (Training 003):** stejné povolené trénovací otázky a stejné zdrojové reference. Existující `diagnostics/rhar_train_003.py` je běžný LoRA SFT experiment, **nikoliv RHAR algoritmus**.
+2. **RHAR-CEP — kandidátní intervence:** na *stejných* příkladech explicitně zohlednit zachování ověřitelných odvozovacích kroků; porovnat se SFT při odpovídajícím trénovacím rozpočtu. Nejprve musí vzniknout konkrétní algoritmus; dokud neexistuje, netvrdit, že jsme CEP natrénovali.
+3. **Oddělené srovnání:** původní Qwen vs. SFT vs. CEP na totožných nezahrnutých otázkách, samplingu a limitech; měřit **strict correctness, dokončenost, celkové generované tokeny** včetně thinking, chyby a rozptyl. Kratší špatná odpověď je neúspěch. Počet zelených unit testů a train loss nejsou soutěžní výsledky.
 
-| Signál | Navržené pozorování | Omezení |
-| --- | --- | --- |
-| Nestabilita odpovědí | Rozdíly ve finálních odpovědích při opakovaném generování | Shoda nezaručuje pravdivost; další generování stojí čas |
-| Falešný pokrok RPS | Vysoká aktivita či opakování v reasoning procesu bez měřitelného posunu | Metriku pokroku je nutné nejprve ověřit, nestačí délka textu |
-| Ztráta informace RPD | Rozpory nebo nemožnost rekonstruovat podstatné kroky a výsledek | Samotné ověřování může být chybové a výpočetně drahé |
-| Ověření vůči zdroji | Tvrzení odporující poskytnutému zdroji, známému výpočtu nebo spustitelnému testu | Vyžaduje vhodný důkaz; neznámý fakt nelze automaticky označit za chybný |
+**Rozhodovací pravidlo:** RHAR-CEP stojí za další vývoj jen pokud vůči běžnému SFT přinese na neviděných datech měřitelné zlepšení poměru tokenů a správnosti. Jinak hypotézu upravit nebo zamítnout; žádné další podprojekty.
 
-**Navržené měření a ověření:**
-1. Začít **rizikovým skóre**, nikoli tvrzením o pravděpodobnosti halucinace.
-2. Připravit samostatná data s ověřitelným správným výsledkem. Vést oddělené štítky **chybná odpověď** a **nepodložené faktické tvrzení**.
-3. Kalibrovat pravděpodobnosti pouze na oddělené kalibrační sadě a ověřit je na další nezávislé sadě. Sledovat **Brierovo skóre**, **expected calibration error (ECE)** a rozlišovací schopnost (např. **AUROC**, pokud jsou zastoupeny obě třídy).
-4. Srovnat s jednoduchými baseline, například stabilitou finálních odpovědí. Ablačně ověřit přínos signálů RPS/RPD/TPC.
-5. Započítat dodatečnou výpočetní a paměťovou cenu. Na GTX 1070 Ti upřednostnit lehké měření z jediné generace; opakované generování vyžaduje samostatné odůvodnění.
-6. Nepřizpůsobovat HRM podle testovacích dat SVAMP, MBPP+, BFCL a IFEval. Neměnit oficiální evaluaci.
+## Originalita a nejbližší existující přístupy
 
-**Současná diagnostika:** `diagnostics/reasoning_probe.py` eviduje správnost několika ručně připravených úloh, tokeny a opakování, ale **neměří riziko, kalibrovanou pravděpodobnost halucinace, faktickou oporu, ECE ani Brierovo skóre**.
+- Keypoint-based Progressive Chain-of-Thought Distillation (ICML 2024): https://proceedings.mlr.press/v235/feng24e.html
+- Less is More Tokens (2025): https://arxiv.org/abs/2509.05226
+- LEASH — délková penalizace / reward shaping (2026): https://aclanthology.org/2026.acl-long.129/
 
-**Čeká na další schválení:** architektura HRM, výběr signálů, prahy, kalibrační data, kontrola zdrojů, trénovací integrace a změny kódu. Nápad nevydávat za světovou novinku, naměřené zlepšení ani funkční predikční systém.
+**LoRA, SFT, GSM8K, kontrola správnosti, důležité kroky ani krátké traces nejsou naše vynálezy.** Náš potenciální přínos je konkrétní způsob určení a ochrany závislostí; jeho odlišnost od nejbližších metod a přínos musejí být prokázány srovnáním. Není možné garantovat, že obdobný mechanismus dosud nikdo nepublikoval.
 
-## RHAR v0.1 — schválený směr a navržený protokol
+## Dosavadní reálný stav (nezaměňovat s plánem)
 
-První zvolený trénovací směr je **Correctness-Gated Reasoning Compression**. Znamená to nejprve hledat **správné, úplné a relativně krátké reasoning traces**, teprve po dalších rozhodnutích zkoušet, zda se model tento vzor naučí. **Směr jsem schválil, ale konkrétní implementaci, sběr dat, GPU rozpočet a trénování zatím ne.** Podrobnosti mám v [RHAR-V01-PLAN.md](RHAR-V01-PLAN.md). Samotný jednoduchý výběr nejkratší správné odpovědi není ověřenou vědeckou novinkou.
+| Milník | Výsledek |
+| --- | --- |
+| Training 001 | Skutečný LoRA adapter z 1 GSM8K příkladu, technický pilot |
+| Training 002 | Skutečný LoRA adapter z 11 referenčních GSM8K řešení, 60 kroků |
+| Eval 002 | 512 tokenů baseline / 137 tokenů adapter, ale **obě strict incorrect** (baseline uříznutá, adapter 4,5 místo 6) |
+| Training 003 | Skript na větší běžný SFT s validací; **v tomto záznamu není doloženo dokončení GPU tréninku** |
+| CEP | **Zatím hypotéza, ne implementovaná ani trénovaná metoda** |
+| Oficiální BottleCapAI skóre | Zatím není |
 
-## Modulární výzkumný plán (další experimenty zatím neschválené)
+Podrobnou historii testů, pomocných skriptů, limitů GTX 1070 Ti a negativních výsledků ponecháváme v [DEV-NOTES.md](DEV-NOTES.md) jako **archiv**, nikoliv aktivní roadmapu.
 
-1. Změřit nezměněný model: správnost, počet reasoning/final/celkových tokenů, čas, variabilitu a selhání.
-2. Zkoumat **RPS samostatně** a ověřit, zda jsou signály pokroku/redundance spolehlivé i mimo jedinou úlohu.
-3. Zkoumat **RPD samostatně** na povolených výzkumných či trénovacích datech; měřit rekonstruovatelnost a výpočetní náklady.
-4. Zkoumat **TPC samostatně** na oddělených povolených trénovacích/validačních datech z několika oblastí, bez přizpůsobování na oficiální testovací sady.
-5. Provést **ablační srovnání** baseline, samostatně testovatelných modulů, RPS+RPD a RPS+RPD+TPC při shodném nastavení.
-6. **Až po mém dalším rozhodnutí** vybrat trénovací cíl a data, určit LoRA nebo jinou úpravu modelu, výpočetní rozpočet a spustit trénování.
-7. Vyhodnotit natrénované kandidáty nezměněným oficiálním `evaluate.py` a párově porovnat baseline/kandidáta pomocí `compare.py`.
+## Co teď vědomě neděláme
 
-Původní nápad destilace krátkých správných postupů zůstává **možnou trénovací baseline**, nikoli schváleným nebo implementovaným algoritmem RHAR.
+Žádné samostatné RPS/RPD/TPC/HRM moduly, honeynety, dashboardy, další sérii plánovačů ani „50 experimentů“. Historické názvy jsou *archivní nápady*, dokud se neprokáže jejich nezbytnost pro tuto jedinou hypotézu.
 
-**Implementována první offline část v0.1:** `diagnostics/offline_selector.py` s 16 CPU testy — kontrola hotových generací a výběr pouze k revizi, **bez trénování**. Viz [OFFLINE-SELECTOR.md](OFFLINE-SELECTOR.md). Konkrétní RHAR trénovací mechanismus zůstává otevřený.
-
-## Metriky a evaluace
-
-- **Hlavní:** správnost a celkový počet generovaných tokenů včetně uvažování a finální odpovědi.
-- **Diagnostické:** poměr reasoning/final, opakování, nedokončené odpovědi, čas, variabilita, náročnost GPU, zhoršení podle oblasti a úspěšnost rekonstrukce.
-- **Kontrolní podmínky:** shodné prompty/sampling/seedy pro porovnání, oddělení trénovacích/validačních dat, ablační testy a evidence chyb.
-- **Oficiální oddělená evaluace:** SVAMP, MBPP+, BFCL a IFEval s dodanými pravidly a intervaly nejistoty. **Nikdy na těchto benchmarcích netrénovat.**
-- **Originalita:** před tvrzením o novosti srovnat konkrétní implementovanou metodu s nejbližšími publikacemi; neveřejný výzkum nelze vyloučit.
-
-## Omezení
-
-- Výchozí model: `Qwen/Qwen3-0.6B`. Finální model přibližně 0.6B a **nadále skutečně uvažuje**.
-- **Nikdy nezkracovat thinking pouze prompt engineeringem ani nevypínat uvažování.**
-- Neměnit oficiální prompty benchmarků, nastavení generování, limity tokenů ani hodnocení.
-- Zachovat kompatibilitu s běžnými Hugging Face Transformers/vLLM pro finální odevzdání.
-- Nevymýšlet výsledky benchmarků, zlepšení, originalitu ani neprovedené testy.
-- **Důležité kroky si výslovně odsouhlasím**; zápis schválené koncepce neznamená povolení nových experimentů.
-
-## Aktuální stav a pozorování
-
-- **Moje ověřená průzkumná inference:** správně `Final answer: 43`, 371 generovaných tokenů, 61,45 sekundy, 6,04 tokenu/s a 1,12 GiB alokované paměti PyTorch na GTX 1070 Ti. **Jedna neoficiální otázka, nikoli naměřené zlepšení.**
-- **Diagnostika bez zásahu do modelu:** existuje `diagnostics/reasoning_probe.py` s vlastními testy; první GPU diagnostika již proběhla: 325 tokenů, chybná odpověď 42 místo 43 (Experiment 002).
-- **RHAR:** směr schválen, mechanismy a trénování neimplementovány, **zatím žádné výsledky RHAR**.
-
-## Hardware
-
-Viz [HARDWARE.md](HARDWARE.md). Lokální počítač: GTX 1070 Ti 8 GB (compute capability 6.1), i5-3450, ASUS P8B75-M, 16 GB RAM. Lokální inference přes PyTorch CUDA funguje; oficiální vyhodnocení ve vLLM vyžaduje podporovanou GPU. Proveditelnost analýzy skrytých stavů a trénování zatím není potvrzena.
-
-## Co fungovalo / nefungovalo
-
-Skutečné běhy, negativní výsledky, hardware a rozhodnutí zapisujeme do [DEV-NOTES.md](DEV-NOTES.md). Žádný trénovací experiment RPS/RPD/TPC zatím neproběhl.
+**Jediné další kroky:** ověřit kontrolní SFT → přesně navrhnout a implementovat malý CEP mechanismus → provést párové měření → podle výsledků pokračovat nebo směr zamítnout. Trénink/GPU vyžaduje výslovné spuštění; nic se nespouští automaticky.
