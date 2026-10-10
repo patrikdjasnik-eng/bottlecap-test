@@ -166,3 +166,23 @@ Moje pracovní pravidlo zůstává: **Bez zelených testů ani krok. Výsledky m
 
 **Další rozhodnutí:** nejdřív ověřit úplnost kandidáta 9003, bezpečně sjednotit datový formát a otestovat selektor. Až po dostatečném rozšíření povolených dat schválit konkrétní trénovací běh.
 
+
+## 2026-10-10 — 🐇 RHAR Pilot 002 — tokenový limit a opakované ověřování
+
+**Skutečně provedeno:** schválený GPU pilot na druhé otázce auditované sady GSM8K (1 otázka × 3 seedy, max_new_tokens=512). Výstup lokálně: `runs/rhar-pilot-002/records.jsonl`; zpráva selektoru `runs/rhar-pilot-002/training-candidates.json`. Jde o nezměněný základní model Qwen3-0.6B, bez LoRA, bez oficiální evaluace.
+
+| Seed | Tokenů | Dokončeno | Split | Pozorování z konce trace |
+| --- | ---: | --- | --- | --- |
+| 9001 | 512 | Ne | `unclosed_think_block` | Vypočítá 14 kg, kontroluje výsledek opakovaně, nezavře thinking |
+| 9002 | 512 | Ne | `unclosed_think_block` | Vypočítá 14 kg, ale při další kontrole začne pochybovat o správném násobení |
+| 9003 | 512 | Ne | `generated_think_block` | Vypočítá 14 kg, uzavře `</think>`, zahájí `Final answer:`, ale odpověď nedokončí |
+
+**Referenční aritmetika ze zobrazených úryvků:** 4 psi × 250 g/den × 14 dní = 14 000 g = **14 kg**. Tento výsledek je přítomen v průběhu všech tří reasoning traces, přestože podle přísného protokolu **0/3 dokončených správných odpovědí** a **3/3 truncation**. Nejde o úspěšné vyřešení úloh podle metriky evaluace. Seed 9003 měl 508 přiřazených reasoning tokenů a 4 final tokeny, ale finální odpověď skončila před číslem.
+
+**Souhrn:** `responses=3`, `correct_responses=0`, `complete_terminations=0`, `valid_reasoning_splits=1`, `mean_total_generated_tokens=512`, `mean_generation_seconds=86.935`. Selektor: `selected_count=0`, `eligible_count=0`, `not_selected_longer_count=0`, `rejected_count=3`. Otisk původních záznamů: `45a19c23e8d5af28ce2af2a90df978de097e51e18c524f5ed93e22d686d115b6`. Žádné výsledky nezachraňovat dodatečným doplněním odpovědi.
+
+**Pracovní hypotéza RHAR:** opakovaná slovní kontrola již správného jednoduchého výpočtu může vyčerpat limit generování, aniž by vznikla úplná finální odpověď. Pozorování z trojice běhů nepředstavuje důkaz obecné úspory tokenů ani kvantifikaci zbytečných kroků.
+
+**Návrh Experimentu 003 — POUZE PLÁN:** porovnat na téže otázce se psy stejný pinned Qwen3-0.6B, stejné tři seedy a stejné sampling parametry; změnit pouze `max_new_tokens` z **512 na 768**. Zaznamenat u každé generace řádné ukončení, správnost finální odpovědi, reasoning/final tokeny a čas. Vyšší limit může prodloužit výstup; správnost není zaručena. Před pokusem připravit oddělený režim, CPU testy, čerstvý výstupní adresář a získat **samostatný výslovný souhlas s GPU**.
+
+**Stav na konci zápisu:** Experiment 003 nebyl implementován ani spuštěn. Žádné nové GPU generování, trénink ani změna modelu. O dalším směru rozhodne porada.
