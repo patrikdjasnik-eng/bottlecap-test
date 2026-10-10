@@ -10,7 +10,7 @@ import re
 
 from .reasoning_structure import analyze_record, THINK
 
-SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z])|\n+")
+SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9])|\n+")
 EQUATION = re.compile(r"(?<!\w)([-+]?\d+(?:\.\d+)?)\s*([+*×x\-/])\s*([-+]?\d+(?:\.\d+)?)\s*=\s*([-+]?\d+(?:\.\d+)?)(?!\w)")
 CUE = re.compile(r"\b(check|verify|double.check|again|alternatively|another way|wait|recalculate|let me)\b", re.I)
 
