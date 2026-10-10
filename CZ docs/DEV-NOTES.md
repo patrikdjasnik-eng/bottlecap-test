@@ -13,6 +13,18 @@
 
 ## Deník
 
+### 2026-10-10 — 🧠 RHAR-CEP 002 v0.2: jednoduchý algoritmus VPS + XP + REC (pouze návrh)
+
+**Rozhodnutí uživatele:** podrobně dopracovat nový směr CEP 002 včetně mého návrhu ochrany nezbytných odvozovacích kroků, ale **bez zbytečné systémové složitosti**. Vysvětlit algoritmus přímo v konverzaci a zapsat jej dvojjazyčně do repozitáře.
+
+**Skutečně provedeno:** nový [CEP-002.md](CEP-002.md) a [English](../docs/CEP-002.en.md), odkazy z obou IDEA.md i obou README. Verze 0.2 určuje **VPS** (deterministická kontrola kroků a vazeb na zadání), **XP** (maximálně tři reálně existující ověřené postupy) a **REC** (nově ověřená zkušenost spustí opětovnou kontrolu starší *trénovací* úlohy, původní trace zůstává neměnný). Důraz na učicí trace **fakta → nutné vztahy → kontrola podmínek → finální odpověď**, nikoli pouhé zkrácení textu.
+
+**Záměrná jednoduchost:** jeden dávkový CPU verifier, JSONL evidence, 10–20 ručně zkontrolovaných testovacích trénovacích příkladů pro budoucí implementaci, standardní LoRA. Žádná vektorová databáze, multi-agentní runtime, RL/DPO, automatický online trénink ani zvláštní inference orchestrátor.
+
+**Experiment, pouze návrh:** A = obyčejné SFT, B = VPS+XP, C = VPS+XP+REC, porovnat C vs. B za odpovídajících podmínek na **nových neviděných příkladech**; zaznamenat správnost, tokeny, dokončení a falešné opravy. Starých 60 prohlédnutých otázek z Evaluation 006 dál nepředstírat jako nezávislý holdout. Nepoužít SVAMP, MBPP+, BFCL ani IFEval pro trénink. Oficiální test musí zůstat nezměněný a Qwen/LoRA standardně načitatelný.
+
+**Stav:** dokumentace hotová; CEP 002 algoritmus **není implementován ani ověřen**, nejde o prokázaně originální metodu a nemáme žádný jeho naměřený přínos. **Nebyly spuštěny CPU testy CEP 002, GPU, nové inference ani trénování.** Implementace a experiment až po dalším výslovném souhlasu.
+
 ### 2026-10-10 — 🧠 CEP 002: přidán návrh REC (zpětná oprava zkušeností)
 
 **Rozhodnutí uživatele:** rozšířit nový výzkumný směr CEP 002 o **REC — Retroactive Experience Correction**. Nový postup ověřený při pozdější *trénovací* úloze může vyvolat přezkum staršího uloženého řešení (např. úloha 10 → opětovné ověření úlohy 3). Model se o chybě nedozví automaticky: je potřeba historie příkladů, spouštěč přezkumu a nezávislý verifier. Nejde o automatické přeučování vah během inference.
