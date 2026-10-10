@@ -42,3 +42,16 @@ The possible RHAR contribution would be **a specific verified dependency-preserv
 Only one active question: **Can evidence-preserving compression shorten Qwen3-0.6B without sacrificing correct answers, better than standard SFT?** RPS, RPD, TPC, HRM and other ideas are archived possibilities, **not parallel modules or active tests**. Details and negative experiments remain in the development diary, not the active plan.
 
 Submission requires an honest `IDEA.md`, model/LoRA safetensors, git bundle, and official results when available; report any missing evaluation transparently. No training or GPU action is initiated by this documentation.
+
+
+## Candidate CEP 002 extension — Verified Procedural Experience Learning (proposal, 2026-10-10)
+
+**User-originated hypothesis:** Do not memorize a final answer to a specific problem. Instead, after solving and independently verifying an allowed training problem, extract the **reusable procedure** and its applicability conditions. Accumulate these verified procedural experiences and distill their use into the Qwen3-0.6B LoRA weights, so that later *new* problems with matching structure can be solved accurately with less repeated reasoning. Informal analogy: the model gains “XP” by learning verified skills.
+
+Proposed pipeline: (1) solve a permitted training problem; (2) check final answer and check intermediate relations when feasible; (3) abstract the procedure, inputs, constraints, and failure conditions rather than storing only a numeric output; (4) validate the generalized procedure on independently generated training-domain variations; (5) retain versioned, provenance-linked verified experience; (6) train the model on applicable short, correct traces and compare against matched SFT and CEP 001 controls on **unseen held-out tasks**. Prefer no runtime retrieval or answer cache in the official evaluation; the claimed improvement must reside in trained weights.
+
+Example: learn the transferable rule `floor(total * (1-reserved_fraction) * (1-defective_fraction) / package_size)`, not the memorized answer `20`. Changing when percentages apply must invalidate the rule; similarity alone is not evidence of applicability.
+
+**Failure guards:** verification of the final number does not prove the reasoning; reject inconsistent intermediate steps and accidental shortcuts. Do not continually train on scored evaluation questions, official benchmarks (SVAMP/MBPP+/BFCL/IFEval), or their solutions. Separate saved experience memory as **training data preparation**, not an inference-time external memory that would distort token counts. Avoid feedback loops, catastrophic forgetting, and claims that each experience automatically improves accuracy. Evaluate correctness *and* total emitted tokens (thinking + final), not token savings alone.
+
+**Status:** Concept only; no procedural XP memory, verification pipeline, or CEP 002 training has been implemented or benchmarked. The general ideas of verified self-training, procedural abstraction, and memory reuse have prior art. Any originality and measurable advantage must be established experimentally.
