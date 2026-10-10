@@ -56,26 +56,33 @@ def run(args,validation,out):
     if out.exists():
         raise FileExistsError("output already exists")
     tokenizer=AutoTokenizer.from_pretrained(BASE_MODEL,revision=BASE_REVISION,local_files_only=True)
-    model=AutoModelForCausalLM.from_pretrained(BASE_MODEL,revision=BASE_REVISION,
-                                              local_files_only=True,dtype=torch.float16).to("cuda").eval()
+    # Load a clean backbone for EACH variant. Avoid PEFT adapter residue.
     opening=tokenizer.convert_tokens_to_ids("<think>")
     closing=tokenizer.convert_tokens_to_ids("</think>")
     eos={int(tokenizer.eos_token_id)}
-    ceos=model.generation_config.eos_token_id
-    if isinstance(ceos,int):eos.add(ceos)
-    elif isinstance(ceos,(tuple,list)):eos.update(int(x) for x in ceos)
+    # EOS ids are completed from each fresh model's generation config below.
     out.mkdir(parents=True,exist_ok=False)
     plan={"status":"running","official_benchmark":False,"train_source":"GSM8K/main/train",
           "untouched_research_holdout_after_training_and_loss_validation":True,"model":BASE_MODEL,
-          "model_revision":BASE_REVISION,"n":len(validation),"seed":SEED,
+          "model_revision":BASE_REVISION,"n":len(validation),"skip":args.skip,"seed":SEED,
           "cap":args.cap,"sampling":SAMPLING,
           "sft_adapter":str(args.sft),"cep_adapter":str(args.cep)}
     (out/"plan.json").write_text(json.dumps(plan,indent=2)+"\n")
     # Evaluate in two model phases to fit an 8 GB Pascal GPU; maintain order
     # by mapping back to per-question pairs when writing result JSONL.
+    import gc
     results={}
+    journal=out/"records.partial.jsonl"
     for name,adapter in (("sft",args.sft),("cep",args.cep)):
-        active=PeftModel.from_pretrained(model,str(adapter),is_trainable=False).eval()
+        backbone=AutoModelForCausalLM.from_pretrained(BASE_MODEL,revision=BASE_REVISION,
+                          local_files_only=True,dtype=torch.float16).to("cuda").eval()
+        eos_this=set(eos)
+        ceos=backbone.generation_config.eos_token_id
+        if isinstance(ceos,int):eos_this.add(ceos)
+        elif isinstance(ceos,(tuple,list)):eos_this.update(int(x) for x in ceos)
+        active=PeftModel.from_pretrained(backbone,str(adapter),is_trainable=False).eval()
+        if len(active.peft_config)!=1:
+            raise RuntimeError("adapter isolation failed: expected one adapter only")
         for i,row in enumerate(validation):
             inputs=tokenizer.apply_chat_template(row["prompt"],tokenize=True,add_generation_prompt=True,
                    enable_thinking=True,return_tensors="pt",return_dict=True).to("cuda")
@@ -86,8 +93,8 @@ def run(args,validation,out):
             with torch.inference_mode():
                 output=active.generate(**inputs,do_sample=True,max_new_tokens=args.cap,**SAMPLING)
             ids=output[0,inputs["input_ids"].shape[1]:].tolist()
-            split=split_reasoning(ids,opening,closing,eos,prefilled)
-            truncated=not ids or ids[-1] not in eos
+            split=split_reasoning(ids,opening,closing,eos_this,prefilled)
+            truncated=not ids or ids[-1] not in eos_this
             final=tokenizer.decode(split["final_ids"],skip_special_tokens=True)
             correct,error=(False,"truncated") if truncated else grade_final(final,row["gold_answer"],"number")
             results[(row["question_id"],name)]={"variant":name,"id":row["question_id"],
@@ -95,9 +102,12 @@ def run(args,validation,out):
                 "reasoning_tokens":split["reasoning_tokens"],"final_tokens":split["final_tokens"],
                 "truncated":truncated,"correct":correct,"error":error,
                 "final_text":final,"generated_text":tokenizer.decode(ids,skip_special_tokens=False)}
+            with journal.open("a",encoding="utf-8") as j:
+                j.write(json.dumps(results[(row["question_id"],name)],ensure_ascii=False)+"\n")
+                j.flush()
             print(f'{name} {i+1}/{len(validation)} correct={correct} tokens={len(ids)}',flush=True)
-        model=active.unload()
-        del active
+        del active,backbone
+        gc.collect()
         torch.cuda.empty_cache()
     records=[results[(row["question_id"],name)] for row in validation for name in ("sft","cep")]
     summary=summarize(records)
@@ -115,12 +125,15 @@ def main(argv=None):
     p.add_argument("--cep",type=Path,default=Path("runs/rhar-cep-pilot-001"))
     p.add_argument("--out",type=Path,required=True)
     p.add_argument("--count",type=int,default=20)
+    p.add_argument("--skip",type=int,default=0,help="Skip previous holdout questions; 20 for unseen batch after Evaluation 005")
     p.add_argument("--cap",type=int,default=512)
     mode=p.add_mutually_exclusive_group(required=True)
     mode.add_argument("--dry-run",action="store_true")
     mode.add_argument("--execute",action="store_true")
     p.add_argument("--approve-gpu",action="store_true")
     args=p.parse_args(argv)
+    if args.skip<0 or args.skip+args.count>200:
+        p.error("skip + count must not exceed 200")
     if args.execute!=args.approve_gpu or args.cap<128 or args.cap>2048:
         p.error("use --execute --approve-gpu (or --dry-run without approval); cap 128..2048")
     if not args.raw_parquet.is_file() or hashlib.sha256(args.raw_parquet.read_bytes()).hexdigest()!=TRAIN_SHA256:
@@ -128,11 +141,11 @@ def main(argv=None):
     if not args.eval_questions.is_file():
         raise FileNotFoundError("evaluation prompts required for screening")
     source_rows=read_parquet(args.raw_parquet)
-    train,extended=prepare_pool(source_rows,1000,100+args.count,42)
+    train,extended=prepare_pool(source_rows,1000,100+args.skip+args.count,42)
     reject_overlap(train,extended,read_eval_prompts(args.eval_questions))
-    validation=extended[100:]
+    validation=extended[100+args.skip:]
     if args.dry_run:
-        print(json.dumps({"status":"plan_only","n":len(validation),"planned_generations":2*len(validation),
+        print(json.dumps({"status":"plan_only","n":len(validation),"skip":args.skip,"planned_generations":2*len(validation),
           "seed":SEED,"cap":args.cap,"training_performed":False,"gpu_used":False,
           "official_benchmark":False,"validation_used_for_loss_in_prior_trainings":False,
           "train_and_validation_ids_disjoint":True,"first_id":validation[0]["question_id"]},indent=2))
