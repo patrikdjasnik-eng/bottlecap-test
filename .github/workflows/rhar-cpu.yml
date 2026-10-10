@@ -57,4 +57,5 @@ jobs:
             tests.test_lora_pilot \
             tests.test_safe_start_rollout_adapter \
             tests.test_reasoning_trace_review \
+            tests.test_stress_test_003 \
             -v
