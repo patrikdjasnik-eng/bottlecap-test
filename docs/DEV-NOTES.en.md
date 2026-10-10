@@ -13,6 +13,44 @@
 
 ## Diary
 
+### 2026-10-10 — 🐇 GPU Canary 002 and RHAR 003–007: lessons, bugs and fixes
+
+**Status:** documented local outputs and implemented changes. No training, weight changes, official benchmark or proven token savings. Original `runs/` artifacts remain untouched.
+
+#### 🖥️ Preflight and the first correct inference
+
+- Kali/WSL2 initially passed `Ran 190 tests`, `OK (skipped=2)`. After RHAR 006 fixes, the full suite passed `Ran 213 tests in 1.255s`, `OK (skipped=2)`. Skips are not failures; inspect their reasons before official evaluation.
+- GTX 1070 Ti 8 GB: PyTorch `2.6.0+cu118`, CUDA available, compute capability `6.1`, actual FP16 computation OK. The local Qwen3-0.6B snapshot is pinned to `c1899de289a04d12100db370d81485cdf75e47ca`.
+- GPU Canary 002 (`runs/canary-002/20261010T102914Z/`) finished with exit code 0: `arithmetic_apples`, seed 9001, correct final answer 43, not truncated, **423 generated tokens = 415 reasoning + 8 final**, 82.552 s, 5.124 tokens/s and 1.185 GiB peak PyTorch allocation. The older Experiment 002 answered 42 incorrectly in 325 tokens and 51.3 s; these are not controlled evidence of improvement.
+- A temporarily quiet terminal and idle `nvidia-smi` snapshot were not sufficient to infer a hang. The saved run records and exit code resolved the uncertainty.
+
+#### 🧠 Offline analyses
+
+- **RHAR 003:** 265 reasoning words, five paragraphs, three repeated four-grams, reasoning share 98.11%. Surface repetition does not prove removable reasoning.
+- **RHAR 004:** four sections were flagged for manual review. An earlier segmenter returned 27 steps; the corrected numeric sentence splitting returned 33 on the same text. Text steps are not token counts.
+- **RHAR 005:** six explicit operations were detected, including two repeats: `5 times 10` / `10*5` and `5 times 2` / `2*5`. The parser does not cover every natural-language form.
+- **RHAR 006:** all six detected operation claims were arithmetically consistent. The answer candidate `43 apples remaining` ended at character offset 646; 616 more reasoning characters followed. This is not a proven safe early-stop location.
+- **RHAR 007:** pinned-tokenizer offline retokenization produced 423 tokens, matching the saved count. The candidate falls on retokenized boundary 200, followed by 223 retokenized tokens. Status: `retokenized_boundary_only`. Original generated token IDs are unavailable. **223 is not measured or guaranteed savings.** `measured_token_savings=null`; `early_stop_safety_verified=false`.
+
+#### 🐛 Bugs and resolutions
+
+1. `test_arithmetic_consistency` returned `[None, None]` rather than `[True, True]`, and `test_detect_wrong_arithmetic` returned `None` rather than `False`: the numeric-result regex rejected a trailing sentence period. Fix: accept punctuation as a numeric boundary.
+2. `test_arithmetic_and_repeat` produced two steps instead of three because sentence splitting only admitted an uppercase letter after punctuation. Fix: also admit a digit. This changed step numbering (27 versus 33) without changing model behavior.
+3. RHAR 004 equation matching missed operations written as words. RHAR 005 normalized `times`, `*`, `×`, `minus` and related forms while keeping redundancy explicitly unproven.
+4. RHAR 006 refined answer-candidate phrasing such as `43 apples remaining`; RHAR 007 introduced fail-closed outcomes for retokenization mismatches, ambiguous offsets and checkpoints inside tokens.
+5. After `Ran 213 tests`, `FAILED (failures=3, skipped=2)`, we stopped advancing. The full local suite subsequently passed before further experiments.
+
+#### ✅ Lessons and next step
+
+- Characters, paragraphs, heuristic repetitions and first correct-answer mentions cannot be equated with saved generated tokens. Accuracy and actual generation counts must be assessed together.
+- Fixed revision, seed, local output artifacts and separation of GPU from CPU-only analysis improve traceability.
+- **Proposed RHAR 008:** save original generated token IDs and validation metadata in future diagnostics, test integrity, then investigate actual token boundaries. Not yet implemented or authorized.
+- CPU CI was added to the feature branch; local tests are green, but no newly successful CI run is claimed without evidence.
+
+**Summary:** 213 tests executed (two skipped), one correct GPU canary, offline RHAR 003–007, three fixed regression failures, **zero demonstrated token savings and zero training runs**. 🐇🛡️
+
+
+
 ### 🌙 2026-10-10 — End of day / What we learned today
 
 **Status: work is finished for today.** Our objective was not to train Qwen, but to build a safe, reproducible preparation pipeline for **RHAR — Rabbit Hollow Adaptive Reasoning**. We began with a CPU-only planner and finished with **103/103 green tests** (`Ran 103 tests in 0.917s`, `OK`) and a verified generation `--dry-run`. This is a genuine preparation result, **not** measured token savings.
