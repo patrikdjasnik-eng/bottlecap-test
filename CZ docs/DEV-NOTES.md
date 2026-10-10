@@ -790,3 +790,14 @@ Příkazy:
 `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m diagnostics.rhar_validation_compare --execute --approve-gpu --skip 20 --count 60 --sft runs/rhar-training-003 --cep runs/rhar-cep-pilot-001 --out runs/rhar-validation-006`
 
 Nespouštět, pokud CPU kontrola není zelená; nevydávat budoucí záměr za provedený test.
+
+
+## 2026-10-10 — Návrh CEP 002: Procedural XP a negativní zkušenost
+
+Uživatel navrhl, aby RHAR-CEP po nezávislém ověření neukládal pouze správnou odpověď, ale zobecněný správný postup s podmínkami použití. Zkušenost („XP“) by po dalším trénování přecházela do vah Qwen3-0.6B; samotná inference ani dokončení úlohy váhy automaticky nemění. Příklad: zapamatovat obecný výpočet a pořadí procent místo čísla 20.
+
+Druhá varianta: **negative procedural memory** — zaznamenat chybný postup včetně konkrétní příčiny a vstupních podmínek, aby další trénink učil model neplatné odvození nerozvíjet. Trestat bez vysvětlení celou odpověď nestačí: metoda může být správná pro jiné podmínky. Chybné řešení lze porovnat se správným na povolených trénovacích úlohách (kontrastivní učení, preference), ale nesmí se použít oficiální eval ani prohlédnutý holdout k trénování.
+
+Třetí varianta: **multi-path selection / synthesis** — v trénovací fázi navrhnout více postupů, nezávisle je ověřit, vybrat až tři nejlepší podle correctness, nutných závislostí a délky a slučovat pouze kompatibilní a ověřené mezikroky. Výslednou krátkou správnou proceduru použít k distilaci do vah. Není bezpečné slepit části tří odpovědí bez ověření; tři generování při oficiální inferenci mohou zvýšit spotřebu tokenů a jejich použití by změnilo evaluační režim.
+
+Hypotéza: zkušenosti ze správných i nesprávných *postupů* mohou zlepšit přesnost při menším počtu tokenů, ale jen když model prokáže přenos na nové úlohy. Pořadí: dokončit Evaluation 006 beze změny; poté návrh jednoho kontrolovaného CEP 002 experimentu. Nejde o implementaci, naměřený přínos ani prokázanou světovou originalitu.
