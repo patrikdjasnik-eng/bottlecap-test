@@ -53,4 +53,5 @@ jobs:
             tests.test_reasoning_checkpoint \
             tests.test_token_boundaries \
             tests.test_token_trace \
+            tests.test_training_candidates \
             -v
