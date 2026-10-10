@@ -720,3 +720,16 @@ CPU: `python -m diagnostics.rhar_train_003 --dry-run --out runs/rhar-training-00
 - *AutoL2S: Auto Long-Short Reasoning* (2025), https://arxiv.org/abs/2505.22662 : adaptive short/long traces.
 
 **Novelty gate:** Before presenting an RHAR mechanism as original, write an executable definition (inputs, outputs, learning signal, objective), cite the nearest prior method, state the actual difference and devise an ablation: plain SFT vs RHAR candidate on identical training data, base model and evaluation protocol; measure total tokens AND correctness, including task transfer. A renamed loss, another wrapper/validator or simple shortest-correct trace selection **does not satisfy novelty by itself**. Any originality assertion is provisional: one literature check cannot exclude unpublished/prior work. Continue Training 003 **only as a disclosed SFT control baseline**, not as the final novel algorithm. The official submission can transparently report negative results.
+
+
+## 2026-10-10 — První RHAR-CEP pilot v kódu (bez GPU spuštění)
+
+Po SFT 003 následovala ruční analýza šesti lokálních diagnostických úloh. SFT 003: **3/6 strict correct, 6/6 dokončené**, průměr 88,17 generovaných tokenů; původní Qwen na těchto šesti úlohách vždy dosáhl limitu 512 bez uzavřené odpovědi (cenzorovaný baseline; nelze z toho prokazovat zachovanou správnost). Chyby: skladová matematika (3/8 a 20 %), pořadí A,B→C→D (nesprávné počítání 4!×2), králíci (raw trace zatím nezískán).
+
+Nový soubor `diagnostics/rhar_cep_pilot.py` je **první kandidátní intervence, ne prokázaně nová algoritmická metoda**. Experiment proti obyčejnému SFT 003: stejná deterministická train/validation data z připnutého GSM8K train parquet, LoRA rank8, learning rate 5e-5, epochy 1, seed 42. Mění se pouze tokenově vážená supervised cross-entropy (`boost=2.0`) pro lexikálně rozpoznaná čísla opsaná ze zadání, operátory a vybraná slova označující vztahy v referenčním řešení. Validační loss je nevažovaný. Tato ochrana je pouze **heuristická**, nepředstavuje ověřenou kauzální důležitost, může zhoršit generalizaci; případný úspěch zatím neověřen. Testy jsou CPU-only. GPU trénink neproběhl a zůstává na explicitním spuštění.
+
+Příkazy (po zelené CPU validaci):
+`python -m diagnostics.rhar_cep_pilot --dry-run --out runs/rhar-cep-pilot-001`
+`HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m diagnostics.rhar_cep_pilot --approve-training --train-size 1000 --val-size 100 --epochs 1 --boost 2.0 --out runs/rhar-cep-pilot-001`
+
+Další rozhodnutí pouze podle párového měření správnosti a celkových tokenů proti SFT a base; žádné tvrzení o soutěžní úspěšnosti.
