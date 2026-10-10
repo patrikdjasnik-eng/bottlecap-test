@@ -15,6 +15,7 @@ def select(records):
     groups = {}
     rejected = {}
     fingerprints = {}
+    eligible_count = 0
     for row in records:
         source = str(row.get("source", "")).lower()
         source_family = source.replace("-", "").replace("_", "")
@@ -48,6 +49,7 @@ def select(records):
         if not accepted:
             rejected[key] = rejected.get(key, 0) + 1
             continue
+        eligible_count += 1
         entry = {"question_id": key, "source": source,
                  "prompt": row["prompt"], "completion": row["full_generated_text"],
                  "total_tokens": row["total_tokens"],
@@ -56,6 +58,8 @@ def select(records):
             groups[key] = entry
     selected = [groups[key] for key in sorted(groups)]
     return {"status": "training_data_candidates_only", "selected_count": len(selected),
+            "eligible_count": eligible_count,
+            "not_selected_longer_count": eligible_count - len(selected),
             "rejected_count": sum(rejected.values()), "training_performed": False,
             "selected": selected}
 
