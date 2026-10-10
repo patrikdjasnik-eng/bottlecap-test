@@ -2,7 +2,7 @@
 
 **Stav: výzkumná hypotéza; nikoliv prokázaný nový algoritmus. Aktualizace: 10. 10. 2026.**
 
-[📔 Historie a surové výsledky](DEV-NOTES.md) · [📋 Soutěžní požadavky](QUEST-ODEVZDANI-CHECKLIST.md) · [🌍 IDEA (EN)](../IDEA.md)
+[📔 Historie a surové výsledky](DEV-NOTES.md) · [📋 Soutěžní požadavky](QUEST-ODEVZDANI-CHECKLIST.md) · [🧠 CEP 002 — přesný jednoduchý návrh](CEP-002.md) · [🌍 IDEA (EN)](../IDEA.md)
 
 ## 🎯 Zadání BottleCapAI, nikoliv naše vedlejší projekty
 
