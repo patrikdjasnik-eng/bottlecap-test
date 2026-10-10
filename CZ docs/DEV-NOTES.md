@@ -13,6 +13,44 @@
 
 ## Deník
 
+### 2026-10-10 — 🐇 GPU Canary 002 a RHAR 003–007: poučení, chyby a opravy
+
+**Stav:** dokumentační souhrn skutečných lokálních výstupů a implementovaných změn. Žádné trénování, úprava vah, oficiální BottleCapAI benchmark ani prokázaná úspora tokenů. Původní artefakty v `runs/` nechávám nedotčené.
+
+#### 🖥️ Preflight a první správná inference
+
+- V Kali/WSL2 prošlo `Ran 190 tests`, `OK (skipped=2)`. Později po opravách RHAR 006 prošlo `Ran 213 tests in 1.255s`, `OK (skipped=2)`. Dva skipy nejsou dvě chyby, jejich důvod je vhodné před oficiální evaluací samostatně prověřit.
+- GTX 1070 Ti 8 GB: PyTorch `2.6.0+cu118`, CUDA dostupná, compute capability `6.1`, skutečný FP16 výpočet OK. Lokální cache má připnutý Qwen3-0.6B snapshot `c1899de289a04d12100db370d81485cdf75e47ca4` — **POZOR: správná plná revize používaná skripty je `c1899de289a04d12100db370d81485cdf75e47ca`**.
+- GPU Canary 002 (`runs/canary-002/20261010T102914Z/`) doběhl s exit code 0: `arithmetic_apples`, seed 9001, správná odpověď 43, `correct=true`, `truncated=false`, **423 tokenů = 415 reasoning + 8 final**, 82,552 s, 5,124 tok/s, PyTorch peak 1,185 GiB. Dřívější Experiment 002 měl chybných 42, 325 tokenů a 51,3 s; nelze z nich vyvozovat zlepšení nebo zhoršení za nesrovnatelných podmínek.
+- Když po spuštění nebyl hned výstup, kontrolovali jsme `nvidia-smi`; pozdější klidová VRAM sama neprokazovala zaseknutí. Rozhodující byl uložený report a exit code 0. Poučení: neinterpretovat jeden snapshot GPU ani ticho terminálu jako selhání.
+
+#### 🧠 Offline výzkum a skutečná zjištění
+
+- **RHAR 003:** 265 slov, 5 odstavců, 3 opakované čtyřslovné sekvence; podíl reasoningu 98,11 %. Lexikální opakování samo nedokazuje nadbytečný reasoning.
+- **RHAR 004:** text byl rozdělen na kroky; heuristika označila 4 úseky k ruční kontrole. Původně 27 kroků, po opravě oddělování vět se stejný text rozpadá na 33 kroků. Počet kroků proto závisí na segmentaci a není měřítkem tokenů.
+- **RHAR 005:** detekováno 6 explicitních matematických operací a 2 opakování (např. `5 times 10` / `10*5` a `5 times 2` / `2*5`). Parser nerozpozná každou přirozenojazyčnou formu; absence označení neznamená absenci opakování.
+- **RHAR 006:** všech 6 rozpoznaných výpočtů je aritmeticky konzistentních. Kandidátní checkpoint: `43 apples remaining`, znakový offset konce 646; dalších 616 znaků uvažování. Jde o kandidátní textový bod, ne prokázané bezpečné předčasné ukončení.
+- **RHAR 007:** offline retokenizace připnutým tokenizerem dává 423 tokenů stejně jako uložený počet; checkpoint odpovídá hranici po 200 zpětně tokenizovaných tokenech, 223 jich následuje. Stav `retokenized_boundary_only`, původní ID tokenů nemáme. **223 není naměřená ani zaručená úspora.** `measured_token_savings=null`, `early_stop_safety_verified=false`.
+
+#### 🐛 Konkrétní regresní chyby a jejich opravy
+
+1. `test_arithmetic_consistency` vracel `[None, None]` místo `[True, True]` a `test_detect_wrong_arithmetic` `None` místo `False`: regex pro výsledek odmítal číselnou hodnotu následovanou tečkou na konci věty. Upravil jsem hranici regexu, aby tečka nebránila rozpoznání výsledku; správný i nesprávný výpočet pak lze hodnotit.
+2. `test_arithmetic_and_repeat` očekával 3 kroky, dostal 2: rozdělovač vět akceptoval po tečce pouze velké písmeno, nikoli číslo. Rozšířil jsem hranici segmentace o číslice. To zároveň změnilo indexování kroků ve starších reportech — nezaměňovat 27 a 33 kroků za změnu modelu.
+3. V RHAR 004 samotné regexy rovnic s `=` neodhalovaly přirozenojazyčné operace. RHAR 005 proto přidal normalizaci zápisů `times`, `*`, `×`, `minus` atd. a explicitní označení opakovaných výskytů, ale bez tvrzení o sémantické nadbytečnosti.
+4. RHAR 006 musel zpřesnit fráze checkpointu (např. `43 apples remaining`) a ignorovat nejednoznačnou identifikaci správného výsledku. RHAR 007 přidal fail-closed stav pro neodpovídající počet tokenů, nejednoznačné offsety a checkpoint uvnitř tokenu.
+5. Vždy jsem po opravách vyžadoval kompletní lokální regresní sadu; při červené sadě `Ran 213 tests`, `FAILED (failures=3, skipped=2)` jsme nepokračovali k experimentu, dokud následný běh nebyl zelený.
+
+#### ✅ Co si odnáším a co dál
+
+- Délka odpovědi, počet odstavců, znaků ani heuristických opakování nejsou automaticky úsporou generovaných tokenů. Správnost a skutečné tokeny musím posuzovat společně.
+- Přesná revize modelu, seed, lokální artefakty a oddělení GPU inference od CPU analýzy udržují pokusy dohledatelné.
+- **Následující návrh RHAR 008:** do budoucích diagnostických záznamů ukládat originální vygenerovaná tokenová ID a validační metadata, přidat testy integrity a teprve poté dělat závěry o přesných hranicích. Dosud neschváleno ani neimplementováno.
+- Automatické CPU CI je přidané na feature větev; lokální testy prošly, ale tento zápis netvrdí nový zelený CI běh bez jeho doložení.
+
+**Bilance:** 213 spuštěných testů (2 přeskočené), 1 správný GPU canary, offline RHAR 003–007, 3 regresní chyby opravené, **0 prokázaných tokenových úspor, 0 trénování**. 🐇🛡️
+
+
+
 ### 🌙 2026-10-10 — Konec dne / Co jsme se dnes naučili
 
 **Stav dne: práce pro dnešek končí.** Dnešní cíl nebyl trénovat Qwen, ale postavit bezpečnou, reprodukovatelnou přípravu výzkumu **RHAR — Rabbit Hollow Adaptive Reasoning**. Začali jsme CPU plánovačem a skončili plně zelenou sadou **103/103 testů** (`Ran 103 tests in 0.917s`, `OK`) a ověřeným generovacím `--dry-run`. To je skutečný výsledek dne, **ne** naměřená úspora tokenů.
