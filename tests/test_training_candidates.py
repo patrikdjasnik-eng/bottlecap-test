@@ -36,6 +36,10 @@ class TrainingCandidatesTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             select([record(),record(prompt=[{"role":"user","content":"changed"}])])
 
+    def test_conflicting_rejected_prompt(self):
+        with self.assertRaises(ValueError):
+            select([record(correct=False), record(prompt=[{"role":"user","content":"changed"}])])
+
     def test_missing_fields(self):
         r=record();del r["correct"]
         with self.assertRaises(ValueError): select([r])
