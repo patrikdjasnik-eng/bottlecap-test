@@ -13,6 +13,16 @@
 
 ## Diary
 
+### 2026-10-10 — 🛡️ CEP 002 v0.3: Verified Lock — protecting independently verified experiences
+
+**User decision:** include a safety guard to prevent a later incorrect Qwen answer from being accepted as truth and used to retroactively corrupt an earlier correct answer.
+
+**Documented design:** Verified Lock is **not a fourth architecture service**; it is a VPS + REC state invariant. A complete trace becomes VERIFIED_LOCKED only with trusted original facts, independently verified intermediate steps, correct final and normal completion, recording contract hash and verifier version. Later Qwen outputs can only trigger RECHECK_PENDING. Original still checks out → REJECTED_CORRECTION; demonstrated mistake plus independently validated repaired procedure → append a versioned correction without overwriting history; disputed contract/verifier → LOCK_DISPUTED / REVIEW_REQUIRED and exclusion from new training examples. The verifier itself is not guaranteed infallible.
+
+**Documentation:** updated Czech [CEP-002.md](../CZ%20docs/CEP-002.md), English [CEP-002.en.md](CEP-002.en.md), and both IDEA files. Pseudocode excludes disputed records from training. Proposed CPU tests for false corrections, ambiguous evidence, verifier conflicts, accidentally correct final answers with flawed reasoning and preservation of prior versions. Track false_correction_proposals, accepted_verified_repairs and disputed_locks.
+
+**Status:** **PROPOSAL ONLY**; no working Verified Lock, new generations, new CEP 002 CPU unit tests, GPU, or LoRA training. Implementations/experiments need separate approval. BottleCapAI compatibility is maintained by offline permitted-training-data processing with no extra official inference-time memory or changed evaluator.
+
 ### 2026-10-10 — 🧠 RHAR-CEP 002 v0.2: simple VPS + XP + REC design (proposal only)
 
 **User decision:** flesh out CEP 002 with my idea of protecting indispensable reasoning dependencies, **without creating an unnecessarily complex system**. Show a readable version of the algorithm directly in the conversation and record the specification in Czech and English.
