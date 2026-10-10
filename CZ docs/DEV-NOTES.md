@@ -13,6 +13,16 @@
 
 ## Deník
 
+### 2026-10-10 — 🛡️ CEP 002 v0.3: Verified Lock — ochrana správně ověřených zkušeností
+
+**Rozhodnutí uživatele:** do CEP 002 zahrnout pojistku proti tomu, aby Qwen přijal pozdější špatný výsledek jako pravdu a zpětně „opravil“ dřívější správné řešení.
+
+**Zapsaný návrh:** Verified Lock **není čtvrtá architektonická služba**. Jde o stav a kontrolní pravidlo ve VPS + REC. Kompletní řešení získá VERIFIED_LOCKED jen po nezávislém ověření původních faktů, mezikroků, finální odpovědi a dokončení, s verzí verifieru a hashem kontraktu. Nový výstup Qwenu smí pouze vyvolat RECHECK_PENDING. Původní řešení znovu projde → REJECTED_CORRECTION; prokazatelně chybné a nově ověřené řešení → neztrátová verzovaná oprava; spor v kontraktu/verifieru → LOCK_DISPUTED / REVIEW_REQUIRED, automaticky nic nepředat do tréninku. Zámek není důkazem neomylnosti samotného verifieru.
+
+**Dokumentace:** aktualizovány český [CEP-002.md](CEP-002.md), anglický [CEP-002.en.md](../docs/CEP-002.en.md) a oba IDEA soubory. Pseudokód vylučuje sporné záznamy z nového trénovacího výběru. Navrženy CPU testy falešné opravy, nejistého důkazu, konfliktu verifierů, nesprávné derivace a zachování historie. Počítat false_correction_proposals, accepted_verified_repairs a disputed_locks.
+
+**Stav:** **POUZE NÁVRH**, žádný funkční Verified Lock, žádné nové modelové odpovědi, CPU unit testy nové funkce, GPU ani LoRA trénink. Implementaci a experiment uživatel schválí samostatně. Návaznost na BottleCapAI: jen offline zpracování přípustných trénovacích dat, finální model bez externí runtime paměti a beze změn oficiální evaluace.
+
 ### 2026-10-10 — 🧠 RHAR-CEP 002 v0.2: jednoduchý algoritmus VPS + XP + REC (pouze návrh)
 
 **Rozhodnutí uživatele:** podrobně dopracovat nový směr CEP 002 včetně mého návrhu ochrany nezbytných odvozovacích kroků, ale **bez zbytečné systémové složitosti**. Vysvětlit algoritmus přímo v konverzaci a zapsat jej dvojjazyčně do repozitáře.
