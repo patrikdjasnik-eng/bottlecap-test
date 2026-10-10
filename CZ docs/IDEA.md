@@ -71,3 +71,21 @@ Příklad: neukládat odpověď `20`, ale postup `floor(celkem * (1-rezervovaný
 **Požadavky BottleCapAI:** Žádná databáze odpovědí při oficiální inferenci; přínos se musí projevit v naučených vahách, při zapnutém thinking. Zákaz učení z hodnoticích dat SVAMP, MBPP+, BFCL, IFEval a z již prohlédnutých validačních otázek, které bychom chtěli vykazovat jako nezávislý test. Kontrolovat přesnost, úplnost i celkové tokeny včetně reasoning. Správná finální odpověď sama o sobě nedokazuje správný postup. Hlídáme chybné zobecnění, uzavřenou smyčku vlastních chyb, zapomínání a náklady na ověřování.
 
 **Stav:** Jde o směr pro případný CEP 002, nikoliv hotový modul, nový prokázaný algoritmus nebo naměřené zlepšení. Příbuzné principy self-trainingu, distilace a opětovného využití postupů již existují. Dokončit Evaluation 006 beze změn.
+
+ 
+### 🧠 CEP 002 — REC: Retroactive Experience Correction (zpětná oprava zkušeností)
+
+**Nově přijatá výzkumná hypotéza, nikoliv implementovaná funkce.** Když se model v pozdější trénovací úloze (např. 10) naučí nezávisle ověřený postup, který je v rozporu s jeho dřívějším řešením (např. otázky 3), REC má umožnit označit starší záznam k opětovnému přezkumu. Samotný Qwen si ale mezi samostatnými běhy nepamatuje všechna řešení, sám nepozná chybu a při inferenci si automaticky nemění váhy. REC je pracovní název, nikoliv tvrzení o nové vědecké metodě.
+
+**Navržený algoritmus jen pro přípravu trénovacích dat:**
+
+1. **Provenience a verzování.** U povolených trénovacích úloh zaznamenat ID/hash, zdroj a split, původní reasoning/final, předpoklady, ověřovací status a historii. Udržovat **nejvýše tři skutečně existující nezávisle ověřené postupy** pro danou strukturu; pokud jsou jen dva, třetí nevymýšlet. Můžeme též vybrat tři obecné strategie napříč daty.
+2. **Spouštěč opravy.** Pozdější ověřený krok, protipříklad nebo nalezený rozpor vytvoří návrh na zpětnou kontrolu. Podobnost zadání sama o sobě není důkazem chyby. Okamžitý návrat i kontrola na konci dávky zůstávají variantami k rozhodnutí podle ceny.
+3. **Nezávislý verifier.** Znovu ověřit celé původní zadání, finální číslo i kontrolovatelné mezikroky deterministicky (aritmetika, rovnice, omezení, testy). LLM-judge smí navrhnout podezření, ale není konečnou autoritou; bez důkazu stav neověřeno.
+4. **Nemazat minulost.** Originální generaci uchovat neměnnou, navrhnout novou verzi s přesnou příčinou chyby, důkazem a podmínkami platnosti. Rozlišit **XP+** (ověřené správné), **XP−** (ověřené selhání za konkrétních podmínek) a **REC** (historie opravy); náhodně správný final s chybným postupem není pozitivní trénovací trace.
+5. **Přenos a trénování.** Správný postup zobecnit, otestovat na dalších povolených trénovacích variantách s jinými čísly i omezeními a **teprve po samostatném souhlasu** využít pro LoRA. Výsledný model otestovat na úplně novém holdoutu; měřit správnost, dokončení, total tokens (thinking + final), falešné opravy a výpočetní náklady REC.
+
+**Soulad s původním BottleCapAI zadáním:** REC funguje **offline před trénováním / při přípravě dat**, ne během oficiálního evaluate.py. Odevzdaný Qwen3-0.6B nebo LoRA musí zůstat načitatelný standardními Transformers i vLLM bez vlastního runtime orchestrátoru či externí paměti; thinking zůstává zapnutý, oficiální prompty, sampling i limity se nemění. Neučit se z SVAMP, MBPP+, BFCL a IFEval. **60 již prohlédnutých otázek Evaluation 006 není nový nezávislý holdout**; pokud je někdy použijeme pro trénink, musíme je z nezávislých validačních nároků vyřadit. Vhodnější je stavět REC na jiných povolených trénovacích úlohách.
+
+**Stav:** pouze dokumentace a testovatelná hypotéza. Žádná implementace REC, nové GPU spuštění, trénování CEP 002 ani prokázaná úspora. Implementace, data a rozpočet čekají na zvláštní schválení.
+
