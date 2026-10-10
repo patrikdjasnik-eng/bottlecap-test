@@ -50,4 +50,5 @@ jobs:
             tests.test_reasoning_structure \
             tests.test_reasoning_steps \
             tests.test_semantic_repetition \
+            tests.test_reasoning_checkpoint \
             -v
