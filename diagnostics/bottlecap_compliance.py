@@ -23,9 +23,15 @@ def inspect(base, candidate, adapter, idea, bundle=None):
         left, right = json.loads(a.read_text()), json.loads(b.read_text())
         info["official_evaluation_results_present"] = True
         # These invariants are mandatory for a meaningful paired comparison.
-        for field in ("selection", "cohort_sha256", "samples", "seed"):
+        for field in ("selection", "cohort_sha256", "samples", "seed", "benchmarks", "sampling", "max_tokens", "max_model_len", "revisions"):
             if field not in left or field not in right or left[field] != right[field]:
                 issues.append(f"Evaluation pairing mismatch or missing {field}")
+        if left.get("smoke") or right.get("smoke"):
+            issues.append("Smoke runs do not provide submission scores")
+        if left.get("failed_benchmarks") or right.get("failed_benchmarks"):
+            issues.append("Some official graders failed; results incomplete")
+        if left.get("selection") != "full" or left.get("samples") != 8:
+            issues.append("Full official submission requires full cohort x 8 samples; document reductions")
         # Let compare.py do final rigorous pairing; do not guess complete schema.
         info["matching_evaluation_configuration"] = not issues
     safetensors = list(Path(adapter).glob("*.safetensors"))
