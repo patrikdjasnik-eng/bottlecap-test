@@ -13,6 +13,21 @@
 
 ## Diary
 
+### 2026-10-10 — 📚 What I learned today: from SFT to safe CEP 002 (daily recap)
+
+**Entry type:** lessons from today's work; summary of experiments already performed and an independently **proposed** algorithm, not new measurements or a working CEP 002 implementation.
+
+- **A model can fail because it loses the relationships between constraints, not because it cannot recognize a number.** In the 536 lock-code task, plain SFT 003 correctly derived `(Y+2)+3Y=14` and finished in 139 tokens. CEP Pilot 001, which increased lexical weights for numbers and operators, used 244 tokens and mentioned the correct candidate but ultimately selected the wrong 312. Emphasizing numeric tokens, shortening text, or merely mentioning a correct intermediate answer is insufficient: the full derivation and final answer must agree.
+- **I must measure correctness and token usage together, using paired comparisons.** On six diagnostic tasks SFT scored 3/6 versus CEP 2/6; on a separate set of 20 tasks both scored 9/20. Evaluation 006 (60 other mathematics tasks, one seed) gave SFT 19/60 and 5,769 generated tokens versus CEP 001 23/60 and 5,266 tokens (503 / 8.72% fewer). CEP fixed eight answers but broke four that SFT got right. **This local sample is encouraging, not proof of cross-domain transfer, official benchmark performance, or robust improvement.**
+- **Experimental isolation matters as much as the algorithm.** I learned to check which LoRA adapter is active: reusing an already PEFT-decorated backbone can compromise the comparison. Evaluation 006 loads each adapter onto a separate clean backbone. Record the seed, matched prompts, generation limit, completion state, and intermediate artifacts; the 60 already inspected questions cannot become a fresh independent holdout or training set retroactively.
+- **CEP 002 is not “memorize every answer.”** The target is a *verified procedure*: task facts → necessary dependencies → applicability and constraint checks → final answer. **VPS** independently checks steps, **XP** records both successful and failed methods with the reason and may select up to three verified applicable candidates, and **REC** allows a newly supported insight to trigger rechecking an older training example. If solution 10 appears to expose an error in solution 3, that alone is not proof: the original case must be independently checked again.
+- **Newer answers are not automatically more truthful.** **Verified Lock** protects independently checked earlier solutions from false “corrections.” A new assertion triggers review only; changing the locked result needs independent evidence and a versioned repair. Conflicting verification evidence requires a hold and exclusion from new training, not deletion of the history. The verifier is not infallible either.
+- **The goal is to improve model weights, not build unnecessary infrastructure around them.** CEP 002 is currently a design for offline processing of permitted training data followed by standard LoRA. Qwen must run without external inference-time memory or a custom orchestrator, while the official BottleCapAI evaluation remains untouched. Related published methods exist, so novelty and gains remain unproven.
+
+**What was actually verified:** SFT 003 and CEP Pilot 001 have been locally evaluated; earlier entries contain the CPU/GPU details and measurements. **What remains a proposal:** CEP 002 (VPS + XP + REC + Verified Lock); no implementation, CEP 002 LoRA run, CEP 002 CPU unit tests, or independent experiment has taken place. An older “End of day” entry further below describes an **earlier CPU-preflight phase**, not the final state of October 10.
+
+**Next step — proposed only, requires separate approval:** a small CPU verifier prototype on 10–20 manually checked permitted training cases, false-correction and evidence-conflict tests; only then a controlled A/B/C comparison of plain SFT, VPS+XP, and VPS+XP+REC on a fresh untouched sample. **No step forward without green tests.** 🐇🛡️
+
 ### 2026-10-10 — 🛡️ CEP 002 v0.3: Verified Lock — protecting independently verified experiences
 
 **User decision:** include a safety guard to prevent a later incorrect Qwen answer from being accepted as truth and used to retroactively corrupt an earlier correct answer.
