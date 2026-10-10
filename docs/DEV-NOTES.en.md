@@ -13,6 +13,16 @@
 
 ## Diary
 
+### 2026-10-10 — 🧠 CEP 002: proposed REC (Retroactive Experience Correction) added
+
+**User decision:** extend the CEP 002 research direction with **REC — Retroactive Experience Correction**. A newly verified solution on a later *training* question may trigger a recheck of an earlier saved solution (e.g. question 10 → recheck question 3). The base model does not automatically recognize its past error: explicit records, a revisit trigger and independent verification are required. This is not online updating of the model weights during inference.
+
+**Proposed mechanism:** immutable and versioned solution history, up to three genuinely available independently verified applicable strategies, intermediate-step verification, preserved errors and corrections (XP+, XP−, REC), transfer to other permitted training variants and only then potentially approved LoRA training with a fresh holdout. Never overwrite historical model responses. An LLM judge alone is not sufficient proof.
+
+**BottleCapAI compliance:** reviewed original `docs/UPSTREAM-README.md`: post-training methods and LoRA are permitted, but the final standard Transformers/vLLM Qwen3-0.6B/LoRA must run without any custom REC runtime component; keep thinking enabled and the official evaluation unchanged. Do not train on SVAMP, MBPP+, BFCL or IFEval. The 60 previously reviewed Evaluation 006 questions cannot simultaneously be training examples and an independent test. Prefer other allowed training questions for REC.
+
+**Actually done:** proposal added to both `CZ docs/IDEA.md` and `IDEA.md`, plus this diary update. **Not done:** REC implementation, REC CPU/GPU testing, new model generations or CEP 002 training. Any execution requires separate approval.
+
 ### 2026-10-10 — 🐇 GPU Canary 002 and RHAR 003–007: lessons, bugs and fixes
 
 **Status:** documented local outputs and implemented changes. No training, weight changes, official benchmark or proven token savings. Original `runs/` artifacts remain untouched.
