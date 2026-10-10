@@ -60,4 +60,5 @@ jobs:
             tests.test_stress_test_003 \
             tests.test_stress_trace_analyzer \
             tests.test_bottlecap_compliance \
+            tests.test_rhar_evaluation_001 \
             -v
