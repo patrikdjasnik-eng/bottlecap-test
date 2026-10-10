@@ -52,4 +52,5 @@ jobs:
             tests.test_semantic_repetition \
             tests.test_reasoning_checkpoint \
             tests.test_token_boundaries \
+            tests.test_token_trace \
             -v
