@@ -13,6 +13,18 @@
 
 ## Diary
 
+### 2026-10-10 — 🧠 RHAR-CEP 002 v0.2: simple VPS + XP + REC design (proposal only)
+
+**User decision:** flesh out CEP 002 with my idea of protecting indispensable reasoning dependencies, **without creating an unnecessarily complex system**. Show a readable version of the algorithm directly in the conversation and record the specification in Czech and English.
+
+**Actually completed:** [CEP-002.en.md](CEP-002.en.md) and [Czech](../CZ%20docs/CEP-002.md), linked from both IDEA files and both READMEs. The three MVP components are **VPS** (deterministic verification of task constraints and intermediate relations), **XP** (at most three actually existing verified applicable strategies) and **REC** (a newly verified insight may trigger rechecking an earlier *training* example; its original trace is immutable). Training targets should follow **task facts → necessary dependencies → applicability check → final answer**, not arbitrary text shortening.
+
+**Deliberate simplicity:** one batch CPU verifier, JSONL records, 10–20 manually reviewed permitted training examples for future tests, and ordinary LoRA. No vector store, multi-agent inference system, RL/DPO, automatic online training or custom inference controller.
+
+**Experiment proposed only:** A = conventional SFT, B = VPS+XP, C = VPS+XP+REC; use matched conditions and fresh untouched validation to isolate C versus B, measuring strict accuracy, generated tokens, completion and false corrections. The 60 previously inspected Evaluation 006 questions are not a fresh independent holdout; exclude official SVAMP/MBPP+/BFCL/IFEval questions from training. Preserve standard Qwen/LoRA loading and official evaluation settings.
+
+**Status:** specification documented; **CEP 002 is not implemented, tested, trained or proven scientifically novel**. No new CEP 002 CPU tests, GPU action, model generation or training was performed. Implementation and execution require separate explicit approval.
+
 ### 2026-10-10 — 🧠 CEP 002: proposed REC (Retroactive Experience Correction) added
 
 **User decision:** extend the CEP 002 research direction with **REC — Retroactive Experience Correction**. A newly verified solution on a later *training* question may trigger a recheck of an earlier saved solution (e.g. question 10 → recheck question 3). The base model does not automatically recognize its past error: explicit records, a revisit trigger and independent verification are required. This is not online updating of the model weights during inference.
