@@ -754,3 +754,25 @@ Další rozhodnutí pouze podle párového měření správnosti a celkových to
 Uživatel lokálně vytiskl `runs/rhar-evaluation-004-task-4/records.jsonl`: **SFT 003, 139 tokenů, strict correct**. Model přímo spojil vztahy `X=Y+2`, `Z=2Y` a `X+Y+Z=14`, dosadil `(Y+2)+3Y=14`, odvodil `Y=3`, `X=5`, `Z=6` a ukončil `Final answer: 536`. Naproti tomu **CEP 001, 244 tokenů, incorrect**, vyjmenovával kandidátní číslice, uvedl mimo jiné správnou trojici `X=5,Y=3,Z=6`, ale následně vybral `312` (součet 6 namísto 14). 
 
 **Interpretace omezená důkazy:** v tomto *jednom páru* model SFT zachoval a vyřešil vazby symbolicky, kdežto CEP změnil strategii na enumeraci s chybným výběrem. Nelze prohlásit, že vážení tokenů přímo způsobilo přechod strategií; inference je stochastická (jediný seed) a šest diagnostických otázek je již prohlédnutých. Nezvyšovat boost naslepo. Další skutečně nezávislé vyhodnocení musí být na dosud neviděných povolených validačních úlohách; srovnat identické prompty/seeds/cap a vyhodnotit correctness i total tokens. CEP 001 není prokázaný přínos.
+
+
+## 2026-10-10 — RHAR Validation 005 a izolovaná kontrola CEP 001
+
+**Kontrolní lokální experiment (nikoli oficiální BottleCapAI benchmark):** Na 20 dalších oddělených úlohách GSM8K train byly porovnány dva natrénované adaptery při stejném seed 9001, samplingu a limitu 512 generovaných tokenů. Tyto úlohy nebyly mezi předchozími 1 000 trénovacími ani 100 loss-validačními příklady. Jde o jedinou generaci na otázku; neprokazuje generalizaci ani zachování kvality.
+
+| Metrika | SFT 003 | CEP Pilot 001 |
+| --- | ---: | ---: |
+| Správné odpovědi | 9/20 (45 %) | 9/20 (45 %) |
+| Dokončené odpovědi | 19/20 | 19/20 |
+| Průměr tokenů | 114,85 | 115,80 |
+| Součet tokenů | 2 297 | 2 316 |
+
+**Závěr:** CEP 001 nepřinesl na této sadě zlepšení proti běžnému SFT; vygeneroval o 19 tokenů více celkem (+0,83 %). Na předchozích šesti již prohlédnutých diagnostických úlohách dosáhl SFT 3/6 a CEP 2/6. Data nepodporují účinnost jednoduchého lexikálního zvýhodnění čísel a operátorů, ale nevylučují širší hypotézu CEP. Z `eval_loss` nebo zkrácení vůči base, která narážela na 512tokenový strop, netvrdit úspěch v soutěžním zadání.
+
+**Kontrola možné kontaminace adapterů při evaluaci:** V hromadném `diagnostics.rhar_validation_compare` se při přechodu SFT → CEP objevil PEFT `UserWarning: Already found a peft_config attribute in the model`. Kvůli tomu je třeba ověřit, že při hromadném přepínání zůstává skutečně aktivní pouze zamýšlený adapter. Oddělená kontrola v novém Python procesu:
+`python -m diagnostics.rhar_evaluation_001 --execute --approve-gpu-2 --adapter runs/rhar-cep-pilot-001 --task-index 4 --out runs/rhar-cep-isolation-check-001`.
+**Výsledek:** CEP znovu vytvořil **244 tokenů, incorrect, truncated=false**, přesně stejně jako jeho předchozí Task 4. To podporuje reprodukovatelnost chyby bez předchozího SFT adapteru; **neprokazuje** však správnou izolaci všech dvaceti hromadných měření.
+
+**Příčina pozorovaného selhání v Task 4:** SFT 003 odvodil `(Y+2)+3Y=14` ⇒ `Y=3`, `X=5`, `Z=6` a správně uzavřel `536` (139 tokenů). CEP 001 při enumeraci uvedl správnou trojici `5,3,6`, ale vybral nesprávné `312` (244 tokenů); jeho kontrola podmínek byla nekonzistentní. Z jediné dvojice nelze prokázat, že váhování operátorů způsobilo odlišnou strategii.
+
+**Další postup:** Nezvyšovat váhy naslepo ani nerozbíhat další pomocné experimenty. Nejdříve zkontrolovat a opravit čisté načtení/přepínání LoRA adapterů v porovnávacím skriptu. Následnou hypotézu zaměřit na uchování **celých ověřitelných vztahů a konzistenci odvození s finální odpovědí**, nikoli pouze na jednotlivé číselné tokeny; nové intervence posuzovat proti stejnému SFT a na dosud neprohlédnutých úlohách. Zatím nemáme doložený CEP algoritmus lepší než SFT ani oficiální skóre BottleCapAI.
