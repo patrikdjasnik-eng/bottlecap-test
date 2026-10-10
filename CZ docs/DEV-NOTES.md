@@ -13,6 +13,16 @@
 
 ## Deník
 
+### 2026-10-10 — 🧠 CEP 002: přidán návrh REC (zpětná oprava zkušeností)
+
+**Rozhodnutí uživatele:** rozšířit nový výzkumný směr CEP 002 o **REC — Retroactive Experience Correction**. Nový postup ověřený při pozdější *trénovací* úloze může vyvolat přezkum staršího uloženého řešení (např. úloha 10 → opětovné ověření úlohy 3). Model se o chybě nedozví automaticky: je potřeba historie příkladů, spouštěč přezkumu a nezávislý verifier. Nejde o automatické přeučování vah během inference.
+
+**Navržené komponenty:** verzovaná paměť řešení, maximálně tři reálně existující ověřené použitelné postupy, kontrola skutečných mezikroků, historie původní chyby i opravy (XP+, XP−, REC), zobecnění na další povolené trénovací varianty a až pak případné LoRA učení s novým holdoutem. Původní odpovědi nepřepisovat. LLM hodnotitel sám nestačí jako důkaz.
+
+**Kontrola souladu s BottleCapAI:** prostudováno původní zadání v `docs/UPSTREAM-README.md`. Vlastní post-training metoda a LoRA jsou povoleny; při oficiálním testování musí standardně načitatelný Qwen3-0.6B/LoRA běžet bez REC runtime doplňku, s thinking zapnutým a beze změn hodnoticího protokolu. Žádné trénování na SVAMP, MBPP+, BFCL ani IFEval. Již prohlédnutých 60 úloh z Evaluation 006 nesmí současně sloužit jako trénink a nezávislý holdout. Bezpečnější je připravit REC na jiných přípustných trénovacích otázkách.
+
+**Skutečně provedeno:** návrh doplněn do českého `CZ docs/IDEA.md` a anglického `IDEA.md`; tento zápis do DEV-NOTES. **Neprovedeno:** REC implementace, CPU/GPU testování REC, modelové generování ani trénování CEP 002. Další kroky vyžadují zvláštní souhlas.
+
 ### 2026-10-10 — 🐇 GPU Canary 002 a RHAR 003–007: poučení, chyby a opravy
 
 **Stav:** dokumentační souhrn skutečných lokálních výstupů a implementovaných změn. Žádné trénování, úprava vah, oficiální BottleCapAI benchmark ani prokázaná úspora tokenů. Původní artefakty v `runs/` nechávám nedotčené.
