@@ -117,3 +117,25 @@ U seedu **9003 při limitu 1024** ve zobrazeném závěru model výslovně rozpo
 4. Nové GPU generování nebo LoRA trénink až po CPU testech a **samostatném výslovném souhlasu**. Základní model nebyl změněn.
 
 **Stav pro předání / poradu:** stress task 01 uzavřena jako negativní výsledek v přísné metrice; hypotéza aktualizována, další experiment ani trénování se nespouští.
+
+
+## 2026-10-10 — RHAR Evaluation 001: skutečné první srovnání baseline a LoRA; plán Training 002
+
+**Zdroj důkazů:** uživatelem poskytnutý lokální výpis `runs/rhar-evaluation-001/summary.json` a koncové úseky obou `records.jsonl` traces (posledních 1 500 znaků každé). Celé generované traces zatím nebyly nezávisle přezkoumány. Test spuštěn v prostředí GTX 1070 Ti (Transformers/PyTorch), `diagnostics.rhar_evaluation_001`, `--execute --approve-gpu-2`, `--task-index 2`, adapter `runs/rhar-training-001`. `official_benchmark=false`.
+
+**Párové nastavení:** nemodifikovaný Qwen3-0.6B vs Qwen3-0.6B + natrénovaný LoRA pilot; stejná diagnostická holdout úloha `rhar003-math-02`, stejný prompt, seed 9001, teplota 0,6 / top_p 0,95 / top_k 20, limit 512 generovaných tokenů, thinking zapnutý. Úloha: 180 km / 60 km/h + 120 km / 40 km/h; kontrolní výsledek **6 hodin**.
+
+| Metrika | Baseline | LoRA |
+| --- | ---: | ---: |
+| Celkové vygenerované tokeny | 512 | 512 |
+| Strict correct | false | false |
+| Truncated | true | true |
+| Split status | unclosed_think_block | unclosed_think_block |
+| Výpočet správných 6 hodin v zobrazeném thinking | ano | ano |
+| Uzavřená finální odpověď | ne | ne |
+
+`token_difference_base_minus_adapter=0`, `token_reduction_pct=0.0`, `quality_preservation_demonstrated=false`, `generalization_demonstrated=false`. Koncové úryvky nejsou doslova stejné (`IDENTICKÝ TEXT: False`), ale **odlišný sampling text není sám o sobě kauzálním důkazem vlivu LoRA**. Obě varianty uvnitř thinking vypočítaly 3 + 3 = 6, opakovaly kontrolu přes průměrnou rychlost 300/6 = 50 km/h a narazily na limit před uzavřením a finální odpovědí. Tento test tedy **neprokázal úsporu tokenů ani dokončenou správnost**; 1 párový vzorek nemůže prokázat generalizaci. Zásadní je přestat zaměňovat správné mezivýsledky za `correct=True`.
+
+**Training 001 je technický pilot:** 1 povolený GSM8K příklad, 20 LoRA kroků, rank 8, uložený a strukturově ověřený `adapter_model.safetensors` (112 tensorů); pokles trénovacího lossu není generalizační důkaz. Cíl Training 002: sestavit *více různorodých správných a kompletních* povolených trénovacích příkladů; zachovat thinking + uzavření + finální odpověď, označit původ a revision, odmítnout duplicity, chybné a zkrácené traces; nezahrnout SVAMP/BFCL/MBPP+/IFEval ani šest RHAR Stress Test 003 holdoutů. Kratší odpověď bez správnosti není úspěch. Důsledná kontrola leakage a oddělení evaluace.
+
+**Následující milníky (zatím plán):** (1) pouze CPU inspekce dostupných povolených dat a schématu kandidátů; (2) návrh Training 002 datasetu a kontrol jeho kvality; (3) zelené unit testy / kontrola overlap; (4) samostatně schválený GPU Training 002; (5) vývojové párové ověření na větším počtu úloh; (6) oficiální `evaluate.py` na kompatibilním vLLM hardwaru, nebo transparentně uvést omezení v odevzdání. **Tento zápis nespouští trénování, stahování dat ani GPU.**
