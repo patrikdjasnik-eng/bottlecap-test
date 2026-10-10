@@ -58,3 +58,13 @@ Podrobnou historii testů, pomocných skriptů, limitů GTX 1070 Ti a negativní
 Žádné samostatné RPS/RPD/TPC/HRM moduly, honeynety, dashboardy, další sérii plánovačů ani „50 experimentů“. Historické názvy jsou *archivní nápady*, dokud se neprokáže jejich nezbytnost pro tuto jedinou hypotézu.
 
 **Jediné další kroky:** ověřit kontrolní SFT → přesně navrhnout a implementovat malý CEP mechanismus → provést párové měření → podle výsledků pokračovat nebo směr zamítnout. Trénink/GPU vyžaduje výslovné spuštění; nic se nespouští automaticky.
+
+
+## Quest CEP 002 — Verified Procedural Experience (návrh, ne spuštěný test)
+
+- **Vstup:** jedině povolené trénovací otázky; předem oddělit nepoužité hodnoticí příklady. Nikdy nebrat SVAMP, MBPP+, BFCL, IFEval ani jejich odpovědi jako trénovací zkušenost.
+- **Získání XP:** vygenerovat kandidátní postup, ověřit výsledek i dostupné vazby mezi mezikroky, zobecnit proměnné a podmínky platnosti, prověřit na pozměněných úlohách, uložit provenienci a zamítnuté nesprávné zobecnění.
+- **Učení:** ze schválených přenositelných postupů sestavit krátké správné reasoning traces a natrénovat **jeden** CEP 002 LoRA adapter, pokud k tomu budou podklady. Zachovat srovnatelné parametry a rozpočet; změna musí být v modelových vahách.
+- **Kontrola:** proti běžnému SFT 003 a CEP 001 se stejnými prompty, seedy a tokenovým limitem testovat přesnost, dokončení, sumu tokenů thinking + final, přenos na změněná čísla i odmítnutí nevhodné procedury při změně významu zadání. Případně doplnit kontrolu pro vliv samotného výběru dat.
+- **Rozhodnutí:** bez zlepšení na neviděném holdoutu mechanismus revidovat či zamítnout. Nepovažovat akumulaci XP za automatický důkaz learningu.
+- **Časové pořadí:** nejdříve dokončit a uzavřít rozběhnutou Evaluation 006; tento quest neznamená spuštění trénování ani novou paralelní větev.
