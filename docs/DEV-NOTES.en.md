@@ -530,3 +530,21 @@ After developing on the feature branch, open a PR to `main` only after validatio
 
 **Next blockers:** manually inspect the complete 9003 reasoning, reconcile the real generation fields (`generated_text`, `total_generated_tokens`, `reasoning_split_status`, `gold_answer`) with training selector inputs (`full_generated_text`, `total_tokens`, `split_status`, `prompt`), test the mapping against real artifacts, collect more distinct permitted training questions, and only then separately approve training. No model weights changed and no official benchmark ran.
 
+
+## 2026-10-10 — 🐇 RHAR Pilot 002 — token budget and repeated verification
+
+**Observed:** explicitly approved GPU pilot on the second audited GSM8K training question (1 question × 3 seeds; max_new_tokens=512), unchanged pinned Qwen3-0.6B. Local records: `runs/rhar-pilot-002/records.jsonl`, selector output `runs/rhar-pilot-002/training-candidates.json`.
+
+| Seed | Tokens | Complete | Split | Tail observation |
+| --- | ---: | --- | --- | --- |
+| 9001 | 512 | No | `unclosed_think_block` | Computes 14 kg; repeatedly verifies it; never closes thinking |
+| 9002 | 512 | No | `unclosed_think_block` | Computes 14 kg; later questions its correct multiplication |
+| 9003 | 512 | No | `generated_think_block` | Computes 14 kg, closes thinking, begins `Final answer:`, but is cut off before the numeric answer |
+
+The arithmetic shown in the shared trace tails is 4 dogs × 250 g/day × 14 days = 14,000 g = **14 kg**. Still, under strict termination and grading rules these runs are **0/3 correct completed outputs and 3/3 truncated**. No truncated sample can be promoted into training merely because its internal reasoning contains the answer. Seed 9003 had 508 accounted reasoning tokens and 4 final tokens before truncation.
+
+**Summary:** responses=3; correct_responses=0; complete_terminations=0; valid_reasoning_splits=1; mean_total_generated_tokens=512; mean_generation_seconds=86.935. Selector: selected_count=0; eligible_count=0; not_selected_longer_count=0; rejected_count=3. Original record SHA-256: `45a19c23e8d5af28ce2af2a90df978de097e51e18c524f5ed93e22d686d115b6`.
+
+**Research hypothesis (not proof):** redundant verbal rechecking of correct arithmetic may exhaust generation budget without yielding a complete final answer. The observation does not establish token savings or generalization.
+
+**Proposed Experiment 003 — PLAN ONLY:** same dog-food question, pinned base model, seeds 9001/9002/9003, and sampling; change only max_new_tokens **512 → 768**. Track termination, final-answer correctness, reasoning/final token counts, and duration. Requires a dedicated implementation, CPU tests, fresh output directory and separately explicit GPU approval. No new generation, training, model update or official benchmark was performed in this documentation change. Await team review before proceeding.
