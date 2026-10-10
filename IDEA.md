@@ -99,3 +99,22 @@ See [docs/HARDWARE.en.md](docs/HARDWARE.en.md). Local machine: GTX 1070 Ti 8 GB 
 ## What worked / failed
 
 Record actual runs, negative findings, hardware and decisions in [docs/DEV-NOTES.en.md](docs/DEV-NOTES.en.md). No RPS/RPD/TPC training experiment has been performed.
+
+
+
+## Research originality review — 2026-10-10 (prior-art checkpoint)
+
+**BottleCapAI wording:** “We're interested in your own ideas, not how well you can copy other's.” The four formal rules permit LoRA and fine-tuning on permitted non-evaluation data; they demand an unchanged evaluation and honest documentation. **Using a published baseline is allowed; claiming it is novel is not.** Do not train on SVAMP, MBPP+, BFCL or IFEval. 
+
+**Current actual implementation:** RHAR Training 001 and 002, and planned Training 003, use ordinary LoRA supervised fine-tuning (SFT) on GSM8K responses or reference rationales, with a correct final answer and explicit thinking boundaries. This is an *established training baseline*, **NOT an invented RHAR compression algorithm**. RHAR modules RPS, RPD and TPC are hypotheses; there is no proven implementation. Existing Eval 002 observed 137 vs 512 tokens on one question, but the trained adapter answered 4.5 instead of 6 hours. Therefore it does **not** establish accuracy-preserving compression. Do not call the implementation novel, world-first, or an improvement on BottleCapAI metrics.
+
+**Documented nearby research (citations and methods to check for overlap):**
+- *Less is More Tokens: Efficient Math Reasoning via Difficulty-Aware Chain-of-Thought Distillation* (2025), https://arxiv.org/abs/2509.05226 : difficulty-proportional traces and SFT + preference optimization.
+- *Making Small Language Models Efficient Reasoners: Intervention, Supervision, Reinforcement* (2025), https://arxiv.org/abs/2505.07961 : stopping-time and length-regularized RL.
+- *Towards Structural Understanding of LLM Overthinking* (ACL 2026), https://deepmind.google/research/publications/203490/ : analysis of Qwen-family oververification/overexploration via thought progression graphs.
+- *LEASH: Adaptive Length Penalty and Reward Shaping* (ACL 2026), https://aclanthology.org/2026.acl-long.129/ : adaptive length reward.
+- *When Internalization Fails: Finding Better Targets for Reasoning Compression* (ACL Findings 2026), https://aclanthology.org/2026.findings-acl.734/ : alternatives for CoT shortening targets.
+- *Keypoint-based Progressive Chain-of-Thought Distillation* (ICML 2024), https://proceedings.mlr.press/v235/feng24e.html : emphasis on reasoning keypoints.
+- *AutoL2S: Auto Long-Short Reasoning* (2025), https://arxiv.org/abs/2505.22662 : adaptive short/long traces.
+
+**Novelty gate:** Before presenting an RHAR mechanism as original, write an executable definition (inputs, outputs, learning signal, objective), cite the nearest prior method, state the actual difference and devise an ablation: plain SFT vs RHAR candidate on identical training data, base model and evaluation protocol; measure total tokens AND correctness, including task transfer. A renamed loss, another wrapper/validator or simple shortest-correct trace selection **does not satisfy novelty by itself**. Any originality assertion is provisional: one literature check cannot exclude unpublished/prior work. Continue Training 003 **only as a disclosed SFT control baseline**, not as the final novel algorithm. The official submission can transparently report negative results.
