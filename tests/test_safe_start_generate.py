@@ -208,6 +208,31 @@ class SafeStartGenerateTests(unittest.TestCase):
             self.assertFalse(report["gpu_used"])
             self.assertFalse(output.exists())
 
+    def test_question_index_two_selects_next_question_only(self):
+        with tempfile.TemporaryDirectory() as folder:
+            q, sel, audit = fixtures(folder)
+            with patch.object(g, "execute", side_effect=AssertionError("GPU forbidden")):
+                with contextlib.redirect_stdout(StringIO()) as stdout:
+                    g.main(["--dry-run", "--pilot-3", "--question-index", "2",
+                            "--questions", str(q), "--selection-report", str(sel),
+                            "--overlap-audit", str(audit)])
+            report = json.loads(stdout.getvalue())
+            self.assertEqual(report["question_ids"], ["gsm8k-train-00001"])
+            self.assertEqual(report["planned_generations"], 3)
+            self.assertEqual(report["full_audit_question_count"], 12)
+            self.assertFalse(report["gpu_used"])
+
+    def test_question_index_guardrails(self):
+        for args in (["--dry-run", "--pilot-3", "--question-index", "0"],
+                     ["--dry-run", "--pilot-3", "--question-index", "13"],
+                     ["--dry-run", "--question-index", "2"],
+                     ["--execute", "--pilot-3", "--question-index", "2"]):
+            with self.subTest(args=args):
+                with contextlib.redirect_stderr(StringIO()):
+                    with self.assertRaises(SystemExit) as err:
+                        g.main(args)
+                self.assertEqual(err.exception.code, 2)
+
     def test_small_pilot_confirmation_is_required(self):
         with contextlib.redirect_stderr(StringIO()):
             with self.assertRaises(SystemExit) as err:
