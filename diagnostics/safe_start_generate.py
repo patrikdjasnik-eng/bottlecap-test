@@ -86,6 +86,17 @@ def load_approved_inputs(questions_path, selection_path, audit_path):
     return questions, plan_attempts(questions)
 
 
+def pilot_three(questions, attempts):
+    """One audited question, all three original seeds; retain full-file audit."""
+    if len(questions) != 12 or len(attempts) != 36:
+        raise ValueError("pilot requires the complete audited 12x3 plan")
+    chosen = questions[:1]
+    selected = [a for a in attempts if a["question_id"] == chosen[0]["question_id"]]
+    if len(selected) != 3 or [a["seed"] for a in selected] != list(SEEDS):
+        raise ValueError("pilot seed or attempt mismatch")
+    return chosen, selected
+
+
 def planned_config(questions, attempts, paths):
     return {
         "status": "plan_only", "model": BASE_MODEL, "model_revision": BASE_REVISION,
@@ -232,8 +243,8 @@ def execute(questions, attempts, config, output):
                   f"reasoning={record['reasoning_tokens']} truncated={record['truncated']}",
                   flush=True)
     overview = summarize(records)
-    if overview["responses"] != 36:
-        raise RuntimeError("not exactly 36 generated records")
+    if overview["responses"] != config["planned_generations"]:
+        raise RuntimeError("generated record count differs from approved plan")
     (output / "summary.json").write_text(json.dumps(overview, indent=2) + "\n",
                                           encoding="utf-8")
     print(json.dumps(overview, indent=2))
@@ -245,6 +256,10 @@ def main(argv=None):
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--dry-run", action="store_true", help="CPU only, no model imports")
     mode.add_argument("--execute", action="store_true", help="NOT authorized yet")
+    parser.add_argument("--pilot-3", action="store_true",
+                        help="Audit all 12 questions, plan only first question x three seeds")
+    parser.add_argument("--confirm-gpu-3", action="store_true",
+                        help="Explicit GPU consent for --pilot-3 (only with --execute)")
     parser.add_argument("--confirm-gpu-36", action="store_true",
                         help="Second explicit consent gate for 36 GPU generations")
     parser.add_argument("--questions", type=Path, default=DEFAULT_QUESTIONS)
@@ -252,14 +267,25 @@ def main(argv=None):
     parser.add_argument("--overlap-audit", type=Path, default=DEFAULT_AUDIT)
     parser.add_argument("--out", type=Path)
     args = parser.parse_args(argv)
-    if args.execute and not args.confirm_gpu_36:
-        parser.error("GPU is not authorized by default; --confirm-gpu-36 required")
-    if args.dry_run and args.confirm_gpu_36:
-        parser.error("GPU confirmation is invalid with --dry-run")
+    if args.confirm_gpu_3 and (not args.execute or not args.pilot_3):
+        parser.error("--confirm-gpu-3 requires --execute --pilot-3")
+    if args.confirm_gpu_36 and (not args.execute or args.pilot_3):
+        parser.error("--confirm-gpu-36 requires --execute without --pilot-3")
+    if args.execute and args.pilot_3 and not args.confirm_gpu_3:
+        parser.error("three-generation GPU pilot requires --confirm-gpu-3")
+    if args.execute and not args.pilot_3 and not args.confirm_gpu_36:
+        parser.error("36-generation GPU pilot requires --confirm-gpu-36")
     paths = {"questions": args.questions, "selection_report": args.selection_report,
              "overlap_audit": args.overlap_audit}
     questions, attempts = load_approved_inputs(*paths.values())
     config = planned_config(questions, attempts, paths)
+    if args.pilot_3:
+        questions, attempts = pilot_three(questions, attempts)
+        config.update({"status": "plan_only", "question_count": 1,
+                       "planned_generations": 3, "question_ids": [questions[0]["question_id"]],
+                       "pilot_mode": "one_question_three_seeds",
+                       "full_audit_question_count": 12,
+                       "full_audit_attempt_count": 36})
     if args.dry_run:
         print(json.dumps(config, indent=2, ensure_ascii=False))
         return 0
