@@ -18,7 +18,7 @@ CLAIM = re.compile(
     rf"(?<![\w.])({NUMBER})\s*(?:is|equals|=|gives|would be)\s*({NUMBER})(?![\w.])",
     re.I,
 )
-RESULT = re.compile(rf"\b(?:remaining|answer|result|be)\s*(?:is|would be|should be)?\s*({NUMBER})(?![\w.])", re.I)
+RESULT = re.compile(rf"(?:\b(?:answer|result)\s*(?:is|would be|should be)\s*({NUMBER})\b|\b({NUMBER})\s+(?:apples\s+)?remaining\b)", re.I)
 
 
 def check_operations(text):
@@ -54,7 +54,7 @@ def analyze_record(record):
     candidate = None
     if isinstance(gold, str) and gold.strip() and record.get("correct") is True:
         for match in RESULT.finditer(text):
-            if match.group(1) != gold:
+            if (match.group(1) or match.group(2)) != gold:
                 continue
             preceding = text[:match.end()]
             if len(preceding) < 1:
