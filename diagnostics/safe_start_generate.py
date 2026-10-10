@@ -86,11 +86,13 @@ def load_approved_inputs(questions_path, selection_path, audit_path):
     return questions, plan_attempts(questions)
 
 
-def pilot_three(questions, attempts):
+def pilot_three(questions, attempts, question_index=1):
     """One audited question, all three original seeds; retain full-file audit."""
     if len(questions) != 12 or len(attempts) != 36:
         raise ValueError("pilot requires the complete audited 12x3 plan")
-    chosen = questions[:1]
+    if type(question_index) is not int or not 1 <= question_index <= 12:
+        raise ValueError("question_index must be in range 1..12")
+    chosen = [questions[question_index - 1]]
     selected = [a for a in attempts if a["question_id"] == chosen[0]["question_id"]]
     if len(selected) != 3 or [a["seed"] for a in selected] != list(SEEDS):
         raise ValueError("pilot seed or attempt mismatch")
@@ -256,6 +258,8 @@ def main(argv=None):
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--dry-run", action="store_true", help="CPU only, no model imports")
     mode.add_argument("--execute", action="store_true", help="NOT authorized yet")
+    parser.add_argument("--question-index", type=int, default=1,
+                        help="1-based audited question position for --pilot-3 (1..12)")
     parser.add_argument("--pilot-3", action="store_true",
                         help="Audit all 12 questions, plan only first question x three seeds")
     parser.add_argument("--confirm-gpu-3", action="store_true",
@@ -267,6 +271,10 @@ def main(argv=None):
     parser.add_argument("--overlap-audit", type=Path, default=DEFAULT_AUDIT)
     parser.add_argument("--out", type=Path)
     args = parser.parse_args(argv)
+    if not 1 <= args.question_index <= 12:
+        parser.error("--question-index must be between 1 and 12")
+    if not args.pilot_3 and args.question_index != 1:
+        parser.error("--question-index requires --pilot-3")
     if args.confirm_gpu_3 and (not args.execute or not args.pilot_3):
         parser.error("--confirm-gpu-3 requires --execute --pilot-3")
     if args.confirm_gpu_36 and (not args.execute or args.pilot_3):
@@ -280,10 +288,11 @@ def main(argv=None):
     questions, attempts = load_approved_inputs(*paths.values())
     config = planned_config(questions, attempts, paths)
     if args.pilot_3:
-        questions, attempts = pilot_three(questions, attempts)
+        questions, attempts = pilot_three(questions, attempts, args.question_index)
         config.update({"status": "plan_only", "question_count": 1,
                        "planned_generations": 3, "question_ids": [questions[0]["question_id"]],
                        "pilot_mode": "one_question_three_seeds",
+                       "question_index": args.question_index,
                        "full_audit_question_count": 12,
                        "full_audit_attempt_count": 36})
     if args.dry_run:
