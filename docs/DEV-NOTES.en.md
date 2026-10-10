@@ -572,3 +572,23 @@ Run summary: responses=4, correct_responses=0, complete_responses=0, training_pe
 **Revised research hypothesis (not a demonstrated method):** *Correctness-Preserving Adaptive Reasoning*: keep verification that fixes reasoning errors; target only checking that brings no new information. Stopping at the first calculated number could freeze the wrong answer **28**.
 
 **Next only after review:** CPU-only trace analyzer for first occurrences of 28 and 20, correction sequences and repetitions; human review of full trace; careful separation of stress holdout from permissible training sources; a new separately approved GPU run only after CPU tests. No model or training changes were made in this documentation step.
+
+
+## 2026-10-10 — RHAR Evaluation 001: first observed baseline-vs-LoRA comparison; Training 002 plan
+
+**Evidence:** user-provided local `summary.json` output from `runs/rhar-evaluation-001` and the final 1,500 characters of each record. Full traces have not been independently reviewed. Exploratory PyTorch/Transformers run on GTX 1070 Ti, task `rhar003-math-02`, seed 9001, max_new_tokens 512, temperature 0.6/top_p 0.95/top_k 20, thinking enabled. Gold: **6 hours** (180/60 + 120/40). Same question, prompt and sampling for unmodified Qwen3-0.6B and pilot LoRA.
+
+| Observation | Base | LoRA |
+| --- | ---: | ---: |
+| Generated tokens | 512 | 512 |
+| Strict correct | false | false |
+| Truncated | true | true |
+| Reasoning split | unclosed_think_block | unclosed_think_block |
+| Correct 6-hour calculation appears in displayed thinking | yes | yes |
+| Completed final answer | no | no |
+
+`token_difference_base_minus_adapter=0`, `token_reduction_pct=0.0`, `quality_preservation_demonstrated=false`, `generalization_demonstrated=false`. Both traces verify the 3+3 calculation and recheck the average speed, but never terminate properly. Texts differed, which **alone does not establish a causal effect of LoRA** under sampling. One paired sample cannot support generalization claims, and an internally correct calculation is **not** a completed correct response. This is **not** BottleCapAI's official evaluation.
+
+Training 001 produced a real 112-tensor rank-8 LoRA adapter using 20 optimization steps on one approved GSM8K training sample. This was a technical proof of the training pipeline, not a demonstration of shortening.
+
+**Training 002 next gates (not yet executed):** CPU-only inventory and validation of more diverse *permitted training* examples, all correct, complete, provenance-checked and properly terminated; remove duplicates, invalid/truncated traces and overlaps with SVAMP/BFCL/MBPP+/IFEval. Keep all six handcrafted RHAR 003 holdouts out of training. After CPU tests and contamination checks, request explicit new GPU training approval. Evaluate baseline and candidate fairly on multiple held-out questions; report official scores only from upstream `evaluate.py` and `compare.py` on compatible hardware, or transparently disclose limits. No training, downloading or GPU was initiated by this documentation update.
