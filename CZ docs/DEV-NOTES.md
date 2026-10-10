@@ -13,6 +13,21 @@
 
 ## Deník
 
+### 2026-10-10 — 📚 Co jsem se dnes naučil: od SFT k bezpečnému CEP 002 (souhrn dne)
+
+**Typ záznamu:** vlastní poučení z dnešní práce; souhrn již provedených experimentů a samostatně **navrženého** algoritmu, nikoli nové měření nebo implementace CEP 002.
+
+- **Model nemusí selhat kvůli neznalosti čísla, ale kvůli ztrátě vztahů mezi podmínkami.** U úlohy s kódem 536 obyčejné SFT 003 správně odvodilo `(Y+2)+3Y=14` a skončilo za 139 tokenů. CEP Pilot 001 s vyšší lexikální vahou čísel a operátorů spotřeboval 244 tokenů, sice zmínil správné řešení, ale nakonec vybral chybných 312. Samotné zvýhodnění číslic, kratší text ani „správný mezivýsledek někde v reasoning“ proto nestačí; musí sedět celý postup i finální odpověď.
+- **Úspěšnost a tokeny musím sledovat společně a párově.** Na 6 diagnostických úlohách vyšlo SFT 3/6 vs. CEP 2/6, na další sadě 20 úloh 9/20 vs. 9/20. V Evaluation 006 (60 jiných matematických úloh, jeden seed) pak SFT dosáhlo 19/60 a 5 769 tokenů, zatímco CEP 001 23/60 a 5 266 tokenů (o 503 / 8,72 % méně). CEP opravilo 8 odpovědí, ale 4 původně správné pokazilo. **Tento lokální vzorek je povzbudivý, ne důkaz přenosu na nové domény, oficiálního skóre ani stabilního zlepšení.**
+- **Čistota experimentu je stejně důležitá jako algoritmus.** Při porovnávání LoRA jsem se naučil hlídat aktivní adapter: opakovaně dekorovaný PEFT backbone může znehodnotit srovnání. Evaluation 006 používá pro každý adapter čistý samostatný model. Zapisovat seed, stejné prompty, tokenový limit, dokončení i průběžné artefakty; již prohlédnutých 60 otázek nesmí zpětně sloužit jako nový nezávislý holdout nebo trénovací data.
+- **CEP 002 není „pamatuj si každou odpověď“.** Chci Qwen učit *ověřenou proceduru*: fakta ze zadání → nezbytné vztahy → kontrola použitelnosti a všech podmínek → výsledek. **VPS** nezávisle kontroluje kroky, **XP** uchovává správné i chybné postupy s důvodem a může vybrat maximálně tři ověřené použitelné varianty, **REC** dovoluje po novém důkazu znovu posoudit starší trénovací případ. Pokud řešení 10 ukáže chybu u řešení 3, není to samo o sobě důkaz: původní případ se musí ověřit znovu.
+- **Novější odpověď není automaticky pravdivější.** **Verified Lock** chrání nezávisle ověřené původní řešení před chybnou „opravou“. Nové tvrzení vyvolá jen přezkum; zámek lze verzovaně opravit pouze na základě samostatného důkazu. Rozpor nebo selhání verifieru znamená pozastavení a vyloučení sporného případu z nového tréninku, nikoli přepsání historie. Ani verifier není neomylný.
+- **Chci měnit váhy modelu, ne stavět kolem něj zbytečnou aplikaci.** CEP 002 je zatím návrh offline přípravy přípustných trénovacích dat a následné standardní LoRA. Qwen má fungovat i bez zvláštní externí paměti nebo inference orchestrátoru; oficiální BottleCapAI evaluace se nesmí upravovat. Podobné směry již existují, takže originalita ani zlepšení nejsou prokázané.
+
+**Co jsem skutečně ověřil:** existující SFT 003 a CEP Pilot 001 byly lokálně porovnány; CPU/GPU práce a konkrétní výsledky jsou rozepsané níže. **Co jsem dnes jen navrhl:** CEP 002 (VPS + XP + REC + Verified Lock); žádná jeho implementace, LoRA CEP 002, nové CEP 002 CPU testy ani nezávislý experiment zatím neproběhly. Starší níže uvedený záznam „Konec dne“ zachycuje pouze dřívější fázi CPU preflightu, **ne konečný stav celého 10. října**.
+
+**Další krok — zatím plán, vyžaduje samostatné schválení:** malý CPU prototyp verifieru na 10–20 ručně ověřených povolených trénovacích případech, testy falešné opravy a konfliktu důkazů; až pak kontrolované A/B/C srovnání obyčejného SFT, VPS+XP a VPS+XP+REC na novém nedotčeném výběru. Pravidlo **„bez zelené ani krok“** platí dál. 🐇🛡️
+
 ### 2026-10-10 — 🛡️ CEP 002 v0.3: Verified Lock — ochrana správně ověřených zkušeností
 
 **Rozhodnutí uživatele:** do CEP 002 zahrnout pojistku proti tomu, aby Qwen přijal pozdější špatný výsledek jako pravdu a zpětně „opravil“ dřívější správné řešení.
