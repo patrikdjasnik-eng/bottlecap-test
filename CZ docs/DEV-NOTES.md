@@ -776,3 +776,17 @@ Uživatel lokálně vytiskl `runs/rhar-evaluation-004-task-4/records.jsonl`: **S
 **Příčina pozorovaného selhání v Task 4:** SFT 003 odvodil `(Y+2)+3Y=14` ⇒ `Y=3`, `X=5`, `Z=6` a správně uzavřel `536` (139 tokenů). CEP 001 při enumeraci uvedl správnou trojici `5,3,6`, ale vybral nesprávné `312` (244 tokenů); jeho kontrola podmínek byla nekonzistentní. Z jediné dvojice nelze prokázat, že váhování operátorů způsobilo odlišnou strategii.
 
 **Další postup:** Nezvyšovat váhy naslepo ani nerozbíhat další pomocné experimenty. Nejdříve zkontrolovat a opravit čisté načtení/přepínání LoRA adapterů v porovnávacím skriptu. Následnou hypotézu zaměřit na uchování **celých ověřitelných vztahů a konzistenci odvození s finální odpovědí**, nikoli pouze na jednotlivé číselné tokeny; nové intervence posuzovat proti stejnému SFT a na dosud neprohlédnutých úlohách. Zatím nemáme doložený CEP algoritmus lepší než SFT ani oficiální skóre BottleCapAI.
+
+
+## 2026-10-10 — Poslední plánovaný test dne: RHAR Evaluation 006 (větší čisté srovnání)
+
+Připraveno, ale **GPU evaluace ještě nespustila žádná vzdálená akce**. Aktualizován `diagnostics/rhar_validation_compare.py`: pro SFT 003 a CEP 001 načítá **každý adapter na samostatném čistém backbone modelu** (bez opětovného použití PEFT-dekorovaného modelu) a vyžaduje `len(active.peft_config)==1`. Každá generace se zapisuje do `records.partial.jsonl`; při dokončení se vytvoří `records.jsonl` a souhrn. Průběžný soubor je bezpečnostní záznam, **automatické resume prozatím implementováno není**.
+
+Nové CLI `--skip 20 --count 60` vybírá **60 dalších, dosud neprohlédnutých otázek** za dříve použitými 20 holdout otázkami a za 100 validačními / 1 000 trénovacími příklady v deterministickém splitu GSM8K train. Celkem plán **120 GPU generování**, seed 9001, cap 512, thinking on. Žádná soutěžní eval data netrénovat. Výsledky nejsou oficiální BottleCapAI benchmark, jde pouze o matematiku a jeden seed. Srovnávat přesnost, dokončení, tokeny i chyby. Hypotézu ani výsledek předem neoznačovat za úspěch.
+
+Příkazy:
+`python -m unittest tests.test_rhar_validation_compare -v`
+`python -m diagnostics.rhar_validation_compare --dry-run --skip 20 --count 60 --out runs/rhar-validation-006`
+`HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m diagnostics.rhar_validation_compare --execute --approve-gpu --skip 20 --count 60 --sft runs/rhar-training-003 --cep runs/rhar-cep-pilot-001 --out runs/rhar-validation-006`
+
+Nespouštět, pokud CPU kontrola není zelená; nevydávat budoucí záměr za provedený test.
