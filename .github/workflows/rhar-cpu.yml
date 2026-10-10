@@ -59,4 +59,5 @@ jobs:
             tests.test_reasoning_trace_review \
             tests.test_stress_test_003 \
             tests.test_stress_trace_analyzer \
+            tests.test_bottlecap_compliance \
             -v
