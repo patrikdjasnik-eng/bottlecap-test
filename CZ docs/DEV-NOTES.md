@@ -611,3 +611,12 @@ U seedu **9003 při limitu 1024** ve zobrazeném závěru model výslovně rozpo
 4. Nové GPU generování nebo LoRA trénink až po CPU testech a **samostatném výslovném souhlasu**. Základní model nebyl změněn.
 
 **Stav pro předání / poradu:** stress task 01 uzavřena jako negativní výsledek v přísné metrice; hypotéza aktualizována, další experiment ani trénování se nespouští.
+
+
+## 2026-10-10 — ✅ RHAR Training 001: první skutečný LoRA GPU pilot
+
+**Potvrzené uživatelským výstupem lokálního běhu** na GTX 1070 Ti: `python -m diagnostics.lora_pilot --candidates runs/rhar-pilot-001/training-candidates-v2.json --out runs/rhar-training-001 --max-length 1024 --max-steps 20 --approve-training` s offline HF proměnnými. Model Qwen3-0.6B, LoRA rank 8, **jeden** vybraný povolený trénovací kandidát. Trénink skončil `20/20`, doba **18,8301 s**, `train_steps_per_second=1.062`, průměrný `train_loss=0.08914567157626152`, loss krok 1 **0,2139**, krok 19 **0,0384**, krok 20 **0,0392**. Výstup hlásí `Pilot adapter saved: runs/rhar-training-001`. PEFT varovalo, že nenalezlo konfigurační soubor modelu pro kontrolu změn vocab; samo o sobě to nedokazuje chybu. Soubor `.safetensors` ještě nebyl nezávisle vylistován, načten ani vyhodnocen.
+
+**Interpretace:** technický GPU LoRA fine-tuning byl reálně proveden. Klesající training loss na jednom vzorku **neprokazuje** úsporu reasoning tokenů, generalizaci ani splnění BottleCapAI kritérií. Žádné nové měření base vs adapter, `evaluate.py` / `compare.py`, jiné datové sady ani další GPU běhy se při tomto zápisu nespouštějí. Následuje offline ověření existence adaptéru, metadat a kompatibility; teprve po schválení izolované srovnávací evaluace.
+
+**Doporučená CPU kontrola:** `ls -lh runs/rhar-training-001/adapter_model.safetensors runs/rhar-training-001/adapter_config.json runs/rhar-training-001/pilot_metadata.json` a `python -m json.tool runs/rhar-training-001/pilot_metadata.json`. Nezapisovat označení 100% vyřešeno, dokud oficiální hodnotící metriky nejsou doloženy.
