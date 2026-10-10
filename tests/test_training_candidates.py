@@ -18,6 +18,14 @@ class TrainingCandidatesTests(unittest.TestCase):
         self.assertEqual(a["selected"][0]["total_tokens"],15)
         self.assertFalse(a["training_performed"])
 
+    def test_accounting_three_generations(self):
+        report = select([record(total_tokens=512, correct=False, truncated=True),
+                         record(total_tokens=433), record(total_tokens=374)])
+        self.assertEqual(report["eligible_count"], 2)
+        self.assertEqual(report["selected_count"], 1)
+        self.assertEqual(report["rejected_count"], 1)
+        self.assertEqual(report["not_selected_longer_count"], 1)
+
     def test_reject_wrong(self):
         self.assertEqual(select([record(correct=False)])["selected_count"],0)
 
