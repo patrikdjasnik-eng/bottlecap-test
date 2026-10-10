@@ -71,5 +71,7 @@ Example: learn the transferable rule `floor(total * (1-reserved_fraction) * (1-d
 
 **BottleCapAI compliance:** REC operates **offline during data preparation**, not as a custom inference-time memory or multiple-answer controller in the official evaluate.py run. The submitted Qwen3-0.6B / LoRA must load in standard Transformers and vLLM; thinking stays enabled; official prompts, sampling and token caps stay unchanged. Never use SVAMP, MBPP+, BFCL or IFEval for training. The **60 reviewed Evaluation 006 questions** are no longer fresh unseen validation examples. If converted to training data, exclude them from any later independent holdout claims; building REC from different allowed training examples is preferable.
 
-**Status:** research proposal/documentation only. No REC code, GPU action, CEP 002 training, or demonstrated effect. Implementation, data selection and compute budget require separate approval.
+**Verified Lock (CEP 002 v0.3):** Qwen may flag an earlier suspected error, but cannot alone invalidate a previously independently verified solution. VPS locks only complete, auditable traces against trusted task facts, validated intermediate relations and final answers. REC may request rechecking the *original* task; false corrections are rejected and counted. Conflicting verifiers/contracts become LOCK_DISPUTED, are excluded from new training targets and require audit. Original records stay immutable. **The lock does not imply a flawless verifier.** Full lightweight specification: [RHAR-CEP 002 v0.3](docs/CEP-002.en.md).
+
+**Status:** research proposal/documentation only. No REC or Verified Lock implementation, new GPU action, CEP 002 training or demonstrated effect. Implementation, data selection and compute budget require separate approval.
 
