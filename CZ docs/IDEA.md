@@ -58,3 +58,16 @@ Podrobnou historii testů, pomocných skriptů, limitů GTX 1070 Ti a negativní
 Žádné samostatné RPS/RPD/TPC/HRM moduly, honeynety, dashboardy, další sérii plánovačů ani „50 experimentů“. Historické názvy jsou *archivní nápady*, dokud se neprokáže jejich nezbytnost pro tuto jedinou hypotézu.
 
 **Jediné další kroky:** ověřit kontrolní SFT → přesně navrhnout a implementovat malý CEP mechanismus → provést párové měření → podle výsledků pokračovat nebo směr zamítnout. Trénink/GPU vyžaduje výslovné spuštění; nic se nespouští automaticky.
+
+
+## Kandidát CEP 002 — Procedural Experience Learning (návrh z 2026-10-10)
+
+**Uživatelská hypotéza („CEP získává XP“):** Nezapamatovat si konkrétní odpověď ani ji jen vracet z cache. Po správném **nezávisle ověřeném** vyřešení trénovacího problému uložit **obecně použitelný postup**, jeho vstupy, závislosti a podmínky platnosti; při dalším učení jej zobecnit a přenést **do vah Qwen3-0.6B**, aby při nových úlohách obdobné struktury zvládl kratší a správné odvození.
+
+Cyklus: **vyřešit → ověřit výsledek i dostupné mezikroky → abstrahovat přenositelný postup → ověřit na změněných příkladech → uložit zkušenost s původem → natrénovat LoRA → vyhodnotit na dosud neviděných úlohách**. Přirovnání k XP je motivační model, nikoli tvrzení o automatickém on-line učení bez tréninku.
+
+Příklad: neukládat odpověď `20`, ale postup `floor(celkem * (1-rezervovaný_podíl) * (1-vadný_podíl) / velikost_balení)` spolu s předpokladem, že podíl vadných se počítá **až ze zbytku**. Jiný význam procent nebo jiné pořadí operací = postup nelze bez dalšího použít.
+
+**Požadavky BottleCapAI:** Žádná databáze odpovědí při oficiální inferenci; přínos se musí projevit v naučených vahách, při zapnutém thinking. Zákaz učení z hodnoticích dat SVAMP, MBPP+, BFCL, IFEval a z již prohlédnutých validačních otázek, které bychom chtěli vykazovat jako nezávislý test. Kontrolovat přesnost, úplnost i celkové tokeny včetně reasoning. Správná finální odpověď sama o sobě nedokazuje správný postup. Hlídáme chybné zobecnění, uzavřenou smyčku vlastních chyb, zapomínání a náklady na ověřování.
+
+**Stav:** Jde o směr pro případný CEP 002, nikoliv hotový modul, nový prokázaný algoritmus nebo naměřené zlepšení. Příbuzné principy self-trainingu, distilace a opětovného využití postupů již existují. Dokončit Evaluation 006 beze změn.
