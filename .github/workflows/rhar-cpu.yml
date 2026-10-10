@@ -48,4 +48,5 @@ jobs:
             tests.test_safe_start_overlap \
             tests.test_safe_start_generate \
             tests.test_reasoning_structure \
+            tests.test_reasoning_steps \
             -v
