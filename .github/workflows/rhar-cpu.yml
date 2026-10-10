@@ -66,4 +66,5 @@ jobs:
             tests.test_dataset_batch_002 \
             tests.test_rhar_teacher_train_002 \
             tests.test_rhar_train_003 \
+            tests.test_rhar_cep_pilot \
             -v
