@@ -733,3 +733,17 @@ Příkazy (po zelené CPU validaci):
 `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m diagnostics.rhar_cep_pilot --approve-training --train-size 1000 --val-size 100 --epochs 1 --boost 2.0 --out runs/rhar-cep-pilot-001`
 
 Další rozhodnutí pouze podle párového měření správnosti a celkových tokenů proti SFT a base; žádné tvrzení o soutěžní úspěšnosti.
+
+
+## 2026-10-10 — CEP Pilot 001: negativní kontrolní výsledek
+
+**Stav:** dokončený GPU trénink a 6 lokálních párových diagnostických úloh; **nejde o oficiální BottleCapAI benchmark**. Toto je skutečně naměřený výsledek, nikoliv nová prokázaná metoda.
+
+- **SFT 003:** 3/6 správně, všechny odpovědi dokončené; délky `[114, 54, 105, 139, 73, 44]` tokenů, průměr **88,17**.
+- **CEP Pilot 001:** 2/6 správně, všechny odpovědi dokončené; délky `[103, 75, 83, 244, 73, 44]` tokenů, průměr **103,67**.
+- **Rozdíl:** CEP oproti SFT ztratil jednu správnou úlohu (Task 4) a průměrně generoval o **15,5 tokenu / ~17,6 % více**. Na pouhých šesti známých diagnostických úlohách s jedním seedem jde jen o slabou evidenci; statistický závěr ani generalizace nejsou doloženy.
+- **Původní model** ve všech šesti měřeních narazil na strop 512 tokenů a neuzavřel finální odpověď. Úspora vůči této cenzorované baseline se nesmí prezentovat jako prokázané zachování accuracy.
+- **Task 4 — číslicový zámek:** úloha vyžaduje `X=Y+2`, `Z=2Y`, `X+Y+Z=14` a tři různé nenulové číslice. Správný kód je **536**. CEP ve vlastním reasoning výslovně vypsal správného kandidáta `X=5, Y=3, Z=6`, ale nakonec neprávem vybral `X=3, Y=1, Z=2` a uzavřel `Final answer: 312`. To porušuje součet `3+1+2=6`, nikoli 14. Model také chybně odmítl několik kandidátů kvůli „digits are not distinct“, ačkoli jejich číslice byly různé; problém byl jinde.
+- **Pracovní interpretace:** jednoduchá lexikální 2× váha čísel a operátorů nezlepšila na tomto vzorku kvalitu rozhodnutí. **Nenazývat to ověřenou kauzální ochranou informací.** Alternativní příčiny, včetně náhodnosti inference a rozptylu malého vzorku, nejsou vyloučeny.
+
+**Dohodnutý bezprostřední krok:** porovnat celý skutečně generovaný reasoning SFT 003 pro Task 4 s CEP 001. Soubor SFT je lokálně `runs/rhar-evaluation-004-task-4/records.jsonl`; v GitHubu není k dispozici. Dokud z něj nedostaneme výpis, **netvrdit, jak konkrétně SFT přišel ke správné odpovědi 536**. Zatím žádný další trénink.
