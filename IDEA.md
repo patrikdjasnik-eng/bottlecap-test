@@ -2,7 +2,7 @@
 
 **Status, 2026-10-10:** one active research hypothesis, **not** a proven novel algorithm or a successful BottleCapAI submission.
 
-[🇨🇿 Czech research direction](CZ%20docs/IDEA.md) · [Development history](docs/DEV-NOTES.en.md)
+[🇨🇿 Czech research direction](CZ%20docs/IDEA.md) · [🧠 CEP 002 — simple algorithm](docs/CEP-002.en.md) · [Development history](docs/DEV-NOTES.en.md)
 
 ## Challenge objective
 
