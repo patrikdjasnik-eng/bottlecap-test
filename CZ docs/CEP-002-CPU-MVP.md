@@ -112,3 +112,8 @@ cep -m diagnostics.cep002_validation_provenance --dry-run --raw-parquet /home/ra
 ```
 
 Jen po zelených testech lze spustit se `--execute`, vytvoří nepřepisovaný `runs/cep002-validation-provenance-001/summary.json` a `other-file-coverage.json`. Klasifikace starších 45 záznamů a sémantické podobnosti zůstává **částečná**, nikdy neznamená schválení pro trénink, GPU ani automatickou produkci XP.
+
+
+## Residual History 001 — šest GSM8K ID + 39 dalších (11. 10. 2026)
+
+Nový `diagnostics/cep002_residual_history.py` řadí zbylých 45 historických záznamů bez zadání podle ID do původních známých GSM8K partition. **Skutečné přiřazení zdrojového indexu je slabší důkaz než shoda originální otázky**, pokud starší záznam neobsahuje otázku. Ostatních 39 ID nejsou automaticky bezpečná data. Výstup obsahuje počty a přehled souborů, nikdy zdrojové zadání, odpovědi ani modelové generace. Vyžaduje původní lokální SHA-256 připnutý GSM8K train Parquet, prohlédnutých 12 kandidátů a 60 holdout referencí (holdout pouze ID/hash). Nových 9 unit testů, očekává se 108; uživatelský běh zatím neproběhl.
