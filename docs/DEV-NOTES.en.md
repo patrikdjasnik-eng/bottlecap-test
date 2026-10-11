@@ -669,3 +669,12 @@ The user's local `diagnostics.cep002_review_packet --dry-run` failed with `Value
 Fixed `diagnostics/cep002_real_contract_drafts.py` on isolated `feat/cep002-cpu-mvp` branch to emit JSON-compatible lists for rules at draft construction. The full provenance/content equality gate remains enabled. Added two regression tests for JSON round-tripping and persisted draft-to-review workflow.
 
 The user's existing `contract-drafts.jsonl` requires **no regeneration**: its serialized rules are already JSON arrays. The fix is backward-compatible with this file. User has not yet run the new Kali tests (69 expected) or generated the packet after the fix. No training or GPU operations performed.
+
+
+## 2026-10-11 — CEP-002 review packet verified; preliminary semantics assessed
+
+User verified `Ran 69 tests in 0.271s — OK`; `diagnostics.cep002_review_packet --dry-run` returned `plan_only`; `--execute` returned `manual_review_pending`, and `runs/cep002-contract-drafts-001/review-packet.md` exists. All three drafts remain `contract_semantic_approvals=0`, `xp_locks_created=0`, `training_records_exported=0`, `gpu_used=false`.
+
+The assistant performed a **preliminary non-independent language-to-math assessment** consistent with 12, 7, and 3840. Shampoo requires a common volume unit and social media sums per-platform counts. See `CZ docs/CEP-002-SEMANTIC-REVIEW-001.md` and English counterpart. Not independent semantic approval or permission to train; cross-checking earlier pilot overlap remains pending.
+
+Also fixed escaped Markdown code backticks in the review packet script and added a regression test. New expected count **70** tests, not yet run by user. Generate the corrected Markdown with a fresh output path (such as `review-packet-v2.md`); existing review packet intentionally cannot be overwritten.
