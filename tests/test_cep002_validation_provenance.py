@@ -110,7 +110,8 @@ class EndToEndProvenanceTests(unittest.TestCase):
             self.assertEqual(result["prior_validation_distinct_questions"], 80)
             self.assertEqual(result["remaining_other_runs_id_only_rows"], 3)
             self.assertTrue(result["remaining_provenance_needs_review"])
-            self.assertFalse(result["holdout_question_texts_loaded_or_exported"])
+            self.assertFalse(result["reserved_holdout_questions_selected"])
+            self.assertFalse(result["reserved_holdout_texts_exported"])
             self.assertFalse(result["training_approved"])
             self.assertFalse(args[-1].exists())
 
@@ -128,7 +129,6 @@ class EndToEndProvenanceTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             args = prepared(Path(temp))
             path = args[4] / "rhar-validation-006" / "records.jsonl"
-            rows = json.loads("[]")
             with path.open(encoding="utf-8") as stream:
                 rows = [json.loads(line) for line in stream]
             rows[0]["id"] = "gsm8k-train-00001"
