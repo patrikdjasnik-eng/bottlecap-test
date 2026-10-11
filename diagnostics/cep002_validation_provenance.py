@@ -1,14 +1,15 @@
 """CPU-only: validate provenance of 005/006 paired evaluation IDs against GSM8K train.
 
-No inference, training, reserved holdout question lookup, or evaluation prompt
-export. Does not treat all remaining older ID-only records as verified.
+No inference, training, future holdout selection, or evaluation prompt export.
+Reading the full pinned Parquet necessarily loads all train rows in memory, but
+only the historical first 1,180 IDs/answers are selected or emitted. Remaining
+older ID-only records must not be treated as verified.
 """
 
 from __future__ import annotations
 
 import argparse
 from collections import Counter
-from hashlib import sha256
 import json
 from pathlib import Path
 
@@ -153,7 +154,8 @@ def provenance(
         "semantic_duplicate_check_exhaustive": False,
         "independent_semantic_review_completed": False,
         "official_benchmark": False,
-        "holdout_question_texts_loaded_or_exported": False,
+        "reserved_holdout_questions_selected": False,
+        "reserved_holdout_texts_exported": False,
         "training_approved": False,
         "training_performed": False,
         "gpu_used": False,
