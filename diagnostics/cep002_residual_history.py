@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
-from hashlib import sha256
 import json
 from pathlib import Path
 
@@ -34,7 +33,6 @@ def inspect_remaining(
     historic_train = {row["question_id"] for row in train}
     historic_loss = {row["question_id"] for row in rest[:LOSS_VAL]}
     historic_eval = {row["question_id"] for row in rest[LOSS_VAL:]}
-    prior = historic_train | historic_loss | historic_eval
 
     counts = Counter()
     per_file = []
