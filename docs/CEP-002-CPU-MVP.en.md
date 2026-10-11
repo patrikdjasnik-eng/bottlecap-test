@@ -38,3 +38,20 @@ Commands:
 - `python -m diagnostics.cep002_fixture_batch --execute --out runs/cep002-fixture-001`
 
 The last command writes a JSONL history and report without overwriting existing runs. All 12 correct example traces are **expected** to be VERIFIED, but the new tests and batch still need execution on the user's computer. This validates a narrow set of task contracts, not model improvement. Do not describe the synthetic fixture's `overlap_screen_passed` flag as an independent audit of real data.
+
+
+## GSM8K Data Intake 001 (11 Oct 2026)
+
+Added `diagnostics/cep002_data_intake.py` and ten CPU unit tests in `tests/test_cep002_data_intake.py`. Reads only locally cached, SHA-256 pinned GSM8K `main/train` data and local official evaluation prompts for overlap screening (never training targets).
+
+The deterministic partition (`seed=42`) excludes historic positions: **1,000 prior train + 100 loss validation + 20 Evaluation 005 + 60 Evaluation 006 = 1,180**. It selects **12 subsequent questions** for manual review only and reserves the **following 60** as future holdout, whose question texts and answers are not included in the output manifest. Every review example is marked `contract: null` and `approved_for_training: false`.
+
+Important: earlier independent pilot/review records have not yet been exhaustively screened, and semantic/near-duplicate overlaps can be missed. **None of the new examples is automatically approved for CEP training.** Viewing reserved holdout questions or answers can invalidate their unseen status.
+
+Local usage (from worktree, Python environment with `pyarrow`; point to original repository files explicitly):
+
+`python -m unittest tests.test_cep002_cpu tests.test_cep002_fixture_batch tests.test_cep002_data_intake -v`
+
+`python -m diagnostics.cep002_data_intake --dry-run --raw-parquet /home/rabbithollow/bottlecap-test/data/safe-start/raw/gsm8k-train.parquet --eval-questions /home/rabbithollow/bottlecap-test/questions/questions.jsonl --out runs/cep002-data-intake-001`
+
+After green dry-run, `--execute` may be run explicitly. An existing output directory is never overwritten. No model inference or training occurs.
