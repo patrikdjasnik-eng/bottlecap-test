@@ -71,24 +71,24 @@ def review_sections(candidates: list[dict], drafts: list[dict]) -> list[str]:
             f"## {index + 1}. {spec['question_id']}",
             "",
             f"**Source:** GSM8K main/train @ {draft['source_revision']}",
-            f"**Question SHA-256:** \`{draft['question_sha256']}\`",
+            f"**Question SHA-256:** `{draft['question_sha256']}`",
             "",
             "**Original question:**",
             "",
             candidate["question"],
             "",
-            f"**Reference final:** \`{draft['gold_answer']}\`",
+            f"**Reference final:** `{draft['gold_answer']}`",
             "",
             "**Proposed mapping from text to facts (check manually):**",
             "",
         ]
         lines += [
-            f"- \`{symbol}\` ← {source_phrase}"
+            f"- `{symbol}` ← {source_phrase}"
             for symbol, source_phrase in notes["fact_mappings"]
         ]
         lines += ["", "**Proposed required relations:**", ""]
         lines += [
-            f"- \`{target} = {expression} => {result}\`"
+            f"- `{target} = {expression} => {result}`"
             for target, expression, result in spec["steps"]
         ]
         lines += [
