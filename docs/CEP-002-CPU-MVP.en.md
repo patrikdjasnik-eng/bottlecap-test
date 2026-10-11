@@ -27,3 +27,14 @@ Full suite (may need additional dependencies):
 `python -m unittest discover -s tests -p 'test_*.py'`
 
 **No progress without green tests.** Next steps are manual contract review and separate data auditing, followed by A/B/C training and paired evaluation only with explicit approval.
+
+## Synthetic batch 001 (11 Oct 2026)
+
+Added 12 *hand-authored synthetic* arithmetic examples in `diagnostics/cep002_fixture_batch.py`. The cases exercise percentages, successive discounts, fractions, warehouse inventory, wages, averages, and other simple relations. **These are not GSM8K, new training data, or real Qwen generations.** The fixture author is not an independent external auditor.
+
+Commands:
+- `python -m unittest tests.test_cep002_cpu tests.test_cep002_fixture_batch -v`
+- `python -m diagnostics.cep002_fixture_batch --dry-run`
+- `python -m diagnostics.cep002_fixture_batch --execute --out runs/cep002-fixture-001`
+
+The last command writes a JSONL history and report without overwriting existing runs. All 12 correct example traces are **expected** to be VERIFIED, but the new tests and batch still need execution on the user's computer. This validates a narrow set of task contracts, not model improvement. Do not describe the synthetic fixture's `overlap_screen_passed` flag as an independent audit of real data.
