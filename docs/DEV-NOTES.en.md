@@ -678,3 +678,12 @@ User verified `Ran 69 tests in 0.271s — OK`; `diagnostics.cep002_review_packet
 The assistant performed a **preliminary non-independent language-to-math assessment** consistent with 12, 7, and 3840. Shampoo requires a common volume unit and social media sums per-platform counts. See `CZ docs/CEP-002-SEMANTIC-REVIEW-001.md` and English counterpart. Not independent semantic approval or permission to train; cross-checking earlier pilot overlap remains pending.
 
 Also fixed escaped Markdown code backticks in the review packet script and added a regression test. New expected count **70** tests, not yet run by user. Generate the corrected Markdown with a fresh output path (such as `review-packet-v2.md`); existing review packet intentionally cannot be overwritten.
+
+
+## 2026-10-11 — CEP-002 History Overlap 001: actual run-history audit prepared
+
+User reported **70/70 CPU tests OK** (0.250s). On original Kali research repo they verified previous Safe Start questions and records from validation 005/006; a `find` listing discovered roughly 25 earlier pilot, evaluation, canary, stress and diagnostic `runs/**/records.jsonl`.
+
+Added `diagnostics/cep002_history_overlap.py` and 18 CPU regression tests `tests/test_cep002_history_overlap.py`. Cross-checks source IDs, hashes, normalized text for only the 12 currently viewed review candidates; the 60 reserved holdout records are referenced only by IDs and SHA-256, **without reading their source questions or answers**. Past research records are read only to extract source identifiers, and no official evaluation prompts/answers are exported. Covers all `runs/**/records.jsonl` in the original research directory and Safe Start; reports opaque/ID-only records as partial coverage. Never overwrites previous outputs or approves training.
+
+Tests and live audit have NOT run on user's computer yet; expected total **88**. After green tests and successful dry-run, output to a new `runs/cep002-history-audit-001` directory, no GPU. No overlap match is not proof against paraphrase/semantic contamination.
