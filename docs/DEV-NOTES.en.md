@@ -639,3 +639,12 @@ Run summary: responses=4, correct_responses=0, complete_responses=0, training_pe
 Training 001 produced a real 112-tensor rank-8 LoRA adapter using 20 optimization steps on one approved GSM8K training sample. This was a technical proof of the training pipeline, not a demonstration of shortening.
 
 **Training 002 next gates (not yet executed):** CPU-only inventory and validation of more diverse *permitted training* examples, all correct, complete, provenance-checked and properly terminated; remove duplicates, invalid/truncated traces and overlaps with SVAMP/BFCL/MBPP+/IFEval. Keep all six handcrafted RHAR 003 holdouts out of training. After CPU tests and contamination checks, request explicit new GPU training approval. Evaluate baseline and candidate fairly on multiple held-out questions; report official scores only from upstream `evaluate.py` and `compare.py` on compatible hardware, or transparently disclose limits. No training, downloading or GPU was initiated by this documentation update.
+
+
+## 2026-10-11 — CEP-002 Data Intake 001 prepared (CPU; not yet executed on Kali)
+
+User verified the original WSL Kali research directory, both SFT 003 / CEP Pilot 001 `adapter_model.safetensors` files (4.4 MB each), the pinned GSM8K main/train Parquet SHA-256 `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d`, and the preserved Validation 006 summary (19/60 SFT vs 23/60 CEP; 5,769 vs 5,266 tokens; not official benchmark). Adapter hashes have not yet been verified, only file presence.
+
+The isolated `feat/cep002-cpu-mvp` branch includes user-tested base CEP-002 checks (22/22) and 12/12 valid hand-authored synthetic traces. User has not yet provided the full 34-test Kali output.
+
+New `diagnostics/cep002_data_intake.py` enforces the pinned GSM8K train file and mandatory screening against the available official evaluation prompt corpus, deterministic seed 42, and exclusion of the first 1,180 historically used samples (1,000 train / 100 loss validation / 20 Evaluation 005 / 60 Evaluation 006). Twelve new records are marked REVIEW_REQUIRED; another 60 are reserved as a holdout, with no question text in the manifest. Added 10 CPU unit tests and bilingual documentation. **The new code/tests have not yet been executed in the user's Kali environment.** Next step: green tests and CPU dry-run, no GPU. Earlier small pilots and the 12 Safe Start review questions might not be fully covered by the historic exclusion; no automated training approval.
