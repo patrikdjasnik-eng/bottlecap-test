@@ -1,6 +1,5 @@
 """Fail-closed CPU tests for the three-question manual semantic review packet."""
 
-from copy import deepcopy
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
