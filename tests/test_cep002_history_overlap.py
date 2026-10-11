@@ -20,7 +20,7 @@ SOURCE_QUESTION = (
 
 def write_jsonl(path: Path, records: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("x", encoding="utf-8") as stream:
+    with path.open("w", encoding="utf-8") as stream:
         for value in records:
             stream.write(json.dumps(value) + "\n")
 
