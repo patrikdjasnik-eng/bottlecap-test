@@ -866,3 +866,12 @@ Hypotéza: zkušenosti ze správných i nesprávných *postupů* mohou zlepšit 
 **Interpretace:** Pozitivní průběžný výsledek pro CEP 001 na tomto konkrétním vzorku; není prokázáno zachování přesnosti vůči originálnímu Qwenu, statisticky spolehlivý přínos algoritmu, generalizace do kódu/funkcí/instrukcí ani soutěžní skóre. Na dřívějším 20otázkovém testu byly oba modely 9/20 a CEP spotřeboval o 19 tokenů více; výsledky mezi výběry kolísají. `summary.json` výslovně hlásí `quality_preservation_demonstrated: false` a `generalization_demonstrated: false`.
 
 **Pro příští výzkumný cyklus:** nedotýkat se již prohlédnutých 60 příkladů jako nového „nezávislého“ holdoutu ani je nepoužít k tréninku. CEP 002 je zatím návrh: ověřené přenositelné postupy („XP“), dokumentované příčiny chybných postupů a kontrolované skládání kompatibilních částí řešení do trénovacích vzorů; netvrdit, že je implementován nebo že zaručí zlepšení.
+
+
+## 2026-10-11 — CEP-002 Data Intake 001 připraven (CPU, dosud nespouštěno na Kali)
+
+Uživatel potvrdil funkční původní WSL Kali pracovní adresář, oba soubory `adapter_model.safetensors` SFT 003 / CEP Pilot 001 (po 4,4 MB), správný SHA-256 původního GSM8K train parquet `ea82612ea9582142387730c793eb67d3b12849002bc0b7fa6f8efafa7351419d` a zachovaný souhrn Validation 006 (19/60 SFT vs 23/60 CEP; 5 769 vs 5 266 tokenů; nejde o oficiální benchmark). Neověřena kryptografická integrita samotných LoRA vah; prozatím máme pouze existenci souborů.
+
+V izolované větvi `feat/cep002-cpu-mvp` jsou již zelené uživatelem spuštěné základní CEP-002 testy (22/22) a syntetická dávka (12/12 správných předem sestavených traces). Výstup všech rozšířených 34 testů v Kali uživatel zatím neposlal.
+
+Nově vytvořen `diagnostics/cep002_data_intake.py`: explicitně SHA-256 kontrolované GSM8K train + povinná kontrola vůči dostupným oficiálním eval promptům; deterministický seed 42; izolace prvních 1 180 již použitých položek (1000/100/20/60); 12 dalších kandidátů označených REVIEW_REQUIRED a 60 budoucích rezervovaných holdout položek bez textu otázek v manifestu. Přidáno 10 unit testů a CZ/EN dokumentace. **Kód a nové testy zatím nebyly spuštěny v uživatelově prostředí**; další krok je zelené CPU testování a dry-run, bez GPU. Další dřívější jednotlivé piloty a 12 Safe Start otázek nemusí být plně zahrnuty do historického auditu; žádné automatické schvalování dat ani trénování.
