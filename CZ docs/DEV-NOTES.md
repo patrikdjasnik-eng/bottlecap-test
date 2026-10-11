@@ -896,3 +896,12 @@ Při lokálním běhu `diagnostics.cep002_review_packet --dry-run` vznikl `Value
 V izolované větvi `feat/cep002-cpu-mvp` upraven `diagnostics/cep002_real_contract_drafts.py`: kontrakt vrací explicitně JSON-kompatibilní seznam pravidel už při návrhu. Zachovává se porovnání identity a původu celého objektu bez vypnutí bezpečnostní kontroly. Dva nové regresní testy ověřují JSON serializaci a kompletní zápis/čtení kontraktů až k review packetu.
 
 **Důležité:** Uživatel již vytvořený `contract-drafts.jsonl` nemusí generovat znovu — jeho pravidla jsou po JSONL uložena jako seznam. Oprava zpětně podporuje stávající obsah. Nové testy dosud uživatel v Kali nespustil; očekáváme 69 testů a revizní dokument pouze po zeleném běhu. Žádný trénink ani GPU výpočet.
+
+
+## 2026-10-11 — CEP-002 revizní protokol zelený, předběžná kontrola sémantiky
+
+Uživatel potvrdil: `Ran 69 tests in 0.271s — OK`; `diagnostics.cep002_review_packet --dry-run` vrací `plan_only`; `--execute` vrací `manual_review_pending` a soubor `runs/cep002-contract-drafts-001/review-packet.md` skutečně existuje. Všechny tři kontrakty mají `contract_semantic_approvals=0`, `xp_locks_created=0`, `training_records_exported=0`, `gpu_used=false`.
+
+Asistent provedl pouze **předběžné vlastní posouzení významu zadání**, vyhodnoceno jako konzistentní 12, 7 a 3840; u šamponu je nutný předpoklad společné jednotky objemu, u sociálních sítí se sčítají počty na platformách. Záznam s omezeními v `CZ docs/CEP-002-SEMANTIC-REVIEW-001.md` a anglickém protějšku. Nejde o nezávislý podpis ani schválení pro trénink; původ a překryv dalšími piloty stále chybí.
+
+V protokolu byly vidět doslovné escaped Markdown backticky `\``; opraveno v `diagnostics/cep002_review_packet.py` a přidán regresní test do `tests/test_cep002_review_packet.py`. Nový očekávaný počet testů je **70** (uživatelský běh 69 byl před tímto commitem). Nový hezky vykreslený packet musí být zapsán do **nové cesty** (např. `review-packet-v2.md`), původní soubor se záměrně nepřepisuje.
