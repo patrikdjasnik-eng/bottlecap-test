@@ -55,3 +55,16 @@ Lokální spuštění (z worktree, v prostředí s `pyarrow`, cesty výslovně n
 `python -m diagnostics.cep002_data_intake --dry-run --raw-parquet /home/rabbithollow/bottlecap-test/data/safe-start/raw/gsm8k-train.parquet --eval-questions /home/rabbithollow/bottlecap-test/questions/questions.jsonl --out runs/cep002-data-intake-001`
 
 Po zeleném dry-runu lze výslovně spustit `--execute`; výstupní složka se nikdy nepřepisuje. Neprovádí se model inference ani trénink.
+
+
+## Návrhy reálných kontraktů 001 (11. 10. 2026)
+
+První tři z `runs/cep002-data-intake-001/candidates-review.jsonl` (pouze lokální *GSM8K main/train*, nikoli soutěžní benchmark) převedeny do přísně omezených matematických návrhů pomocí `diagnostics/cep002_real_contract_drafts.py`. Zkontrolují se předem známé SHA-256 původních otázek, původ/split/revize, referenční výsledek a přesná aritmetika přes `fractions.Fraction`.
+
+- `gsm8k-train-00664`: `dog_years=2.5*4=10`, `fish_years=10+2=12`.
+- `gsm8k-train-06718`: z `1/3+1/4=7/12`, při spotřebě `1/12` denně => **7 dní**. Kontrola s přesnými celočíselnými dvanáctinami bez zaokrouhlení.
+- `gsm8k-train-03644`: `240+500=740`, Twitter `370`, TikTok `1110`, YouTube `1620`, součet `3840`.
+
+**Přísná hranice:** návrhy jsou **UNVERIFIED**, `reviewed_by=""`, `overlap_screen_passed=false`, `approved_for_training=false`. Z předem napsaných referenčních postupů nevzniká žádný Qwen trace, XP lock ani učicí příklad. Samostatná matematická kontrola ověřuje početní konzistenci, **neautomatizuje nezávislou sémantickou kontrolu přepisu zadání do kontraktu**. Všechny tři úlohy jsou nyní viděné a nelze je později označit za neviděný holdout.
+
+Nových 11 CPU testů: `python -m unittest tests.test_cep002_real_contract_drafts -v`. Dry-run `python -m diagnostics.cep002_real_contract_drafts --dry-run`, poté výslovné `--execute`. Výstup nesmí přepsat existující složku.
