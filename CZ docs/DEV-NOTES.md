@@ -880,3 +880,10 @@ Nově vytvořen `diagnostics/cep002_data_intake.py`: explicitně SHA-256 kontrol
 ## 2026-10-11 — První tři GSM8K kontrakty CEP-002: návrhy bez schválení
 
 Uživatel poskytl první tři záznamy skutečného Data Intake 001 s ID `gsm8k-train-00664`, `gsm8k-train-06718` a `gsm8k-train-03644`. Ruční analýza zadání dala referenční správné odpovědi 12, 7 a 3840. Přidán `diagnostics/cep002_real_contract_drafts.py` a 11 CPU unit testů. Prototyp ověřuje shodu hashů otázek, provenance a přesné matematické relace na úrovni `Fraction`; záměrně **nevydává trénovací ani modelové příklady** a požaduje samostatný sémantický audit. Drafty mají `VPS=UNVERIFIED` a čekají na ruční review; recenzent ani automatická kontrola NESMÍ být předstíráni. Testy na Kali zatím nebyly spuštěny; dřívější zelených 44 CPU testů mělo uživatelský výstup `Ran 44 tests`, ale bez doloženého finálního `OK`. Žádný GPU běh, nové učení ani oficiální benchmark.
+
+
+## 2026-10-11 — CEP-002 Human Semantic Review 001 (připraveno, běh čeká)
+
+Uživatel spustil v Kali 55/55 CPU testů za 0,456 s s výsledkem `OK`. Nový `diagnostics.cep002_real_contract_drafts --execute` úspěšně vytvořil 3 matematicky konzistentní návrhy, všechny `review_required`, `locked_experiences: 0`, `semantic_contracts_independently_reviewed: 0`, bez GPU a tréninku.
+
+Doplněn `diagnostics/cep002_review_packet.py` a 12 testů: strict identita vstupu a návrhu, manuální významové mapování veličin, vztahy, možné chyby a nezaškrtnutý checklist. Skript vytvoří `review-packet.md` bez trénovacích dat či XP zámku. Doplnění bylo vytvořeno v GitHub větvi `feat/cep002-cpu-mvp`; 12 nových testů ani revizní protokol dosud uživatel nespustil. Samotný draft ani jeho revizní protokol není nezávislé schválení sémantiky. Další krok: 67 CPU testů; jen po úspěchu příprava revizního dokumentu.
