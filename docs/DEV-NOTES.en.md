@@ -715,3 +715,12 @@ Not yet run on user's Kali; **108 expected CPU tests**. Usage:
 `cep -m diagnostics.cep002_residual_history --dry-run --raw-parquet /home/rabbithollow/bottlecap-test/data/safe-start/raw/gsm8k-train.parquet --history-root /home/rabbithollow/bottlecap-test/runs`
 
 Following green checks, optional explicit `--execute` writes only to new non-overwritable `runs/cep002-residual-history-001/summary.json` and `coverage.json`. **The actual remaining blockers to CEP-002 training** are independent semantic approval, investigation of the other ID sources, and enough genuinely verified/provenance-clean procedural examples; the three hand-authored drafts are not a meaningful training sample.
+
+
+## 2026-10-11 — Residual History: fixed undercount in `requires_investigation_count`
+
+User reported **108/108 passing CPU tests** and a successful `cep002_residual_history --dry-run`. Six historical `gsm8k-train-NNNNN` IDs map to source row indexes in the pinned `main/train` dataset; all six are **outside the previously reconstructed 1,180 train/loss-val/paired-eval positions**, and none has a recorded gold answer. **39 further historical records** have other ID formats without source question text. No direct overlap was detected with the 12 CEP-002 review questions or 60 reserved future holdout references, but historical semantic overlap screening remains incomplete.
+
+Earlier `requires_investigation_count: 0` was a **reporting bug**: it counted only malformed/conflicting IDs and omitted otherwise parseable but unreviewed source IDs. Fixed in `diagnostics/cep002_residual_history.py` by counting all remaining ID-only records via mutually exclusive categories (`gsm8k_format_id`, `non_gsm8k_format_id`, `ambiguous_id_or_hash_only`). Added `unresolved_provenance_id_only_rows`, `requires_manual_provenance_review`, and an invariant guarding full classification of GSM8K IDs. Three regression tests assert **45** pending provenance rows and proper handling of non-GSM8K and ambiguous IDs.
+
+**New code has not yet run in user Kali; expected 111 CPU tests.** Following a green result and dry-run, explicit `--execute` can write a new `runs/cep002-residual-history-001` with per-file aggregate coverage, without GPU, modifying adapters, or training. `training_approved=false`. Scalable verified contracts and independent semantic approval remain key blockers before meaningful CEP-002 LoRA training.
