@@ -942,3 +942,12 @@ Dosud na uživatelově Kali neověřeno; očekávaný počet **108 CPU testů**.
 `cep -m diagnostics.cep002_residual_history --dry-run --raw-parquet /home/rabbithollow/bottlecap-test/data/safe-start/raw/gsm8k-train.parquet --history-root /home/rabbithollow/bottlecap-test/runs`
 
 Po zelených testech je možné volitelné `--execute`, generující výhradně nové `runs/cep002-residual-history-001/summary.json` a `coverage.json` bez přepisu. **Další hlavní blokery tréninku:** skutečně nezávislé sémantické schválení, dotáhnutí historií ostatních ID, audit a příprava dostatečně početných skutečně ověřených trénovacích vzorů; tři hand-authored drafty nestačí k měřitelnému učení.
+
+
+## 2026-10-11 — Residual History: nalezená chyba v metrice `requires_investigation_count`
+
+Uživatel potvrdil **108/108 CPU testů zelených** a úspěšný `cep002_residual_history --dry-run`: šest starších `gsm8k-train-NNNNN` ID lze přiřadit ke zdrojovým indexům v připnutém `main/train`, všech šest leží **mimo dřívějších známých 1180 train/loss-val/paired-eval pozic**, žádné ze šesti nemá uložený `gold`. Dalších **39 záznamů** má jiný formát ID, bez zdrojového textu. Žádný přímý historický překryv s 12 novými review úlohami nebo 60 budoucími rezervovanými holdout ID nebyl nalezen. Sémantický audit minulých běhů dosud není úplný.
+
+Původní `requires_investigation_count: 0` byla **implementační chyba reportování**, protože metrika počítala jen chybná / konfliktní ID a ignorovala validní, ale historicky neznámá ID a ne-GSM8K zdroje. Opraveno v `diagnostics/cep002_residual_history.py`: všechna ID-only v reziduálních bězích zůstávají čekající na prověření a řádky se počítají vzájemně se vylučujícím způsobem (`gsm8k_format_id`, `non_gsm8k_format_id`, `ambiguous_id_or_hash_only`). Nově `unresolved_provenance_id_only_rows`, `requires_manual_provenance_review`, ochranný invariant přiřazení GSM8K ID. Tři regresní testy ověřují očekávaných **45** neuzavřených položek a nezamlčení ostatních/nejednoznačných ID.
+
+**Upravený kód zatím na uživatelské Kali neběžel; očekáváme 111 testů.** Po zelené a novém dry-runu teprve explicitní `--execute` vytvoří nový adresář `runs/cep002-residual-history-001` s per-file agregacemi, bez GPU, změny adapterů nebo tréninku. Stále `training_approved=false`. Získání konzistentních správných kontraktů a sémantické schválení je hlavním blokujícím bodem skutečného CEP-002 LoRA tréninku.
