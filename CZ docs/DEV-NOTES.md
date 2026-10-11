@@ -887,3 +887,12 @@ Uživatel poskytl první tři záznamy skutečného Data Intake 001 s ID `gsm8k-
 Uživatel spustil v Kali 55/55 CPU testů za 0,456 s s výsledkem `OK`. Nový `diagnostics.cep002_real_contract_drafts --execute` úspěšně vytvořil 3 matematicky konzistentní návrhy, všechny `review_required`, `locked_experiences: 0`, `semantic_contracts_independently_reviewed: 0`, bez GPU a tréninku.
 
 Doplněn `diagnostics/cep002_review_packet.py` a 12 testů: strict identita vstupu a návrhu, manuální významové mapování veličin, vztahy, možné chyby a nezaškrtnutý checklist. Skript vytvoří `review-packet.md` bez trénovacích dat či XP zámku. Doplnění bylo vytvořeno v GitHub větvi `feat/cep002-cpu-mvp`; 12 nových testů ani revizní protokol dosud uživatel nespustil. Samotný draft ani jeho revizní protokol není nezávislé schválení sémantiky. Další krok: 67 CPU testů; jen po úspěchu příprava revizního dokumentu.
+
+
+## 2026-10-11 — Oprava JSONL kompatibility revizních kontraktů
+
+Při lokálním běhu `diagnostics.cep002_review_packet --dry-run` vznikl `ValueError: draft content or provenance changed: gsm8k-train-00664`. Analýza: `dataclasses.asdict(TaskContract)` zachovalo `rules` jako Python `tuple`, zatímco JSONL round-trip převádí sekvenci na `list`. Přímé `draft != create_draft(...)` vyhodnotilo typovou změnu jako manipulaci dat.
+
+V izolované větvi `feat/cep002-cpu-mvp` upraven `diagnostics/cep002_real_contract_drafts.py`: kontrakt vrací explicitně JSON-kompatibilní seznam pravidel už při návrhu. Zachovává se porovnání identity a původu celého objektu bez vypnutí bezpečnostní kontroly. Dva nové regresní testy ověřují JSON serializaci a kompletní zápis/čtení kontraktů až k review packetu.
+
+**Důležité:** Uživatel již vytvořený `contract-drafts.jsonl` nemusí generovat znovu — jeho pravidla jsou po JSONL uložena jako seznam. Oprava zpětně podporuje stávající obsah. Nové testy dosud uživatel v Kali nespustil; očekáváme 69 testů a revizní dokument pouze po zeleném běhu. Žádný trénink ani GPU výpočet.
