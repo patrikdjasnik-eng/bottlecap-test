@@ -5,7 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from diagnostics.cep002_real_contract_drafts import DRAFT_SPECS, create_draft
+from diagnostics.cep002_real_contract_drafts import DRAFT_SPECS, create_draft, make_drafts
 from diagnostics.cep002_review_packet import prepare_review_packet, review_sections
 from tests.test_cep002_real_contract_drafts import source_record
 
@@ -44,6 +44,30 @@ class SemanticReviewPacketTests(unittest.TestCase):
         self.assertTrue(all(draft["manual_semantic_review"] == "PENDING"
                             and draft["vps_status"] == "UNVERIFIED"
                             and not draft["approved_for_training"] for draft in drafts))
+
+    def test_jsonl_round_trip_preserves_contract_comparison(self):
+        candidates, drafts = sample_data()
+        restored = [json.loads(json.dumps(draft)) for draft in drafts]
+        self.assertIsInstance(restored[0]["contract"]["rules"], list)
+        self.assertEqual(len(review_sections(candidates, restored)), 3)
+
+    def test_end_to_end_persisted_drafts_can_build_review_packet(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            intake = root / "candidates-review.jsonl"
+            draft_dir = root / "contract-drafts"
+            output = draft_dir / "review-packet.md"
+            candidates, _ = sample_data()
+            write_rows(intake, candidates)
+            make_drafts(intake, draft_dir, execute=True)
+            result = prepare_review_packet(
+                intake, draft_dir / "contract-drafts.jsonl", output, execute=True
+            )
+            self.assertEqual(result["draft_count"], 3)
+            self.assertEqual(result["contract_semantic_approvals"], 0)
+            self.assertEqual(result["xp_locks_created"], 0)
+            self.assertTrue(output.is_file())
+            self.assertEqual(output.read_text(encoding="utf-8").count("**Original question:**"), 3)
 
     def test_tampered_gold_rejected(self):
         candidates, drafts = sample_data()
