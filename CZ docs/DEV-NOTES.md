@@ -905,3 +905,12 @@ Uživatel potvrdil: `Ran 69 tests in 0.271s — OK`; `diagnostics.cep002_review_
 Asistent provedl pouze **předběžné vlastní posouzení významu zadání**, vyhodnoceno jako konzistentní 12, 7 a 3840; u šamponu je nutný předpoklad společné jednotky objemu, u sociálních sítí se sčítají počty na platformách. Záznam s omezeními v `CZ docs/CEP-002-SEMANTIC-REVIEW-001.md` a anglickém protějšku. Nejde o nezávislý podpis ani schválení pro trénink; původ a překryv dalšími piloty stále chybí.
 
 V protokolu byly vidět doslovné escaped Markdown backticky `\``; opraveno v `diagnostics/cep002_review_packet.py` a přidán regresní test do `tests/test_cep002_review_packet.py`. Nový očekávaný počet testů je **70** (uživatelský běh 69 byl před tímto commitem). Nový hezky vykreslený packet musí být zapsán do **nové cesty** (např. `review-packet-v2.md`), původní soubor se záměrně nepřepisuje.
+
+
+## 2026-10-11 — CEP-002 History Overlap 001: audit skutečných starších běhů připraven
+
+Uživatel potvrdil **70/70 CPU testů OK** (0,250 s). Na původním WSL/Kali repozitáři ověřil existenci původních Safe Start otázek a reálných validačních záznamů 005/006; výpis `find` navíc objevil přibližně 25 `runs/**/records.jsonl` v pilotních, validačních, canary, stress a diagnostických bězích.
+
+Přidán `diagnostics/cep002_history_overlap.py` a 18 regresních CPU testů `tests/test_cep002_history_overlap.py`; porovnání ID, SHA-256 a normalizované podoby pouze u aktuálně prohlížených 12 kandidátů, kontrola rezervovaných 60 holdout záznamů **pouze přes ID a SHA-256, bez přístupu k jejich původním otázkám či odpovědím**. Vstupní historické soubory čteny jen pro extrakci zdrojových referencí, bez exportu eval textů. Program kontroluje všechny původní `runs/**/records.jsonl` a Safe Start, odhaluje neznámé/ID-only záznamy v coverage reportu, nepřepisuje staré výsledky ani neschvaluje trénink.
+
+Testy ani ostrý audit ještě na počítači uživatele neběžely, očekávaný součet je **88/88**. Po zelené a úspěšném dry-runu lze spustit read-only vstupní audit se zápisem nového souhrnu do `runs/cep002-history-audit-001`. Bez GPU. Nulový překryv není důkaz absence nepřímé/sémantické kontaminace.
