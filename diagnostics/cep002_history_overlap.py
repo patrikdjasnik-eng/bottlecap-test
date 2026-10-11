@@ -269,7 +269,8 @@ def main(argv: list[str] | None = None) -> int:
         args.intake, args.reservations, args.safe_start, args.history_root,
         args.out, args.execute,
     )
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    console = {key: value for key, value in result.items() if key != "files"}
+    print(json.dumps(console, ensure_ascii=False, indent=2))
     return 0
 
 
