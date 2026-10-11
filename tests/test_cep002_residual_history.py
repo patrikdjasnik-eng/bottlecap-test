@@ -55,7 +55,7 @@ class ResidualHistoryTests(unittest.TestCase):
             self.assertEqual(counts["within_old_paired_evaluation"], 1)
             self.assertEqual(counts["outside_known_1180"], 3)
             self.assertEqual(counts["gold_not_recorded"], 6)
-            self.assertFalse(any("question" in json.dumps(item) for item in details))
+            self.assertNotIn("Synthetic practice task", json.dumps(details))
 
     def test_source_index_out_of_range_is_reported(self):
         with TemporaryDirectory() as temp:
