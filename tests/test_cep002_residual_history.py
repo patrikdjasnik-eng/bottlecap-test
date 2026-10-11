@@ -124,6 +124,52 @@ class ResidualHistoryTests(unittest.TestCase):
             self.assertFalse(result["reserved_holdout_questions_selected"])
             self.assertFalse(args[-1].exists())
 
+    def test_all_45_id_only_history_rows_remain_pending_review(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            args = setup_case(root)
+            with (
+                patch("diagnostics.cep002_residual_history.sha256_file", return_value=TRAIN_SHA256),
+                patch("diagnostics.cep002_residual_history.read_parquet", return_value=fake_dataset()),
+                patch("diagnostics.cep002_residual_history.prepare_pool", return_value=fake_partition()),
+            ):
+                result = main_audit(*args, execute=False)
+            self.assertEqual(result["requires_investigation_count"], 45)
+            self.assertEqual(result["unresolved_provenance_id_only_rows"], 45)
+            self.assertTrue(result["requires_manual_provenance_review"])
+            self.assertTrue(result["numeric_id_resolved_does_not_prove_question_identity"])
+            self.assertFalse(result["training_approved"])
+
+    def test_ambiguous_source_reference_also_counts_as_pending(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            args = setup_case(root)
+            write_jsonl(args[3] / "other-pilot" / "records.jsonl",
+                        [{"id": "gsm8k-train-00033", "question_sha256": "0" * 64}])
+            with (
+                patch("diagnostics.cep002_residual_history.sha256_file", return_value=TRAIN_SHA256),
+                patch("diagnostics.cep002_residual_history.read_parquet", return_value=fake_dataset()),
+                patch("diagnostics.cep002_residual_history.prepare_pool", return_value=fake_partition()),
+            ):
+                result = main_audit(*args, execute=False)
+            self.assertEqual(result["ambiguous_id_or_hash_only_rows"], 1)
+            self.assertEqual(result["requires_investigation_count"], 1)
+
+    def test_non_gsm8k_format_id_is_pending_even_when_well_formed(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            args = setup_case(root)
+            write_jsonl(args[3] / "other-pilot" / "records.jsonl",
+                        [{"id": "arithmetic_apples"}])
+            with (
+                patch("diagnostics.cep002_residual_history.sha256_file", return_value=TRAIN_SHA256),
+                patch("diagnostics.cep002_residual_history.read_parquet", return_value=fake_dataset()),
+                patch("diagnostics.cep002_residual_history.prepare_pool", return_value=fake_partition()),
+            ):
+                result = main_audit(*args, execute=False)
+            self.assertEqual(result["historical_non_gsm8k_id_rows"], 1)
+            self.assertEqual(result["requires_investigation_count"], 1)
+
     def test_execute_creates_only_summary_and_coverage(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)
