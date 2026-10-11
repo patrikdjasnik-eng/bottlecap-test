@@ -55,3 +55,16 @@ Local usage (from worktree, Python environment with `pyarrow`; point to original
 `python -m diagnostics.cep002_data_intake --dry-run --raw-parquet /home/rabbithollow/bottlecap-test/data/safe-start/raw/gsm8k-train.parquet --eval-questions /home/rabbithollow/bottlecap-test/questions/questions.jsonl --out runs/cep002-data-intake-001`
 
 After green dry-run, `--execute` may be run explicitly. An existing output directory is never overwritten. No model inference or training occurs.
+
+
+## First real contract DRAFTS 001 (11 Oct 2026)
+
+The first three rows of `runs/cep002-data-intake-001/candidates-review.jsonl` (allowed local *GSM8K main/train*, NOT competition evaluation) are mapped into tightly scoped math contract drafts by `diagnostics/cep002_real_contract_drafts.py`. It checks expected source-question SHA-256 hashes, source/revision, gold answers, and exact arithmetic using `fractions.Fraction`.
+
+- `gsm8k-train-00664`: dog lifespan `2.5*4=10`, fish lifespan `10+2=12`.
+- `gsm8k-train-06718`: shampoo `1/3+1/4=7/12`, at `1/12` bottle per day => **7 days**. Exact twelfths, no rounding.
+- `gsm8k-train-03644`: `240+500=740`, Twitter `370`, TikTok `1110`, YouTube `1620`, total `3840`.
+
+**Strict gate:** all drafts stay **UNVERIFIED** with `reviewed_by=""`, `overlap_screen_passed=false`, `approved_for_training=false`. These hand-authored reference traces are NOT Qwen generations, XP locks, or training targets. Exact arithmetic checks numerical consistency but **do not independently review the semantic translation from source questions to contracts**. These three questions are now seen and cannot later qualify as an untouched holdout.
+
+Added 11 CPU tests: `python -m unittest tests.test_cep002_real_contract_drafts -v`. First `python -m diagnostics.cep002_real_contract_drafts --dry-run`, followed by explicit `--execute`. An existing output path is never overwritten.
