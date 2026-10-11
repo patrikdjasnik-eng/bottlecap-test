@@ -95,3 +95,20 @@ cep -m diagnostics.cep002_history_overlap --dry-run --safe-start /home/rabbithol
 ```
 
 After green tests and successful dry-run, optionally call the same command with `--execute`. Never overwrites `runs/cep002-history-audit-001/summary.json` and `overlaps.jsonl`. **The 18 new tests and historical audit have not yet run on the user's Kali system**; expected test total is 88. No GPU/training/learning dataset export.
+
+
+## Reconstruct validation 005/006 provenance (11 Oct 2026)
+
+From the saved `runs/cep002-history-audit-001/summary.json`, the user showed that 160 of 205 previous ID-only rows came from `rhar-validation-005` (40 records = 20 questions × 2 model variants) and `rhar-validation-006` (120 records = 60 × 2). The remaining **45** ID-only records from other runs need further provenance checks.
+
+New **`diagnostics/cep002_validation_provenance.py`** rebuilds the 005/006 source partitions from pinned GSM8K `main/train` via `prepare_pool(rows, 1000, 180, seed=42)`. It verifies exact source IDs and GSM8K reference gold answers, requiring one `sft` and one `cep` observation for each question. Any missing/unexpected model variant, source ID or gold answer fails closed. It also reruns ID/hash overlap checks on the 12 reviewed candidates and 60 future holdout reservations, and classifies counts of unverified ID-only rows by historical file without exporting question text.
+
+Reading the full train Parquet necessarily loads all train records into memory, including rows that may later be reserved for holdout. Only the **first 1,180 historical positions** are selected for validation, however; the future holdout question texts are never selected for the report, displayed or exported. Flags accurately report `reserved_holdout_questions_selected=false` and `reserved_holdout_texts_exported=false`, not that the Parquet file was never read.
+
+Added **11 unit tests** in `tests/test_cep002_validation_provenance.py` (**99 expected CPU tests** in total, not yet executed by user). Read-only dry-run:
+
+```powershell
+cep -m diagnostics.cep002_validation_provenance --dry-run --raw-parquet /home/rabbithollow/bottlecap-test/data/safe-start/raw/gsm8k-train.parquet --safe-start /home/rabbithollow/bottlecap-test/data/safe-start/questions.jsonl --history-root /home/rabbithollow/bottlecap-test/runs
+```
+
+After green tests, explicit `--execute` would create non-overwritable `runs/cep002-validation-provenance-001/summary.json` and `other-file-coverage.json`. The 45 remaining ID-only history records and semantic/paraphrase overlap are still **partial**, never proof of training authorization or a reason to use the GPU.
