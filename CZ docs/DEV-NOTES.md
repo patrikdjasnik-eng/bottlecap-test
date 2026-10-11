@@ -914,3 +914,12 @@ Uživatel potvrdil **70/70 CPU testů OK** (0,250 s). Na původním WSL/Kali rep
 Přidán `diagnostics/cep002_history_overlap.py` a 18 regresních CPU testů `tests/test_cep002_history_overlap.py`; porovnání ID, SHA-256 a normalizované podoby pouze u aktuálně prohlížených 12 kandidátů, kontrola rezervovaných 60 holdout záznamů **pouze přes ID a SHA-256, bez přístupu k jejich původním otázkám či odpovědím**. Vstupní historické soubory čteny jen pro extrakci zdrojových referencí, bez exportu eval textů. Program kontroluje všechny původní `runs/**/records.jsonl` a Safe Start, odhaluje neznámé/ID-only záznamy v coverage reportu, nepřepisuje staré výsledky ani neschvaluje trénink.
 
 Testy ani ostrý audit ještě na počítači uživatele neběžely, očekávaný součet je **88/88**. Po zelené a úspěšném dry-runu lze spustit read-only vstupní audit se zápisem nového souhrnu do `runs/cep002-history-audit-001`. Bez GPU. Nulový překryv není důkaz absence nepřímé/sémantické kontaminace.
+
+
+## 2026-10-11 — Historický audit 001: 88 CPU testů OK, dry-run bez shod
+
+Uživatel spustil všechny testy CEP-002 v WSL/Kali: **`Ran 88 tests in 0.355s — OK`**. Následný příkaz `cep -m diagnostics.cep002_history_overlap --dry-run --safe-start /home/rabbithollow/bottlecap-test/data/safe-start/questions.jsonl --history-root /home/rabbithollow/bottlecap-test/runs` uspěl s výsledkem `partial_historical_screen_no_match`.
+
+Naměřeno: **26 historických zdrojů (25 × `records.jsonl` + Safe Start), 217 záznamů, 12 se vstupním textem, 205 pouze s identifikátorem nebo hashem, 0 opaque záznamů, 0 shod s 12 CEP-002 review kandidáty, 0 shod s 60 rezervovanými holdout ID/hash.** `historical_sources_fully_screened=false`, `question_text_missing_from_some_records=true`, `semantic_duplicate_check_exhaustive=false`; audit neprokazuje nepřítomnost parafrází ani zcela vyloučené historické kontaminace. `holdout_questions_accessed=false`, `training_approved=false`, `training_performed=false`, `gpu_used=false`.
+
+**Dry-run nic nezapsal.** Další navržený krok: `--execute` na existující nezměněné vstupy s výstupem `runs/cep002-history-audit-001`, aby bylo možné prohlédnout per-file coverage; před schválením tréninku je nutná nezávislá sémantická kontrola a cílené vyšetření ID-only historických běhů. Žádné nové modelové učení nebylo provedeno.
