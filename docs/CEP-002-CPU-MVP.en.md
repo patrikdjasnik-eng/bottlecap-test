@@ -77,3 +77,21 @@ Added `diagnostics/cep002_review_packet.py` and 12 CPU tests in `tests/test_cep0
 It writes **only** `runs/cep002-contract-drafts-001/review-packet.md`, containing the three original questions, proposed input facts, required relations, likely semantic pitfalls, and unchecked human-review checklist items. Decisions remain `PENDING`; **zero independently approved contracts, zero XP locks, zero training records exported**. The review packet is a review aid, not proof of independent correctness or authorization to train.
 
 Before running: `python -m unittest tests.test_cep002_cpu tests.test_cep002_fixture_batch tests.test_cep002_data_intake tests.test_cep002_real_contract_drafts tests.test_cep002_review_packet -v`. Twelve new tests bring the expected total to 67. Then `python -m diagnostics.cep002_review_packet --dry-run` and `python -m diagnostics.cep002_review_packet --execute`. New tests have not yet been run in the user's Kali environment.
+
+
+## Historical screening against actual experiment files (11 Oct 2026)
+
+The user confirmed **70 passing CPU tests** and found `data/safe-start/questions.jsonl`, both `runs/rhar-validation-005/records.jsonl` and `runs/rhar-validation-006/records.jsonl`, plus numerous other past pilot and diagnostic `records.jsonl` files in the original Kali repo.
+
+Added **`diagnostics/cep002_history_overlap.py`** and **18 synthetic CPU regression tests** in `tests/test_cep002_history_overlap.py`. The audit reads only 12 already selected/reviewed CEP-002 Data Intake questions and 60 reserved `(ID,SHA256)` pairs without holdout question or answer text. It screens these against Safe Start source questions and all `runs/**/records.jsonl` in the **original** research working tree. New isolated CEP-002 draft/manifests are not misidentified as historical experiments. Checks literal task IDs, question SHA-256 hashes, SHA-256 of source question strings, normalized question equality and full question embedded in a user prompt. Model outputs, reference answers and generated reasoning are ignored.
+
+**Fail-closed** when critical historical files are missing, manifests malformed, a JSONL file empty/corrupt, or output would overwrite an earlier audit. Unknown record schemas and ID-only rows are reported as incomplete question-text coverage. Even zero matches means only `partial_historical_screen_no_match`, **never training approval**. No official evaluation question/answer text is emitted; output contains IDs, file names and counts. No exhaustive semantic/paraphrase similarity proof.
+
+From Windows PowerShell with the `cep` function:
+
+```powershell
+cep -m unittest tests.test_cep002_cpu tests.test_cep002_fixture_batch tests.test_cep002_data_intake tests.test_cep002_real_contract_drafts tests.test_cep002_review_packet tests.test_cep002_history_overlap -q
+cep -m diagnostics.cep002_history_overlap --dry-run --safe-start /home/rabbithollow/bottlecap-test/data/safe-start/questions.jsonl --history-root /home/rabbithollow/bottlecap-test/runs
+```
+
+After green tests and successful dry-run, optionally call the same command with `--execute`. Never overwrites `runs/cep002-history-audit-001/summary.json` and `overlaps.jsonl`. **The 18 new tests and historical audit have not yet run on the user's Kali system**; expected test total is 88. No GPU/training/learning dataset export.
