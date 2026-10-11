@@ -687,3 +687,12 @@ User reported **70/70 CPU tests OK** (0.250s). On original Kali research repo th
 Added `diagnostics/cep002_history_overlap.py` and 18 CPU regression tests `tests/test_cep002_history_overlap.py`. Cross-checks source IDs, hashes, normalized text for only the 12 currently viewed review candidates; the 60 reserved holdout records are referenced only by IDs and SHA-256, **without reading their source questions or answers**. Past research records are read only to extract source identifiers, and no official evaluation prompts/answers are exported. Covers all `runs/**/records.jsonl` in the original research directory and Safe Start; reports opaque/ID-only records as partial coverage. Never overwrites previous outputs or approves training.
 
 Tests and live audit have NOT run on user's computer yet; expected total **88**. After green tests and successful dry-run, output to a new `runs/cep002-history-audit-001` directory, no GPU. No overlap match is not proof against paraphrase/semantic contamination.
+
+
+## 2026-10-11 — Historical audit 001: 88 CPU tests OK; dry-run shows no identified overlaps
+
+The user ran the CEP-002 WSL/Kali suite: **`Ran 88 tests in 0.355s — OK`**. The subsequent historical-overlap `--dry-run` returned `partial_historical_screen_no_match`.
+
+Observed: **26 historic sources (25 `records.jsonl` files plus Safe Start), 217 rows, 12 with source question text, 205 with only ID/hash, 0 opaque rows, 0 matches for the 12 CEP-002 review candidates, and 0 matches for the 60 reserved holdout IDs/hashes.** Flags `historical_sources_fully_screened=false`, `question_text_missing_from_some_records=true`, `semantic_duplicate_check_exhaustive=false` remain true/false as appropriate; there is no proof that paraphrases or all historical exposure have been excluded. `holdout_questions_accessed=false`, `training_approved=false`, `training_performed=false`, `gpu_used=false`.
+
+**Dry-run did not write output.** Next proposed step is an explicit `--execute` on unchanged inputs writing the new `runs/cep002-history-audit-001` output directory for per-file coverage, followed by investigation of ID-only records and an independent semantic review before any training permission. No model training has been performed.
