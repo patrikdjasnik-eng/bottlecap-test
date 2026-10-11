@@ -117,3 +117,8 @@ After green tests, explicit `--execute` would create non-overwritable `runs/cep0
 ## Residual History 001 — six GSM8K IDs and 39 others (11 Oct 2026)
 
 New `diagnostics/cep002_residual_history.py` classifies the remaining 45 ID-only historical rows using reproducible seed=42 GSM8K train partition memberships. **Resolving a source index is weaker evidence than matching the original question text** when old records do not carry the question. Other 39 source IDs are not automatically safe training material. The report contains file-level aggregate counts, never source question texts, answers or model generations. Requires the original SHA-256 pinned GSM8K train Parquet, the 12 already viewed candidates, and 60 holdout references (ID/hash only). Nine new unit tests, 108 expected in total; no user execution yet.
+
+
+## Fix for misleading pending history count (11 Oct 2026)
+
+The real dry-run found six valid GSM8K index-shaped IDs outside the known initial partitions and 39 other ID-only records, but incorrectly reported `requires_investigation_count: 0`. The metric now counts all remaining ID-only historical rows lacking full provenance, **expected 45**. The change adds a full-classification invariant and three CPU regression tests. It does not mean that 45 records are wrong or that they are cleared; even the six resolvable GSM8K indexes do not independently prove the source-question content. **111 CPU tests expected**, not yet run.
