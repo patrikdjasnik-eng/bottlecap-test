@@ -703,3 +703,15 @@ Observed: **26 historic sources (25 `records.jsonl` files plus Safe Start), 217 
 The user displayed top historical sources after running `cep002_history_overlap --execute`: `rhar-validation-005/records.jsonl` contained 40 records and `rhar-validation-006/records.jsonl` contained 120, accounting for 160 of 205 ID-only rows. These were previous paired SFT/CEP diagnostics of 20 and 60 GSM8K train questions, not 160 unique questions. **80 unique original IDs can be checked by replaying the pinned shuffle.** The other 45 ID-only records are not yet fully characterized.
 
 Added `diagnostics/cep002_validation_provenance.py` and 11 standalone CPU tests. Reconstructs the old 005/006 partitions from the pinned train Parquet (seed 42, after 1,000 train + 100 loss-validation examples), checking every question ID, gold reference, and paired `sft`/`cep` row. The other 45 rows are grouped by known ID schema but not certified. Source data, adapters and previous results are unchanged; future holdout question texts are not emitted (the full train Parquet is read for reconstruction). **99 total CPU tests expected**, not yet run by user. No GPU or training export.
+
+
+## 2026-10-11 — Remaining 45 ID-only historical records: focused triage (prepared)
+
+User reported `99/99` CPU tests OK. The `cep002_validation_provenance --dry-run` reconciled **160 earlier records = 80 unique GSM8K main/train questions**: validation 005 was 20 × 2 model variants and validation 006 was 60 × 2. It matched exact IDs, dataset gold references and paired `sft/cep` labels. **45 older ID-only rows remain: six `gsm8k-train-NNNNN` IDs and 39 different IDs.**
+
+Added `diagnostics/cep002_residual_history.py` and nine CPU tests in `tests/test_cep002_residual_history.py`. It analyzes **only historical runs other than 005/006**, mapping the six formatted GSM8K IDs to row indexes in the pinned train Parquet and categorizing membership in the original seed=42 (1,000 train / 100 loss-val / 80 paired validation / outside known historical partition). When a gold answer was recorded, it checks that answer against the original source; otherwise the result remains unconfirmed. The 39 non-GSM8K-format IDs remain unverified/unknown-source, not automatically clean or trainable. File-level aggregate counts are reported; original question texts, holdout prompts, and generated outputs are never exported. **No exhaustive semantic or historical clearance and no permission to train.** CPU only.
+
+Not yet run on user's Kali; **108 expected CPU tests**. Usage:
+`cep -m diagnostics.cep002_residual_history --dry-run --raw-parquet /home/rabbithollow/bottlecap-test/data/safe-start/raw/gsm8k-train.parquet --history-root /home/rabbithollow/bottlecap-test/runs`
+
+Following green checks, optional explicit `--execute` writes only to new non-overwritable `runs/cep002-residual-history-001/summary.json` and `coverage.json`. **The actual remaining blockers to CEP-002 training** are independent semantic approval, investigation of the other ID sources, and enough genuinely verified/provenance-clean procedural examples; the three hand-authored drafts are not a meaningful training sample.
