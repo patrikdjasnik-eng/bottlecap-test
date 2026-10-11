@@ -69,6 +69,14 @@ class SemanticReviewPacketTests(unittest.TestCase):
             self.assertTrue(output.is_file())
             self.assertEqual(output.read_text(encoding="utf-8").count("**Original question:**"), 3)
 
+    def test_review_packet_has_renderable_markdown_backticks(self):
+        candidates, drafts = sample_data()
+        sections = review_sections(candidates, drafts)
+        for section in sections:
+            self.assertIn("**Question SHA-256:** " + "\x60", section)
+            self.assertIn("**Reference final:** " + "\x60", section)
+            self.assertNotIn("\\\x60", section)
+
     def test_tampered_gold_rejected(self):
         candidates, drafts = sample_data()
         candidates[0]["gold_answer"] = "11"
