@@ -653,3 +653,10 @@ New `diagnostics/cep002_data_intake.py` enforces the pinned GSM8K train file and
 ## 2026-10-11 — First three GSM8K CEP-002 contract drafts (not approved)
 
 User shared the first three Data Intake 001 rows (`gsm8k-train-00664`, `gsm8k-train-06718`, `gsm8k-train-03644`). Manual question analysis yielded the correct reference results 12, 7 and 3840. Added `diagnostics/cep002_real_contract_drafts.py` and 11 CPU unit tests. The prototype validates question hashes, provenance and exact arithmetic via `Fraction`, but deliberately **does not issue training targets or model-generated traces**; independent semantic contract review is still required. All drafts are `VPS=UNVERIFIED`, awaiting manual review. Neither an independent reviewer nor their approval is to be fabricated. The new Kali tests have not yet been run. The prior user output showed `Ran 44 tests` but did not include the final `OK` line. No GPU action, new model training or official benchmark.
+
+
+## 2026-10-11 — CEP-002 Human Semantic Review 001 (prepared, pending execution)
+
+The user ran 55/55 Kali CPU tests in 0.456 seconds, reporting `OK`. `diagnostics.cep002_real_contract_drafts --execute` created 3 arithmetically consistent draft contracts; all remain `review_required`, with `locked_experiences: 0`, `semantic_contracts_independently_reviewed: 0`, no GPU or training.
+
+Added `diagnostics/cep002_review_packet.py` and 12 checks: strict source-to-draft identity, manually proposed semantic fact mappings, relations, pitfalls, and unchecked reviewer checklist. Creates `review-packet.md` without training data or an XP lock. The additions are committed on GitHub branch `feat/cep002-cpu-mvp`; the 12 new tests and review-packet generation have not yet run on the user's Kali machine. Neither a draft nor its review packet constitutes independent semantic approval. Next: 67 CPU tests; create the review document only after a green result.
