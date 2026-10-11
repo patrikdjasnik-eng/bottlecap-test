@@ -149,6 +149,9 @@ def create_draft(record: dict, spec: dict) -> dict:
     if status != "UNVERIFIED":
         raise RuntimeError("draft mistakenly received a verified lock")
 
+    contract_data = asdict(proposed_contract)
+    contract_data["rules"] = [asdict(rule) for rule in proposed_contract.rules]
+
     return {
         "question_id": expected_id,
         "question_sha256": actual_digest,
@@ -156,7 +159,7 @@ def create_draft(record: dict, spec: dict) -> dict:
         "source_revision": DATASET_REVISION,
         "gold_answer": spec["gold_answer"],
         "semantic_note_for_manual_review": spec["semantic_note"],
-        "contract": asdict(proposed_contract),
+        "contract": contract_data,
         "suggested_trace": raw_trace,
         "exact_fraction_arithmetic_checked": True,
         "vps_status": status,
