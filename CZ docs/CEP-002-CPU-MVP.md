@@ -95,3 +95,20 @@ cep -m diagnostics.cep002_history_overlap --dry-run --safe-start /home/rabbithol
 ```
 
 Po zelených testech a úspěšném `--dry-run` lze výslovně spustit stejné CLI s `--execute`. Výstup `runs/cep002-history-audit-001/summary.json` a `overlaps.jsonl` se nikdy automaticky nepřepisuje. **Zatím žádný nový auditní běh ani jeho 18 nových testů uživatel nespustil**; očekáváme 88 CPU testů. Žádný GPU běh, LoRA učení nebo export trénovacích vzorů.
+
+
+## Rekonstrukce původu validací 005/006 (11. 10. 2026)
+
+Uživatel potvrdil z uloženého `runs/cep002-history-audit-001/summary.json`, že 160/205 historických záznamů bez textu zadání pochází z `rhar-validation-005` (40 řádků = 20 × 2 modely) a `rhar-validation-006` (120 řádků = 60 × 2 modely). Dalších **45 řádků** bez textu z jiných běhů ještě nemá úplně určený původ.
+
+Nový **`diagnostics/cep002_validation_provenance.py`** rekonstruuje validace 005/006 z originálního SHA-256 připnutého GSM8K `main/train` pomocí `prepare_pool(rows, 1000, 180, seed=42)`. Ověří přesná ID a GSM8K gold referenční čísla a vyžaduje právě jedno `sft` a jedno `cep` měření pro každou z 20 a 60 úloh; chybějící/přebývající ID či varianta audit zablokují. Zároveň opakuje předchozí kontrolu ID/hash překryvu pro 12 review kandidátů a 60 budoucích rezervací. Z ostatních `records.jsonl` jen agreguje typy známých ID a souborové počty, nikoliv texty/odpovědi.
+
+Čtení originálního train Parquet načte do operační paměti všechny trénovací řádky včetně budoucí holdout oblasti, avšak do ověřované validační množiny vybere jen **prvních 1180 historických pozic**; budoucí 60 otázek nevybírá do výstupu, neukazuje a neexportuje. Proto se metadata vztahují přesně k `reserved_holdout_questions_selected=false` a `reserved_holdout_texts_exported=false`, nikoli k tvrzení, že se Parquet holdout bytes nikdy nečetly.
+
+Nových **11 unit testů** v `tests/test_cep002_validation_provenance.py` (celkem očekávaných **99 CPU testů**), dosud uživatel nespustil. Dry-run bez zápisu:
+
+```powershell
+cep -m diagnostics.cep002_validation_provenance --dry-run --raw-parquet /home/rabbithollow/bottlecap-test/data/safe-start/raw/gsm8k-train.parquet --safe-start /home/rabbithollow/bottlecap-test/data/safe-start/questions.jsonl --history-root /home/rabbithollow/bottlecap-test/runs
+```
+
+Jen po zelených testech lze spustit se `--execute`, vytvoří nepřepisovaný `runs/cep002-validation-provenance-001/summary.json` a `other-file-coverage.json`. Klasifikace starších 45 záznamů a sémantické podobnosti zůstává **částečná**, nikdy neznamená schválení pro trénink, GPU ani automatickou produkci XP.
