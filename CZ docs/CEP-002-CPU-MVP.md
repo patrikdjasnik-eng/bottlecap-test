@@ -68,3 +68,12 @@ První tři z `runs/cep002-data-intake-001/candidates-review.jsonl` (pouze loká
 **Přísná hranice:** návrhy jsou **UNVERIFIED**, `reviewed_by=""`, `overlap_screen_passed=false`, `approved_for_training=false`. Z předem napsaných referenčních postupů nevzniká žádný Qwen trace, XP lock ani učicí příklad. Samostatná matematická kontrola ověřuje početní konzistenci, **neautomatizuje nezávislou sémantickou kontrolu přepisu zadání do kontraktu**. Všechny tři úlohy jsou nyní viděné a nelze je později označit za neviděný holdout.
 
 Nových 11 CPU testů: `python -m unittest tests.test_cep002_real_contract_drafts -v`. Dry-run `python -m diagnostics.cep002_real_contract_drafts --dry-run`, poté výslovné `--execute`. Výstup nesmí přepsat existující složku.
+
+
+## Ruční sémantická revize 001 (11. 10. 2026)
+
+Přidán `diagnostics/cep002_review_packet.py` a 12 CPU testů `tests/test_cep002_review_packet.py`. Skript spojí přes původní ID a SHA-256 soubor `runs/cep002-data-intake-001/candidates-review.jsonl` s `runs/cep002-contract-drafts-001/contract-drafts.jsonl`. Odmítá změněný původní text, nesouhlasící draft, předčasné schválení a přepsání výstupního protokolu.
+
+Vytváří **pouze** `runs/cep002-contract-drafts-001/review-packet.md` se všemi třemi původními zadáními, definovanými veličinami, potřebnými výpočty, konkrétními riziky a nezaškrtnutými položkami pro lidskou kontrolu. Všechny závěry zůstávají `PENDING`; **0 nezávisle schválených kontraktů, 0 XP locků, 0 exportovaných trénovacích záznamů**. Review packet je podklad, nikoliv důkaz samostatné správnosti nebo autorizace tréninku.
+
+Testy před spuštěním: `python -m unittest tests.test_cep002_cpu tests.test_cep002_fixture_batch tests.test_cep002_data_intake tests.test_cep002_real_contract_drafts tests.test_cep002_review_packet -v`. Nových testů je 12 (očekávaný součet 67). Poté `python -m diagnostics.cep002_review_packet --dry-run` a `python -m diagnostics.cep002_review_packet --execute`. Nové testy dosud uživatel v Kali nespustil.
