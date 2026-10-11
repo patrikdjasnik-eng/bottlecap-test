@@ -117,3 +117,8 @@ Jen po zelených testech lze spustit se `--execute`, vytvoří nepřepisovaný `
 ## Residual History 001 — šest GSM8K ID + 39 dalších (11. 10. 2026)
 
 Nový `diagnostics/cep002_residual_history.py` řadí zbylých 45 historických záznamů bez zadání podle ID do původních známých GSM8K partition. **Skutečné přiřazení zdrojového indexu je slabší důkaz než shoda originální otázky**, pokud starší záznam neobsahuje otázku. Ostatních 39 ID nejsou automaticky bezpečná data. Výstup obsahuje počty a přehled souborů, nikdy zdrojové zadání, odpovědi ani modelové generace. Vyžaduje původní lokální SHA-256 připnutý GSM8K train Parquet, prohlédnutých 12 kandidátů a 60 holdout referencí (holdout pouze ID/hash). Nových 9 unit testů, očekává se 108; uživatelský běh zatím neproběhl.
+
+
+## Oprava počtu neuzavřených historických řádků (11. 10. 2026)
+
+Při skutečném dry-runu bylo nalezeno 6 validních GSM8K indexových ID mimo první známé partition a 39 ostatních ID-only záznamů, avšak původní `requires_investigation_count` chybně uváděl 0. Metrika nyní počítá všechny dosud sémanticky nedoložené ID-only záznamy z reziduálních běhů, **očekáváno 45**. Oprava zahrnuje kontrolu úplnosti kategorizace a 3 regresní CPU testy. To neznamená 45 chybných úloh ani neosvědčuje jejich čistotu; ani šest platných GSM8K indexů bez textu zadání není nezávislá kontrola obsahu. Očekávaný počet CPU testů **111**, dosud nespouštěno.
