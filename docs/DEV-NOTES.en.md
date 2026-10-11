@@ -660,3 +660,12 @@ User shared the first three Data Intake 001 rows (`gsm8k-train-00664`, `gsm8k-tr
 The user ran 55/55 Kali CPU tests in 0.456 seconds, reporting `OK`. `diagnostics.cep002_real_contract_drafts --execute` created 3 arithmetically consistent draft contracts; all remain `review_required`, with `locked_experiences: 0`, `semantic_contracts_independently_reviewed: 0`, no GPU or training.
 
 Added `diagnostics/cep002_review_packet.py` and 12 checks: strict source-to-draft identity, manually proposed semantic fact mappings, relations, pitfalls, and unchecked reviewer checklist. Creates `review-packet.md` without training data or an XP lock. The additions are committed on GitHub branch `feat/cep002-cpu-mvp`; the 12 new tests and review-packet generation have not yet run on the user's Kali machine. Neither a draft nor its review packet constitutes independent semantic approval. Next: 67 CPU tests; create the review document only after a green result.
+
+
+## 2026-10-11 — Fix JSONL round-trip for contract review
+
+The user's local `diagnostics.cep002_review_packet --dry-run` failed with `ValueError: draft content or provenance changed: gsm8k-train-00664`. Root cause: `dataclasses.asdict(TaskContract)` retains `rules` as a Python tuple, while JSONL serialization converts it to a list. Direct comparison with a newly reconstructed draft falsely treated this type change as tampering.
+
+Fixed `diagnostics/cep002_real_contract_drafts.py` on isolated `feat/cep002-cpu-mvp` branch to emit JSON-compatible lists for rules at draft construction. The full provenance/content equality gate remains enabled. Added two regression tests for JSON round-tripping and persisted draft-to-review workflow.
+
+The user's existing `contract-drafts.jsonl` requires **no regeneration**: its serialized rules are already JSON arrays. The fix is backward-compatible with this file. User has not yet run the new Kali tests (69 expected) or generated the packet after the fix. No training or GPU operations performed.
