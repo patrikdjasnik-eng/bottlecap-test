@@ -923,3 +923,10 @@ Uživatel spustil všechny testy CEP-002 v WSL/Kali: **`Ran 88 tests in 0.355s �
 Naměřeno: **26 historických zdrojů (25 × `records.jsonl` + Safe Start), 217 záznamů, 12 se vstupním textem, 205 pouze s identifikátorem nebo hashem, 0 opaque záznamů, 0 shod s 12 CEP-002 review kandidáty, 0 shod s 60 rezervovanými holdout ID/hash.** `historical_sources_fully_screened=false`, `question_text_missing_from_some_records=true`, `semantic_duplicate_check_exhaustive=false`; audit neprokazuje nepřítomnost parafrází ani zcela vyloučené historické kontaminace. `holdout_questions_accessed=false`, `training_approved=false`, `training_performed=false`, `gpu_used=false`.
 
 **Dry-run nic nezapsal.** Další navržený krok: `--execute` na existující nezměněné vstupy s výstupem `runs/cep002-history-audit-001`, aby bylo možné prohlédnout per-file coverage; před schválením tréninku je nutná nezávislá sémantická kontrola a cílené vyšetření ID-only historických běhů. Žádné nové modelové učení nebylo provedeno.
+
+
+## 2026-10-11 — Validation Provenance 001 připraveno: zaměření na 160/205 ID-only záznamů
+
+Uživatel po `cep002_history_overlap --execute` zobrazil top 10 historických souborů bez textu zadání. `rhar-validation-005/records.jsonl` = 40 řádků a `rhar-validation-006/records.jsonl` = 120 řádků, celkem 160 z 205 ID-only. Původní experimenty používaly 20/60 GSM8K train úloh po 1000 trénovacích a 100 loss-val, seed 42, v obou LoRA variantách SFT/CEP. **Nejde o 160 samostatných otázek; po rekonstrukci lze ověřit 80 unikátních ID.** Zbývá 45 starších ID-only řádků v dalších bězích, jejichž původ není potvrzen.
+
+Přidán `diagnostics/cep002_validation_provenance.py` a 11 izolovaných CPU unit testů. Přesně připnutý train Parquet a replika původního shufflu rekonstruují 005/006, kontroluje se každé ID, gold odpověď a jeden pár `sft/cep`. Dalších 45 se kategorizuje podle ID/schema bez automatického osvědčení. Původní datasety, modely i výsledky zůstávají nedotčené, 60 rezervovaných holdout textů se nezveřejňuje (originální train Parquet se pro rekonstrukci čte). Očekáváme celkem **99 CPU testů**. Nový kód zatím uživatel nespustil. Bez GPU a exportu trénovacích vzorů.
