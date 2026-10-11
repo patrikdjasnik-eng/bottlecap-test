@@ -117,9 +117,21 @@ def main_audit(raw: Path, intake: Path, reservations: Path,
 
     target = load_targets(intake, reservations)
     counts, details = inspect_remaining(read_parquet(raw), history_root, target)
-    total_unresolved = (counts.get("unresolvable_gsm8k_source_id", 0)
-                        + counts.get("gold_mismatch_or_unknown", 0)
-                        + counts.get("ambiguous_id_or_hash_only", 0))
+    # Every ID-only record outside the fully reconstructed 005/006 validation
+    # remains pending provenance review. The earlier formula counted only malformed
+    # or conflicting IDs and misleadingly returned zero despite unreviewed rows.
+    # These categories are mutually exclusive at the record level, so there is
+    # no double-counting of missing gold or unknown partition membership.
+    total_pending = (counts.get("gsm8k_format_id", 0)
+                     + counts.get("non_gsm8k_format_id", 0)
+                     + counts.get("ambiguous_id_or_hash_only", 0))
+    categorised = (counts.get("within_old_training", 0)
+                   + counts.get("within_old_loss_validation", 0)
+                   + counts.get("within_old_paired_evaluation", 0)
+                   + counts.get("outside_known_1180", 0)
+                   + counts.get("unresolvable_gsm8k_source_id", 0))
+    if categorised != counts.get("gsm8k_format_id", 0):
+        raise ValueError("historic GSM8K ID categorisation is incomplete")
     summary = {
         "status": "partial_residual_history_classification",
         "mode": "execute" if execute else "dry_run",
@@ -136,7 +148,10 @@ def main_audit(raw: Path, intake: Path, reservations: Path,
         "recorded_gold_mismatch_or_unknown": counts.get("gold_mismatch_or_unknown", 0),
         "ambiguous_id_or_hash_only_rows": counts.get("ambiguous_id_or_hash_only", 0),
         "rows_with_input_text_excluded_from_id_only_triage": counts.get("with_original_question_text", 0),
-        "requires_investigation_count": total_unresolved,
+        "requires_investigation_count": total_pending,
+        "unresolved_provenance_id_only_rows": total_pending,
+        "requires_manual_provenance_review": total_pending > 0,
+        "numeric_id_resolved_does_not_prove_question_identity": True,
         "non_gsm8k_ids_not_semantically_screened": True,
         "old_histories_exhaustively_proven_clean": False,
         "independent_semantic_review_completed": False,
