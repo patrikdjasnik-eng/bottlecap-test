@@ -38,3 +38,20 @@ Příkazy:
 - `python -m diagnostics.cep002_fixture_batch --execute --out runs/cep002-fixture-001`
 
 Poslední příkaz zapíše JSONL historii a souhrn, nikdy nepřepisuje existující běh. Všech 12 správných vzorových traces se **očekává** jako VERIFIED, ale nové testy i dávku je nutné nejprve spustit na uživatelově PC. V této fázi jde o testování kontraktů, ne o ověřený přínos pro model. Nevydávat příznak `overlap_screen_passed` u syntetických fixtur za nezávislý audit reálných dat.
+
+
+## GSM8K Data Intake 001 (11. 10. 2026)
+
+Přidán `diagnostics/cep002_data_intake.py` a deset CPU unit testů v `tests/test_cep002_data_intake.py`. Nástroj čte jen lokální SHA-256 připnutý `GSM8K main/train` a místní soubor oficiálních evaluačních promptů pro kontrolu překryvu (nikdy jako trénovací cíle).
+
+Deterministická posloupnost (`seed=42`) přeskakuje historické pozice: **1 000 původních train + 100 loss validation + 20 Evaluation 005 + 60 Evaluation 006 = 1 180**. Dalších **12 příkladů** nabídne pouze k ručnímu review a **60 následujících** rezervuje bez jejich zadání a odpovědí v souhrnu jako budoucí holdout. Každý review příklad má `contract: null` a `approved_for_training: false`.
+
+Důležité: kontrola ostatních dřívějších pilotů / ručně vybraných úloh není úplná; blízké duplicity a sémantický překryv mohou uniknout. **Žádný z připravených příkladů není automaticky schválen pro CEP trénink**. Zveřejnění nebo prohlížení budoucího holdoutu jej může znehodnotit.
+
+Lokální spuštění (z worktree, v prostředí s `pyarrow`, cesty výslovně na původní repozitář):
+
+`python -m unittest tests.test_cep002_cpu tests.test_cep002_fixture_batch tests.test_cep002_data_intake -v`
+
+`python -m diagnostics.cep002_data_intake --dry-run --raw-parquet /home/rabbithollow/bottlecap-test/data/safe-start/raw/gsm8k-train.parquet --eval-questions /home/rabbithollow/bottlecap-test/questions/questions.jsonl --out runs/cep002-data-intake-001`
+
+Po zeleném dry-runu lze výslovně spustit `--execute`; výstupní složka se nikdy nepřepisuje. Neprovádí se model inference ani trénink.
