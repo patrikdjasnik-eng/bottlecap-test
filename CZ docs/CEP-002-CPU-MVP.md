@@ -77,3 +77,21 @@ Přidán `diagnostics/cep002_review_packet.py` a 12 CPU testů `tests/test_cep00
 Vytváří **pouze** `runs/cep002-contract-drafts-001/review-packet.md` se všemi třemi původními zadáními, definovanými veličinami, potřebnými výpočty, konkrétními riziky a nezaškrtnutými položkami pro lidskou kontrolu. Všechny závěry zůstávají `PENDING`; **0 nezávisle schválených kontraktů, 0 XP locků, 0 exportovaných trénovacích záznamů**. Review packet je podklad, nikoliv důkaz samostatné správnosti nebo autorizace tréninku.
 
 Testy před spuštěním: `python -m unittest tests.test_cep002_cpu tests.test_cep002_fixture_batch tests.test_cep002_data_intake tests.test_cep002_real_contract_drafts tests.test_cep002_review_packet -v`. Nových testů je 12 (očekávaný součet 67). Poté `python -m diagnostics.cep002_review_packet --dry-run` a `python -m diagnostics.cep002_review_packet --execute`. Nové testy dosud uživatel v Kali nespustil.
+
+
+## Historický audit přes skutečné běhy (11. 10. 2026)
+
+Uživatel potvrdil **70/70 zelených CPU testů** a lokálně v Kali našel `data/safe-start/questions.jsonl`, `runs/rhar-validation-005/records.jsonl`, `runs/rhar-validation-006/records.jsonl` i množství dalších záznamů pilotních experimentů a diagnostiky.
+
+Přidán **`diagnostics/cep002_history_overlap.py`** a **18 syntetických CPU regresních testů** `tests/test_cep002_history_overlap.py`. Skript čte **pouze** 12 již vybraných a prohlédnutých úloh z CEP-002 Data Intake 001 a 60 rezervovaných dvojic `(ID,SHA256)` bez zadání či odpovědí. Porovnává je s původními Safe Start otázkami a všemi `runs/**/records.jsonl` v původním research repo. Návrhy a holdout manifesty v izolovaném novém worktree nejsou považovány za starší zdroje. Kontroluje identitu ID, přímo uložený SHA-256 otázky, SHA-256 samotného textu, normalizovanou shodu a vložení celého textu do uživatelského promptu. Modelové výstupy, referenční odpovědi a generated reasoning ignoruje.
+
+Vyhodnocení je **fail-closed** pro chybějící kritické běhy, nesprávnou strukturu vstupních manifestů, prázdné či poškozené JSONL a přepis existujícího výstupu. Neznámé schema a řádky pouze s ID jsou v metrikách uvedeny jako nepokryté textové kontroly; i nulová shoda znamená pouze `partial_historical_screen_no_match`, **nikoliv schválená trénovací data**. Zpráva používá jen identifikátory a názvy souborů, neverbatim eval otázky či odpovědi. Heuristika neumí spolehlivě zachytit parafráze a sémantické duplicity.
+
+Použij z Windows PowerShellu s funkcí `cep`:
+
+```powershell
+cep -m unittest tests.test_cep002_cpu tests.test_cep002_fixture_batch tests.test_cep002_data_intake tests.test_cep002_real_contract_drafts tests.test_cep002_review_packet tests.test_cep002_history_overlap -q
+cep -m diagnostics.cep002_history_overlap --dry-run --safe-start /home/rabbithollow/bottlecap-test/data/safe-start/questions.jsonl --history-root /home/rabbithollow/bottlecap-test/runs
+```
+
+Po zelených testech a úspěšném `--dry-run` lze výslovně spustit stejné CLI s `--execute`. Výstup `runs/cep002-history-audit-001/summary.json` a `overlaps.jsonl` se nikdy automaticky nepřepisuje. **Zatím žádný nový auditní běh ani jeho 18 nových testů uživatel nespustil**; očekáváme 88 CPU testů. Žádný GPU běh, LoRA učení nebo export trénovacích vzorů.
