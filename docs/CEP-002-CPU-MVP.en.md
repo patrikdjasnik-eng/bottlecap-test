@@ -68,3 +68,12 @@ The first three rows of `runs/cep002-data-intake-001/candidates-review.jsonl` (a
 **Strict gate:** all drafts stay **UNVERIFIED** with `reviewed_by=""`, `overlap_screen_passed=false`, `approved_for_training=false`. These hand-authored reference traces are NOT Qwen generations, XP locks, or training targets. Exact arithmetic checks numerical consistency but **do not independently review the semantic translation from source questions to contracts**. These three questions are now seen and cannot later qualify as an untouched holdout.
 
 Added 11 CPU tests: `python -m unittest tests.test_cep002_real_contract_drafts -v`. First `python -m diagnostics.cep002_real_contract_drafts --dry-run`, followed by explicit `--execute`. An existing output path is never overwritten.
+
+
+## Human semantic review 001 (11 Oct 2026)
+
+Added `diagnostics/cep002_review_packet.py` and 12 CPU tests in `tests/test_cep002_review_packet.py`. The script links `runs/cep002-data-intake-001/candidates-review.jsonl` and `runs/cep002-contract-drafts-001/contract-drafts.jsonl` using source IDs and SHA-256. It rejects tampered original text, altered drafts, premature approval, and overwriting the review packet.
+
+It writes **only** `runs/cep002-contract-drafts-001/review-packet.md`, containing the three original questions, proposed input facts, required relations, likely semantic pitfalls, and unchecked human-review checklist items. Decisions remain `PENDING`; **zero independently approved contracts, zero XP locks, zero training records exported**. The review packet is a review aid, not proof of independent correctness or authorization to train.
+
+Before running: `python -m unittest tests.test_cep002_cpu tests.test_cep002_fixture_batch tests.test_cep002_data_intake tests.test_cep002_real_contract_drafts tests.test_cep002_review_packet -v`. Twelve new tests bring the expected total to 67. Then `python -m diagnostics.cep002_review_packet --dry-run` and `python -m diagnostics.cep002_review_packet --execute`. New tests have not yet been run in the user's Kali environment.
