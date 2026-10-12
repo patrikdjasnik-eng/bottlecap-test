@@ -1,8 +1,12 @@
 # 🐇 RHAR — jediná aktivní hypotéza a ověřovací plán
 
-**Stav: výzkumná hypotéza; nikoliv prokázaný nový algoritmus. Aktualizace: 10. 10. 2026.**
+**Stav: výzkumná hypotéza; nikoliv prokázaný nový algoritmus. Aktualizace: 12. 10. 2026.**
 
 [📔 Historie a surové výsledky](DEV-NOTES.md) · [📋 Soutěžní požadavky](QUEST-ODEVZDANI-CHECKLIST.md) · [🧠 CEP 002 — přesný jednoduchý návrh](CEP-002.md) · [🌍 IDEA (EN)](../IDEA.md)
+
+## 📊 Aktuální kontrolní evidence — RHAR Validation 007 (12. 10. 2026)
+
+**Lokální exploratorní test podle uživatelova terminálu, nikoli oficiální skóre:** 40 oddělených GSM8K-train otázek × base/SFT003/SFT004, 1 seed, cap 512, 120 dokončených generování jako experiment. **Base 6/40 správně, 19 860 tokenů, 32/40 uříznuto; SFT003 14/40, 4 885 tokenů; SFT004 17/40, 4 611 tokenů, 1/40 uříznuto.** SFT004 vs SFT003 +3 správné, −274 tokenů (~5,6 %), párově 6 oprav a 3 zhoršení. Původní model u 32/40 případů narazil na token cap; nejde o důkaz zachování přesnosti či generalizace. SFT004 je **běžná SFT kontrola, nikoli implementace CEP 002**. Lokální Validation 007 / Training 004 zdrojové skripty a artefakty v aktuálně prohlížené GitHub větvi chyběly; čísla jsou zdokumentována podle uživatelem dodaných logů. [Podrobný záznam a metodická omezení](RHAR-VALIDATION-007.md).
 
 ## 🎯 Zadání BottleCapAI, nikoliv naše vedlejší projekty
 
