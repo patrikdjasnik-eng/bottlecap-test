@@ -13,7 +13,7 @@
 
 > 🐇 Rabbit Hollow Research: explore **RHAR — Rabbit Hollow Adaptive Reasoning**, a modular research concept for shorter Qwen3-0.6B reasoning without sacrificing accuracy.
 
-**My chosen research direction:** RPS (Reasoning Progress Signature) + RPD (Reversible Proof Distillation) + TPC (Transfer-Protected Compression). The concepts are approved; no RHAR learning algorithm or improvement has been implemented or demonstrated.
+**Active research direction:** RHAR-CEP 002 (VPS + XP + REC + Verified Lock), **a proposed algorithm not yet implemented or trained**. Earlier RPS/RPD/TPC ideas remain archived; conventional SFT adapters have been locally evaluated, but this does not demonstrate CEP 002.
 
 ## 🎯 Challenge
 
@@ -23,7 +23,7 @@ Improve the reasoning model's efficiency by **changing the model's behavior**, n
 - **Goal:** reduce total generated tokens (thinking + final answer) while maintaining comparable accuracy.
 - **Benchmarks:** SVAMP, MBPP+, BFCL, IFEval.
 - **Rules:** never train on evaluation benchmarks; do not change the official evaluation settings.
-- **Current status:** project structure prepared; no benchmark result or claimed improvement yet.
+- **Current status:** exploratory local Validation 007 completed on 40 GSM8K-train questions (SFT004 17/40 correct, 4,611 tokens; SFT003 14/40, 4,885 tokens; original Qwen 6/40, 19,860 tokens and 32 truncations). **No official BottleCapAI benchmark; no CEP 002 implementation or claim of generalization.**
 
 ## 🖥️ Development PC
 
@@ -38,6 +38,7 @@ Details, limitations, and an external-GPU plan: [docs/HARDWARE.en.md](docs/HARDW
 
 ## 🔬 Research files
 
+- [🧪 RHAR Validation 007 — local base vs SFT003 vs SFT004](docs/RHAR-VALIDATION-007.en.md) — 40-question exploratory result, user-provided GPU log, data-screen and truncation limitations. [Czech](CZ%20docs/RHAR-VALIDATION-007.md).
 - [🧠 RHAR-CEP 002 — VPS + XP + REC algorithm (research proposal)](docs/CEP-002.en.md) — verified procedural steps, up to three real strategies, proven retroactive corrections and a small controlled experiment; **documentation only, no new GPU/training**. [Czech](CZ%20docs/CEP-002.md).
 - [🐇 RHAR Safe Start — prepare 36 generations safely](docs/SAFE-START-GENERATION.en.md) — explicit-gated future Qwen3 runner, 24 new CPU tests, no GPU execution. [Czech](CZ%20docs/SAFE-START-GENERATION.md).
 - [🛡️ Safe Start — CPU-only official evaluation overlap audit](docs/SAFE-START-OVERLAP.en.md) — six pinned source objects, 18 new tests, no GPU. [Czech](CZ%20docs/SAFE-START-OVERLAP.md).
