@@ -13,7 +13,7 @@
 
 > 🐇 Rabbit Hollow Research: výzkum **RHAR — Rabbit Hollow Adaptive Reasoning**, modulárního přístupu k efektivnějšímu uvažování modelu Qwen3-0.6B bez ztráty přesnosti.
 
-**Můj zvolený výzkumný směr:** RPS (Reasoning Progress Signature) + RPD (Reversible Proof Distillation) + TPC (Transfer-Protected Compression). Schválená je koncepce; žádný algoritmus učení RHAR ani zlepšení dosud nebyly implementovány či prokázány.
+**Aktivní výzkumný směr:** RHAR-CEP 002 (VPS + XP + REC + Verified Lock), **zatím navržený algoritmus bez implementace a tréninku**. Starší RPS/RPD/TPC jsou archivní nápady; běžné SFT adaptery byly lokálně změřeny, ale to neprokazuje fungování CEP 002.
 
 - [🧠 Moje hypotézy a zjištění](HYPOTEZY-A-ZJISTENI.md) — osobní přehled výsledků RHAR 002–007, chyb, hypotéz a dalších kroků.
 
@@ -25,7 +25,7 @@ Zvýšit efektivitu reasoning modelu **změnou jeho chování v modelu**, ne př
 - **Cíl:** snížit celkový počet generovaných tokenů (thinking + odpověď) při srovnatelné přesnosti.
 - **Benchmarky:** SVAMP, MBPP+, BFCL, IFEval.
 - **Pravidla:** žádný trénink na evaluačních datech, neměnit nastavení oficiální evaluace.
-- **Aktuální stav:** struktura projektu připravena; žádný výsledek benchmarku ani zlepšení zatím netvrdíme.
+- **Aktuální stav:** dokončené lokální exploratorní Validation 007 na 40 GSM8K-train otázkách (SFT004 17/40, 4 611 tokenů; SFT003 14/40, 4 885 tokenů; původní Qwen 6/40, 19 860 tokenů a 32 truncations). **Žádný oficiální BottleCapAI benchmark, žádná implementace CEP 002 ani prokázaná generalizace.**
 
 ## 🖥️ Vývojový počítač
 
@@ -40,6 +40,7 @@ Podrobnosti, limity a plán práce s externí GPU: [HARDWARE.md](HARDWARE.md). G
 
 ## 🔬 Výzkumné soubory
 
+- [🧪 RHAR Validation 007 — lokální base vs SFT003 vs SFT004](RHAR-VALIDATION-007.md) — exploratorní výsledek na 40 otázkách z uživatelova GPU výstupu, včetně omezení měření a kontroly dat. [English](../docs/RHAR-VALIDATION-007.en.md).
 - [🧠 RHAR-CEP 002 — VPS + XP + REC (návrh algoritmu)](CEP-002.md) — ověřitelné kroky, nejvýše tři existující postupy, důkazem podložené zpětné opravy a malý kontrolovaný experiment; **pouze dokumentace, bez nového GPU/trénování**. [English](../docs/CEP-002.en.md).
 - [🐇 RHAR Safe Start — CPU příprava 36 generací](SAFE-START-GENERATION.md) — budoucí Qwen3 GPU skript s dvojitým potvrzením, 24 nových CPU testů, bez spuštění GPU. [English](../docs/SAFE-START-GENERATION.en.md).
 - [🛡️ Safe Start — CPU kontrola evaluačního překryvu](SAFE-START-OVERLAP.md) — šest připnutých zdrojových souborů, 18 nových testů, žádné GPU. [English](../docs/SAFE-START-OVERLAP.en.md).
