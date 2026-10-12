@@ -13,6 +13,24 @@
 
 ## Diary
 
+### 🌙 2026-10-12 — End of day: RHAR Validation 007 completed, BASE vs SFT003 vs SFT004
+
+**Session closed.** Evidence is the user's **actual local Kali/WSL2 terminal output**, not an experiment independently rerun by the assistant. **10 CPU tests OK** (`Ran 10 tests in 0.057s`, `OK`). `diagnostics.rhar_validation_007 --dry-run` planned 40 GSM8K-train questions × 3 variants = 120 generations. With explicitly requested `--execute --approve-gpu`, the local run printed all 120 cases and returned `status=completed_exploratory`. **Not an official BottleCapAI benchmark.**
+
+| Variant | Strict correct | Complete | Truncated | Total emitted tokens | Mean tokens |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Original Qwen | **6/40 (15%)** | 8/40 | **32/40** | 19,860 | 496.50 |
+| SFT003 | **14/40 (35%)** | 38/40 | 2/40 | 4,885 | 122.12 |
+| **SFT004 / long-SFT** | **17/40 (42.5%)** | 39/40 | 1/40 | **4,611** | **115.28** |
+
+**Observed comparisons on this one sample:** SFT004 vs base **+11 correct**, **−15,249 tokens (~76.8%)**, 12 paired fixes and 1 regression. SFT004 vs SFT003 **+3 correct**, **−274 tokens (~5.6%)**, 6 fixes and 3 regressions. However **32/40 base answers hit the 512-token cap**, so the large savings are measured against a heavily censored baseline. One seed (**9001**), 40 questions, and possibly different SFT003/SFT004 training budgets do **not** establish stable or causal gains. The program correctly returned `quality_preservation_demonstrated=false` and `generalization_demonstrated=false`.
+
+**Reproducibility and data boundary:** pinned Qwen revision `c1899de289a04d12100db370d81485cdf75e47ca`, 512 cap, sampling 0.6/0.95/20, selection seed 7007, fingerprint `256adfdeddf9c73371893573c71af9698d11116c525b884cd5f79e276f3bf175`. The plan reported excluding 2,500 SFT004 train and 100 loss-validation IDs, 60 reserved CEP002 holdout IDs, 1,262 protected unique IDs, plus heuristic screening of 2,759 official evaluation prompts; **semantic overlap is not excluded**. Validation 007 source, SFT004 training code and the complete local `runs/` artifacts were **not available in the inspected remote feature branch** at documentation time.
+
+**Keep hypotheses separate:** this tested **base/SFT003/SFT004, not CEP 002**. VPS + XP + REC + Verified Lock in CEP 002 v0.3 is still a **proposal**. Do not train on these 40 already scored questions while claiming them as independent validation. Preserve all local run evidence unchanged.
+
+**Today documented:** detailed [RHAR Validation 007](RHAR-VALIDATION-007.en.md) / [Czech](../CZ%20docs/RHAR-VALIDATION-007.md), this diary and short status updates in IDEA/README/hypotheses. **Next session, proposed only:** check local Git status, preserve `plan.json`, `records.jsonl`, `summary.json`, inspect the 6 wins / 3 losses of SFT004 vs SFT003, then consider a small CPU VPS prototype and future separately approved CEP 002 experiments. **No step forward without green tests. No more GPU runs or training tonight.** 🐇🛡️
+
 ### 2026-10-10 — 📚 What I learned today: from SFT to safe CEP 002 (daily recap)
 
 **Entry type:** lessons from today's work; summary of experiments already performed and an independently **proposed** algorithm, not new measurements or a working CEP 002 implementation.
