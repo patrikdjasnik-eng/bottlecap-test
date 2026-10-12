@@ -13,6 +13,24 @@
 
 ## Deník
 
+### 🌙 2026-10-12 — Konec dne: RHAR Validation 007 dokončeno, BASE vs SFT003 vs SFT004
+
+**Dnešní práce je uzavřena.** Podklad: **skutečný terminálový výstup uživatele z Kali/WSL2**, nikoli mnou opakovaný experiment. **10 CPU testů OK** (`Ran 10 tests in 0.057s`, `OK`). Dry-run `diagnostics.rhar_validation_007` potvrdil plán 40 GSM8K-train otázek × 3 varianty = 120 generování; po explicitním `--execute --approve-gpu` lokální běh vypsal všech 120 pokusů a `status=completed_exploratory`. **Není to oficiální BottleCapAI benchmark.**
+
+| Varianta | Strict correct | Complete | Truncated | Tokeny celkem | Průměr tokenů |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Původní Qwen | **6/40 (15 %)** | 8/40 | **32/40** | 19 860 | 496,50 |
+| SFT003 | **14/40 (35 %)** | 38/40 | 2/40 | 4 885 | 122,12 |
+| **SFT004 / long-SFT** | **17/40 (42,5 %)** | 39/40 | 1/40 | **4 611** | **115,28** |
+
+**Co se potvrdilo v této sadě:** SFT004 proti base **+11 správných**, **−15 249 tokenů (~76,8 %)**; párově opravilo 12 a pokazilo 1. Proti SFT003 **+3 správné**, **−274 tokenů (~5,6 %)**; párově opravilo 6 a pokazilo 3. **Pozor:** původní Qwen narazil na limit 512 tokenů u 32/40 úloh; porovnání úspory je zatíženo cenzorovanou baseline. Jediný seed **9001**, pouhých 40 úloh a pravděpodobně různé trénovací rozpočty SFT003/SFT004 **nedovolují prokázat stabilní ani kauzální přínos**. Finální výstup správně uvádí `quality_preservation_demonstrated=false` a `generalization_demonstrated=false`.
+
+**Reprodukovatelnost a čistota:** Qwen3-0.6B revize `c1899de289a04d12100db370d81485cdf75e47ca`, cap 512, sampling 0.6/0.95/20, výběrový seed 7007; validační fingerprint `256adfdeddf9c73371893573c71af9698d11116c525b884cd5f79e276f3bf175`. Dry-run oznámil vyloučení 2 500 SFT004 trénovacích a 100 loss-validačních ID, rezervovaných 60 CEP002 holdout a celkem 1 262 unikátních chráněných ID; 2 759 oficiálních promptů bylo kontrolováno **jen heuristicky**, takže sémantické parafráze nevylučujeme. Lokální skript Validation 007, SFT004 trénovací skript ani kompletní `runs/` artefakty nyní v prohlížené vzdálené feature větvi **nejsou**; jen z terminálu je nelze nezávisle přeauditovat.
+
+**Nezaměňovat výzkumné směry:** tento test srovnával **base/SFT003/SFT004**, **nikoli funkční CEP 002**. VPS + XP + REC + Verified Lock v CEP 002 v0.3 zůstává **návrhem**; nic z tohoto 40otázkového holdoutu nepoužívat k trénování a současně vykazovat jako nezávislý test. Původní lokální výstupy zachovat, nic nepřepisovat.
+
+**Dnes zapsáno:** detailní [RHAR Validation 007](RHAR-VALIDATION-007.md) / [English](../docs/RHAR-VALIDATION-007.en.md), tento deník a navazující stručné aktuální souhrny v IDEA/README a hypotézách. **Pro další den (pouze plán):** ověřit lokální Git status a uchování `plan.json`, `records.jsonl`, `summary.json`; prostudovat 6 opravených a 3 zhoršené páry SFT004 vs SFT003; potom teprve rozhodnout o kontrolovaném CPU prototypu VPS a budoucím CEP 002 experimentu. **Bez zelené ani krok. Dnes už žádný další GPU běh ani trénink.** 🐇🛡️
+
 ### 2026-10-10 — 📚 Co jsem se dnes naučil: od SFT k bezpečnému CEP 002 (souhrn dne)
 
 **Typ záznamu:** vlastní poučení z dnešní práce; souhrn již provedených experimentů a samostatně **navrženého** algoritmu, nikoli nové měření nebo implementace CEP 002.
