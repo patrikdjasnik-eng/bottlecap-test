@@ -1,8 +1,12 @@
 # IDEA.md — RHAR: Causal Evidence Preservation (CEP)
 
-**Status, 2026-10-10:** one active research hypothesis, **not** a proven novel algorithm or a successful BottleCapAI submission.
+**Status, 2026-10-12:** one active research hypothesis, **not** a proven novel algorithm or a successful BottleCapAI submission.
 
 [🇨🇿 Czech research direction](CZ%20docs/IDEA.md) · [🧠 CEP 002 — simple algorithm](docs/CEP-002.en.md) · [Development history](docs/DEV-NOTES.en.md)
+
+## Latest local control evidence — RHAR Validation 007 (2026-10-12)
+
+**User-provided local terminal output, not an official score or independently rerun experiment:** 40 separate GSM8K-train questions, one seed, cap 512, comparing original base, SFT003 and SFT004. **Base: 6/40 correct, 19,860 generated tokens and 32/40 truncated; SFT003: 14/40, 4,885 tokens; SFT004: 17/40, 4,611 tokens and 1/40 truncated.** SFT004 vs SFT003 gained three correct responses and emitted 274 fewer tokens (~5.6%); paired 6 fixes and 3 regressions. The original model's heavy token-cap truncation and 40 single-seed questions prevent strong generalization/accuracy-preservation claims. SFT004 is an **ordinary SFT control**, **not an implementation of CEP 002**. Local Validation 007 and Training 004 sources/results were not present in the inspected remote branch. [Detailed report](docs/RHAR-VALIDATION-007.en.md).
 
 ## Challenge objective
 
@@ -18,7 +22,7 @@ This is a proposed mechanism, **not yet specified sufficiently for implementatio
 
 Training 001: actual rank-8 LoRA technical pilot with one GSM8K sample. Training 002: actual LoRA SFT with 11 GSM8K reference rationales and 60 steps. In one exploratory comparison, the base model generated **512 tokens** and was truncated, while Training 002 generated **137 tokens**, terminated, but answered **4.5 hours** instead of **6** after substituting 90 km for the input 180 km. Both were incorrect under strict completion grading. Thus **73.24% fewer observed tokens is not accuracy-preserving compression**, and the base measurement is capped. No generalization or official BottleCapAI success has been demonstrated.
 
-Training 003 is conventional GSM8K LoRA supervised fine-tuning with validation and checkpoints, as a **control baseline**. Its GPU completion is not evidenced in the current research record. CEP is not yet implemented.
+Training 003 is conventional GSM8K LoRA supervised fine-tuning with validation and checkpoints, as a **control baseline**. The user's later local Validation 007 log shows successful inference with the SFT003 adapter, although the full local training run has not been independently audited here. **CEP 002 remains unimplemented**; existing CEP 001 is a separate earlier heuristic experiment.
 
 ## The single controlled experiment
 
