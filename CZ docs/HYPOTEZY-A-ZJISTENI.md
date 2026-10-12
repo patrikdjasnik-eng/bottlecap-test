@@ -1,8 +1,14 @@
 # 🐇 RHAR — jediná aktivní hypotéza a ověřovací plán
 
-**Stav: výzkumná hypotéza; nikoliv prokázaný nový algoritmus. Aktualizace: 10. 10. 2026.**
+**Stav: výzkumná hypotéza; nikoliv prokázaný nový algoritmus. Aktualizace: 12. 10. 2026.**
 
 [📔 Historie a surové výsledky](DEV-NOTES.md) · [📋 Soutěžní požadavky](QUEST-ODEVZDANI-CHECKLIST.md) · [🌍 IDEA (EN)](../IDEA.md)
+
+## 🧪 Nový kontrolní důkaz (12. 10. 2026): RHAR Validation 007
+
+**Podle doloženého uživatelova lokálního výstupu** prošlo 10 CPU testů a GPU experiment 40 × 3 = **120 generací** Qwen3-0.6B na oddělených GSM8K-train otázkách. Při jednom seedu a capu 512: **base 6/40 správně, 19 860 tokenů, 32/40 truncated; SFT003 14/40 správně, 4 885 tokenů; SFT004 17/40 správně, 4 611 tokenů**. SFT004 proti SFT003: **+3 správné, −274 tokenů (~5,6 %), 6 opravených a 3 zhoršené páry**. Tuto pozitivní lokální evidenci **nepřipisovat CEP 002**, které stále nemá implementaci/trénování. Vzhledem k malému jednoseedovému vzorku, možné různosti trénovacího rozpočtu a limitu původního modelu nejsou prokázány obecná správnost, úspora napříč doménami ani oficiální výsledky. Podrobnosti: [RHAR-VALIDATION-007.md](RHAR-VALIDATION-007.md).
+
+**Další test hypotézy H-CEP-002:** jakmile bude po samostatném souhlasu VPS/XP/REC implementováno, použít **nová nedotčená data**, srovnat kontrolní SFT vs VPS+XP vs VPS+XP+REC při vyrovnaném rozpočtu a sledovat i falešné opravy. Již hodnocených 40 otázek Validation 007 ponechat mimo nové trénovací příklady, pokud mají zůstat nezávislou validací.
 
 ## 🎯 Zadání BottleCapAI, nikoliv naše vedlejší projekty
 
@@ -47,8 +53,9 @@ Na úloze 180 km při 60 km/h + 120 km při 40 km/h je správně 6 hodin. LoRA 0
 | Training 001 | Skutečný LoRA adapter z 1 GSM8K příkladu, technický pilot |
 | Training 002 | Skutečný LoRA adapter z 11 referenčních GSM8K řešení, 60 kroků |
 | Eval 002 | 512 tokenů baseline / 137 tokenů adapter, ale **obě strict incorrect** (baseline uříznutá, adapter 4,5 místo 6) |
-| Training 003 | Skript na větší běžný SFT s validací; **v tomto záznamu není doloženo dokončení GPU tréninku** |
-| CEP | **Zatím hypotéza, ne implementovaná ani trénovaná metoda** |
+| Training 003 | Existující běžný SFT adapter; lokální Validation 007 ukazuje inference **14/40**, 4 885 tokenů. Trénovací log nebyl zde nezávisle auditován. |
+| Training 004 | Lokální SFT004 / long-SFT adapter podle Validation 007: **17/40**, 4 611 tokenů; zdrojový trénovací skript ve vzdálené větvi zatím nedoložen. |
+| CEP 002 | **Zatím návrh VPS + XP + REC + Verified Lock; neimplementován ani netrénován.** |
 | Oficiální BottleCapAI skóre | Zatím není |
 
 Podrobnou historii testů, pomocných skriptů, limitů GTX 1070 Ti a negativních výsledků ponecháváme v [DEV-NOTES.md](DEV-NOTES.md) jako **archiv**, nikoliv aktivní roadmapu.
