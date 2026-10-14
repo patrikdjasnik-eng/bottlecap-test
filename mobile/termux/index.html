@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d1c">
+<title>BottleCap · RHAR Mobile Lab</title>
+<style>
+:root{color-scheme:dark;font:15px system-ui,-apple-system,sans-serif;background:#090c19;color:#eff1ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#21163a 0,#0b0d1c 58%);min-height:100dvh}
+.app{max-width:820px;margin:auto;min-height:100dvh;display:flex;flex-direction:column}
+header{position:sticky;top:0;z-index:3;background:#0d1022eb;backdrop-filter:blur(18px);padding:16px 18px;border-bottom:1px solid #343054}
+.brand{display:flex;align-items:center;gap:12px}.logo{background:linear-gradient(135deg,#9270ff,#37d7c8);border-radius:14px;padding:12px;font-weight:900;color:#101327;font-size:20px}
+h1{font-size:18px;margin:0;letter-spacing:.04em}small,.muted{color:#a1a7c7}small{font-size:11px}#status{margin-left:auto;font-size:12px;border:1px solid #424568;border-radius:20px;padding:7px 10px}
+.hero{margin:20px 16px 10px;padding:20px;border:1px solid #3c375d;border-radius:18px;background:linear-gradient(120deg,#292045,#101a31)}
+.hero strong{font-size:20px}.hero p{color:#aeb5d8;font-size:13px;line-height:1.6}
+.pills{display:flex;gap:6px;flex-wrap:wrap}.pill{background:#231d3c;border:1px solid #524378;color:#c9bfff;padding:6px 9px;border-radius:20px;font-size:11px}
+main{flex:1;padding:10px 16px 20px;display:flex;flex-direction:column;gap:16px}
+.message{max-width:94%;padding:14px;border:1px solid #343850;border-radius:17px;background:#14192d;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}
+.message.user{align-self:flex-end;background:#30244a;border-color:#554273}
+.message.assistant{align-self:flex-start;width:min(100%,690px)}
+.who{font-size:10px;letter-spacing:.14em;font-weight:800;color:#a390ff;margin-bottom:9px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.stat{padding:11px;border:1px solid #3b415d;border-radius:11px;background:#101729}
+.stat b{display:block;font-size:17px;color:#69e3d6;margin-top:5px}.stat span{font-size:10px;color:#afb4cd}
+details{margin-top:12px;border-top:1px solid #383a54;padding-top:10px}summary{color:#b8aaff;cursor:pointer}
+footer{position:sticky;bottom:0;background:#0c1021ee;backdrop-filter:blur(18px);padding:12px 15px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #353555}
+form{display:flex;align-items:flex-end;gap:10px}textarea{background:#171b30;color:white;border:1px solid #444665;border-radius:14px;flex:1;resize:none;min-height:50px;max-height:150px;padding:14px;font:inherit}
+button{border:0;border-radius:13px;background:linear-gradient(135deg,#926cff,#32cdbf);color:#0c1020;font-weight:800;padding:15px;cursor:pointer}
+button:disabled{opacity:.5;cursor:wait}.utility{background:#20253c;color:#cdd0e9;padding:9px 13px;font-size:12px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:11px;color:#858fac}
+#error{color:#ffa9b5;font-size:12px;margin:8px 0 0}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><div class="logo">BC</div><div><h1>BottleCap <span style="color:#a88aff">RHAR</span></h1><small>MOBILE RESEARCH LAB · QWEN3-0.6B</small></div><span id="status">● kontroluji</span></div></header>
+<div class="hero"><strong>Reasoning. Measured.</strong><p>Jeden model. Jediný výzkum. Lokální chat na OnePlus Nord 4 s měřením každé generace. GGUF výsledky nejsou oficiální skóre BottleCapAI.</p><div class="pills"><span class="pill">🧠 Qwen3-0.6B</span><span class="pill">📱 Termux</span><span class="pill">🧪 CEP Research</span><span class="pill">🔒 127.0.0.1</span></div></div>
+<main id="messages" aria-live="polite"><div class="message assistant"><div class="who">BOTTLECAP · RESEARCH</div>Laboratoř připravena. Napiš otázku a pod každou odpovědí zobrazím dostupné metriky z llama.cpp. Pole, která runtime nevrátí, označím jako N/A.</div></main>
+<footer><div class="toolbar"><span>GGUF · NE_OFICIÁLNÍ TEST</span><button class="utility" id="reset" type="button">Nový chat</button></div><form id="form"><textarea id="input" rows="2" maxlength="8000" placeholder="Zeptej se Qwenu…" required></textarea><button id="send" type="submit">➤</button></form><div id="error" role="alert"></div></footer>
+</div>
+<script>
+const messages = [];
+const feed = document.getElementById('messages');
+const form = document.getElementById('form');
+const input = document.getElementById('input');
+const error = document.getElementById('error');
+const send = document.getElementById('send');
+const status = document.getElementById('status');
+const format = value => typeof value === 'number' ? value.toLocaleString('cs-CZ', {maximumFractionDigits: 2}) : 'N/A';
+function item(role, text, metrics, reasoning) {
+  const wrap = document.createElement('div');
+  wrap.className = 'message ' + role;
+  const who = document.createElement('div');
+  who.className = 'who';
+  who.textContent = role === 'user' ? 'TY' : 'QWEN3-0.6B · LOCAL';
+  const body = document.createElement('div');
+  body.textContent = text || '(prázdná odpověď)';
+  wrap.append(who, body);
+  if (metrics) {
+    const stats = document.createElement('div');
+    stats.className = 'stats';
+    [['Generované tokeny', metrics.generatedTokens], ['Prompt tokeny', metrics.promptTokens],
+     ['Rychlost · tok/s', metrics.tokensPerSecond], ['Generování · s', metrics.generationSeconds],
+     ['Reasoning tokeny', metrics.reasoningTokens], ['Ukončení', metrics.finishReason]].forEach(([name, value]) => {
+       const box = document.createElement('div');
+       box.className = 'stat';
+       const label = document.createElement('span');
+       label.textContent = name;
+       const number = document.createElement('b');
+       number.textContent = format(value);
+       box.append(label, number);
+       stats.append(box);
+     });
+    wrap.append(stats);
+  }
+  if (reasoning) {
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = 'Reasoning trace · zobrazit';
+    const text = document.createElement('pre');
+    text.style.whiteSpace = 'pre-wrap';
+    text.style.overflowWrap = 'anywhere';
+    text.textContent = reasoning;
+    details.append(summary, text);
+    wrap.append(details);
+  }
+  feed.append(wrap);
+  wrap.scrollIntoView({behavior: 'smooth', block: 'end'});
+}
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  const question = input.value.trim();
+  if (!question || send.disabled) return;
+  error.textContent = '';
+  input.value = '';
+  item('user', question);
+  messages.push({role: 'user', content: question});
+  send.disabled = true;
+  try {
+    const response = await fetch('/api/chat', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({messages: messages.slice(-20)})});
+    const data = await response.json();
+    if (!response.ok) throw Error(data.error || 'Model není dostupný');
+    item('assistant', data.answer, data.metrics, data.reasoning);
+    messages.push({role: 'assistant', content: data.answer});
+  } catch (cause) {
+    messages.pop();
+    error.textContent = 'Chyba: ' + cause.message;
+  } finally {
+    send.disabled = false;
+    input.focus();
+  }
+});
+document.getElementById('reset').addEventListener('click', () => {
+  messages.length = 0;
+  feed.replaceChildren();
+  item('assistant', 'Nová konverzace. Model zůstává Qwen3-0.6B.');
+});
+fetch('/health').then(r => {status.textContent = r.ok ? '● model online' : '● model offline'; status.style.color = r.ok ? '#60e6c9' : '#ffadad';}).catch(() => {status.textContent = '● offline';});
+</script>
+</body>
+</html>
