@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat/reasoning-compression
+      - feat/termux-qwen-research-chat
   pull_request:
   workflow_dispatch:
 
@@ -31,7 +32,21 @@ jobs:
           python-version: "3.11"
 
       - name: Compile Python sources
-        run: python -m compileall -q diagnostics tests utils
+        run: python -m compileall -q diagnostics tests utils mobile/termux
+
+      - name: Parse Windows PowerShell launchers
+        shell: pwsh
+        run: |
+          $paths = @('desktop/windows/Start-BottleCap.ps1', 'desktop/windows/Stop-BottleCap.ps1')
+          foreach ($path in $paths) {
+            $tokens = $null
+            $parseErrors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $path), [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors.Count -gt 0) {
+              $parseErrors | ForEach-Object { Write-Error $_.Message }
+              exit 1
+            }
+          }
 
       - name: Run RHAR CPU regression tests
         env:
@@ -68,4 +83,5 @@ jobs:
             tests.test_rhar_train_003 \
             tests.test_rhar_cep_pilot \
             tests.test_rhar_validation_compare \
+            tests.test_mobile_termux \
             -v
