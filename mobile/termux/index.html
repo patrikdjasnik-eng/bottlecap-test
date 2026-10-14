@@ -28,7 +28,12 @@ footer{position:sticky;bottom:0;background:#0c1021ee;backdrop-filter:blur(18px);
 form{display:flex;align-items:flex-end;gap:10px}textarea{background:#171b30;color:white;border:1px solid #444665;border-radius:14px;flex:1;resize:none;min-height:50px;max-height:150px;padding:14px;font:inherit}
 button{border:0;border-radius:13px;background:linear-gradient(135deg,#926cff,#32cdbf);color:#0c1020;font-weight:800;padding:15px;cursor:pointer}
 button:disabled{opacity:.5;cursor:wait}.utility{background:#20253c;color:#cdd0e9;padding:9px 13px;font-size:12px}
-.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:11px;color:#858fac}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:11px;color:#858fac}
+.toolbar select{appearance:none;border:1px solid #51446c;border-radius:10px;background:#211b38;color:#decfff;padding:9px 10px;max-width:185px;font:inherit}
+.toolbar select:focus-visible{outline:2px solid #65e1d1}
+.toolbar select option{background:#14192d;color:#eff1ff}
+.toolbar .left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mode-note{color:#a3aac7;font-size:11px;margin-bottom:8px}
 #error{color:#ffa9b5;font-size:12px;margin:8px 0 0}
 </style>
 </head>
@@ -37,7 +42,7 @@ button:disabled{opacity:.5;cursor:wait}.utility{background:#20253c;color:#cdd0e9
 <header><div class="brand"><div class="logo">BC</div><div><h1>BottleCap <span style="color:#a88aff">RHAR</span></h1><small>LOCAL RESEARCH LAB · QWEN3-0.6B</small></div><span id="status">● kontroluji</span></div></header>
 <div class="hero"><strong>Reasoning. Measured.</strong><p>Jeden model. Jediný výzkum. Lokální chat na Windows PC nebo v Termuxu s měřením každé generace. GGUF výsledky nejsou oficiální skóre BottleCapAI.</p><div class="pills"><span class="pill">🧠 Qwen3-0.6B</span><span class="pill">🖥️ Windows / Termux</span><span class="pill">🧪 CEP Research</span><span class="pill">🔒 127.0.0.1</span></div></div>
 <main id="messages" aria-live="polite"><div class="message assistant"><div class="who">BOTTLECAP · RESEARCH</div>Laboratoř připravena. Napiš otázku a pod každou odpovědí zobrazím dostupné metriky z llama.cpp. Pole, která runtime nevrátí, označím jako N/A.</div></main>
-<footer><div class="toolbar"><span>GGUF · NE_OFICIÁLNÍ TEST</span><button class="utility" id="reset" type="button">Nový chat</button></div><form id="form"><textarea id="input" rows="2" maxlength="8000" placeholder="Zeptej se Qwenu…" required></textarea><button id="send" type="submit">➤</button></form><div id="error" role="alert"></div></footer>
+<footer><div class="toolbar"><div class="left"><label for="languageMode">Jazykový test</label><select id="languageMode" aria-label="Režim odpovídání"><option value="cs" selected>🇨🇿 Česky · instrukce</option><option value="raw">RAW · bez instrukce</option></select></div><button class="utility" id="reset" type="button">Nový chat</button></div><div class="mode-note" id="modeNote">Chatová instrukce pro češtinu. Nemění váhy modelu ani oficiální evaluaci.</div><form id="form"><textarea id="input" rows="2" maxlength="8000" placeholder="Zeptej se Qwenu…" required></textarea><button id="send" type="submit">➤</button></form><div id="error" role="alert"></div></footer>
 </div>
 <script>
 const messages = [];
@@ -47,8 +52,10 @@ const input = document.getElementById('input');
 const error = document.getElementById('error');
 const send = document.getElementById('send');
 const status = document.getElementById('status');
+const languageMode = document.getElementById('languageMode');
+const modeNote = document.getElementById('modeNote');
 const format = value => typeof value === 'number' ? value.toLocaleString('cs-CZ', {maximumFractionDigits: 2}) : (typeof value === 'string' && value ? value : 'N/A');
-function item(role, text, metrics, reasoning) {
+function item(role, text, metrics, reasoning, responseMode) {
   const wrap = document.createElement('div');
   wrap.className = 'message ' + role;
   const who = document.createElement('div');
@@ -62,7 +69,7 @@ function item(role, text, metrics, reasoning) {
     stats.className = 'stats';
     [['Generované tokeny', metrics.generatedTokens], ['Prompt tokeny', metrics.promptTokens],
      ['Rychlost · tok/s', metrics.tokensPerSecond], ['Generování · s', metrics.generationSeconds],
-     ['Reasoning tokeny', metrics.reasoningTokens], ['Ukončení', metrics.finishReason]].forEach(([name, value]) => {
+     ['Reasoning tokeny', metrics.reasoningTokens], ['Ukončení', metrics.finishReason], ['Jazykový režim', responseMode === 'cs' ? 'CZ instrukce' : 'RAW']].forEach(([name, value]) => {
        const box = document.createElement('div');
        box.className = 'stat';
        const label = document.createElement('span');
@@ -97,15 +104,19 @@ form.addEventListener('submit', async event => {
   item('user', question);
   messages.push({role: 'user', content: question});
   send.disabled = true;
+  languageMode.disabled = true;
   try {
-    const response = await fetch('/api/chat', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({messages: messages.slice(-20)})});
+    const response = await fetch('/api/chat', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({messages: messages.slice(-20), languageMode: languageMode.value})});
     const data = await response.json();
     if (!response.ok) {
       const summary = data.detail || data.error || 'Model není dostupný';
       const code = data.upstreamStatus ? ' (llama.cpp HTTP ' + data.upstreamStatus + ')' : '';
       throw Error(summary + code);
     }
-    item('assistant', data.answer, data.metrics, data.reasoning);
+    item('assistant', data.answer, data.metrics, data.reasoning, data.languageMode);
+    if (!data.answer && data.metrics?.finishReason === 'length') {
+      error.textContent = 'Limit tokenů vyčerpaný během uvažování. Toto není dokončená odpověď.';
+    }
     messages.push({role: 'assistant', content: data.answer});
     status.textContent = '● model odpovídá';
     status.style.color = '#60e6c9';
@@ -117,13 +128,23 @@ form.addEventListener('submit', async event => {
     status.style.color = '#ffadad';
   } finally {
     send.disabled = false;
+    languageMode.disabled = false;
     input.focus();
   }
 });
-document.getElementById('reset').addEventListener('click', () => {
+function clearConversation() {
   messages.length = 0;
   feed.replaceChildren();
+  input.value = '';
+  error.textContent = '';
   item('assistant', 'Nová konverzace. Model zůstává Qwen3-0.6B.');
+}
+document.getElementById('reset').addEventListener('click', clearConversation);
+languageMode.addEventListener('change', () => {
+  modeNote.textContent = languageMode.value === 'cs'
+    ? 'Chatová instrukce pro češtinu. Nemění váhy modelu ani oficiální evaluaci.'
+    : 'Neasistovaný test schopností Qwenu bez jazykové instrukce. Jen lokální GGUF měření.';
+  clearConversation();
 });
 fetch('/health').then(r => {status.textContent = r.ok ? '● server připraven' : '● server offline'; status.style.color = r.ok ? '#60e6c9' : '#ffadad';}).catch(() => {status.textContent = '● server offline';});
 </script>
