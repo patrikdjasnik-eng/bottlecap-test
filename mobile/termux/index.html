@@ -47,7 +47,7 @@ const input = document.getElementById('input');
 const error = document.getElementById('error');
 const send = document.getElementById('send');
 const status = document.getElementById('status');
-const format = value => typeof value === 'number' ? value.toLocaleString('cs-CZ', {maximumFractionDigits: 2}) : 'N/A';
+const format = value => typeof value === 'number' ? value.toLocaleString('cs-CZ', {maximumFractionDigits: 2}) : (typeof value === 'string' && value ? value : 'N/A');
 function item(role, text, metrics, reasoning) {
   const wrap = document.createElement('div');
   wrap.className = 'message ' + role;
