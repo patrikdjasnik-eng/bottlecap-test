@@ -4,13 +4,18 @@ import argparse
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import os
 from pathlib import Path
 from urllib.error import URLError, HTTPError
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parent
 MAX_BODY = 65536
-UPSTREAM = "http://127.0.0.1:8080/v1/chat/completions"
+LLAMA_PORT = int(os.environ.get("BOTTLECAP_LLAMA_PORT", "8080"))
+if not 1024 <= LLAMA_PORT <= 65535:
+    raise ValueError("BOTTLECAP_LLAMA_PORT must be between 1024 and 65535")
+UPSTREAM = f"http://127.0.0.1:{LLAMA_PORT}/v1/chat/completions"
+HEALTH_URL = f"http://127.0.0.1:{LLAMA_PORT}/health"
 
 
 def extract(data):
@@ -64,7 +69,7 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(body)
         elif self.path == "/health":
             try:
-                with urlopen("http://127.0.0.1:8080/health", timeout=3) as response:
+                with urlopen(HEALTH_URL, timeout=3) as response:
                     self.respond(200, {"server": "online", "upstream": response.status})
             except (URLError, TimeoutError):
                 self.respond(503, {"server": "offline"})
