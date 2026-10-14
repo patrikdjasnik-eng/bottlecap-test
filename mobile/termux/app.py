@@ -18,6 +18,39 @@ UPSTREAM = f"http://127.0.0.1:{LLAMA_PORT}/v1/chat/completions"
 HEALTH_URL = f"http://127.0.0.1:{LLAMA_PORT}/health"
 
 
+def upstream_error_detail(exc):
+    """Return only llama.cpp's error description, not echoed chat content."""
+    try:
+        payload = json.loads(exc.read(8192).decode("utf-8", errors="replace"))
+        if isinstance(payload, dict):
+            error = payload.get("error", payload)
+            if isinstance(error, dict):
+                description = error.get("message") or error.get("type")
+            elif isinstance(error, str):
+                description = error
+            else:
+                description = None
+            if isinstance(description, str):
+                return description.strip()[:300]
+    except (ValueError, UnicodeDecodeError, OSError):
+        pass
+    return f"llama.cpp HTTP {exc.code}"
+
+
+def call_model(messages, timeout=180):
+    payload = {
+        "messages": messages, "temperature": 0.6, "top_p": 0.95,
+        "max_tokens": 512, "stream": False,
+        "chat_template_kwargs": {"enable_thinking": True},
+    }
+    request = Request(
+        UPSTREAM, data=json.dumps(payload).encode("utf-8"),
+        method="POST", headers={"Content-Type": "application/json"},
+    )
+    with urlopen(request, timeout=timeout) as response:
+        return json.load(response)
+
+
 def extract(data):
     choice = (data.get("choices") or [{}])[0]
     message = choice.get("message") or {}
@@ -70,9 +103,14 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/health":
             try:
                 with urlopen(HEALTH_URL, timeout=3) as response:
-                    self.respond(200, {"server": "online", "upstream": response.status})
-            except (URLError, TimeoutError):
-                self.respond(503, {"server": "offline"})
+                    state = json.load(response)
+                    self.respond(200, {
+                        "server": "online", "upstream": response.status,
+                        "status": state.get("status", "unknown"),
+                        "inferenceVerified": False,
+                    })
+            except (HTTPError, URLError, TimeoutError, ValueError):
+                self.respond(503, {"server": "offline", "inferenceVerified": False})
         else:
             self.respond(404, {"error": "not_found"})
 
@@ -90,13 +128,7 @@ class Handler(BaseHTTPRequestHandler):
             if any(not isinstance(m, dict) or m.get("role") not in ("user", "assistant")
                    or not isinstance(m.get("content"), str) or len(m["content"]) > 8000 for m in messages):
                 return self.respond(400, {"error": "invalid_message_content"})
-            payload = {"messages": messages, "temperature": 0.6, "top_p": 0.95,
-                       "max_tokens": 512, "stream": False, "chat_template_kwargs": {"enable_thinking": True}}
-            req = Request(UPSTREAM, data=json.dumps(payload).encode(), method="POST",
-                          headers={"Content-Type": "application/json"})
-            with urlopen(req, timeout=180) as response:
-                data = json.load(response)
-            result = extract(data)
+            result = extract(call_model(messages))
             result["timestamp"] = datetime.now(timezone.utc).isoformat()
             result["runtime"] = "llama.cpp / GGUF (unofficial)"
             folder = ROOT / "runs"
@@ -106,12 +138,23 @@ class Handler(BaseHTTPRequestHandler):
                 file.write(json.dumps({"timestamp": result["timestamp"],
                     "runtime": result["runtime"], **result["metrics"]}) + "\n")
             self.respond(200, result)
-        except (ValueError, KeyError, json.JSONDecodeError):
-            self.respond(400, {"error": "invalid_json"})
-        except (HTTPError, URLError, TimeoutError) as exc:
-            self.respond(502, {"error": "model_unavailable", "detail": str(exc)[:200]})
+        except HTTPError as exc:
+            self.respond(502, {
+                "error": "model_request_rejected",
+                "upstreamStatus": exc.code,
+                "detail": upstream_error_detail(exc),
+            })
+        except (URLError, TimeoutError) as exc:
+            self.respond(502, {
+                "error": "model_unavailable",
+                "detail": "llama.cpp did not respond. Check llama.stderr.log.",
+            })
+        except json.JSONDecodeError:
+            self.respond(502, {"error": "invalid_model_response", "detail": "llama.cpp returned invalid JSON."})
+        except (ValueError, KeyError, TypeError):
+            self.respond(400, {"error": "invalid_request"})
         except Exception:
-            self.respond(500, {"error": "internal_error"})
+            self.respond(500, {"error": "internal_error", "detail": "Check chat.stderr.log."})
 
 
 def main():
