@@ -100,12 +100,21 @@ form.addEventListener('submit', async event => {
   try {
     const response = await fetch('/api/chat', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({messages: messages.slice(-20)})});
     const data = await response.json();
-    if (!response.ok) throw Error(data.error || 'Model není dostupný');
+    if (!response.ok) {
+      const summary = data.detail || data.error || 'Model není dostupný';
+      const code = data.upstreamStatus ? ' (llama.cpp HTTP ' + data.upstreamStatus + ')' : '';
+      throw Error(summary + code);
+    }
     item('assistant', data.answer, data.metrics, data.reasoning);
     messages.push({role: 'assistant', content: data.answer});
+    status.textContent = '● model odpovídá';
+    status.style.color = '#60e6c9';
   } catch (cause) {
     messages.pop();
+    input.value = question;
     error.textContent = 'Chyba: ' + cause.message;
+    status.textContent = '● inference selhala';
+    status.style.color = '#ffadad';
   } finally {
     send.disabled = false;
     input.focus();
@@ -116,7 +125,7 @@ document.getElementById('reset').addEventListener('click', () => {
   feed.replaceChildren();
   item('assistant', 'Nová konverzace. Model zůstává Qwen3-0.6B.');
 });
-fetch('/health').then(r => {status.textContent = r.ok ? '● model online' : '● model offline'; status.style.color = r.ok ? '#60e6c9' : '#ffadad';}).catch(() => {status.textContent = '● offline';});
+fetch('/health').then(r => {status.textContent = r.ok ? '● server připraven' : '● server offline'; status.style.color = r.ok ? '#60e6c9' : '#ffadad';}).catch(() => {status.textContent = '● server offline';});
 </script>
 </body>
 </html>
