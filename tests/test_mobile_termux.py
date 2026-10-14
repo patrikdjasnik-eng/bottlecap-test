@@ -39,6 +39,37 @@ class MobileChatTest(unittest.TestCase):
         self.assertIsNone(result["metrics"]["generationSeconds"])
 
 
+    def test_czech_chat_mode_uses_local_system_instruction(self):
+        original = [{"role": "user", "content": "Kolik je pět plus sedm?"}]
+        prepared = module.prepare_messages(original, "cs")
+        self.assertEqual(prepared[0]["role"], "system")
+        self.assertIn("Czech", prepared[0]["content"])
+        self.assertEqual(prepared[1:], original)
+        self.assertEqual(len(original), 1)
+
+    def test_raw_chat_mode_has_no_language_instruction(self):
+        original = [{"role": "user", "content": "Jaký je výsledek?"}]
+        self.assertEqual(module.prepare_messages(original, "raw"), original)
+
+    def test_unknown_language_mode_rejected(self):
+        with self.assertRaises(ValueError):
+            module.prepare_messages([{"role": "user", "content": "ahoj"}], "xx")
+
+    def test_czech_chat_request_preserves_thinking(self):
+        response = io.BytesIO(json.dumps({
+            "choices": [{"message": {"content": "Sedm."}}]
+        }).encode("utf-8"))
+        with patch.object(module, "urlopen", return_value=response) as mocked:
+            module.call_model(
+                [{"role": "user", "content": "Kolik je tři a čtyři?"}],
+                language_mode="cs",
+            )
+        payload = json.loads(mocked.call_args.args[0].data)
+        self.assertEqual(payload["messages"][0]["role"], "system")
+        self.assertEqual(payload["messages"][1]["content"], "Kolik je tři a čtyři?")
+        self.assertTrue(payload["chat_template_kwargs"]["enable_thinking"])
+
+
     def test_model_request_keeps_thinking_enabled(self):
         response = io.BytesIO(json.dumps({
             "choices": [{"message": {"content": "43"}}]
