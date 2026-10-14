@@ -1,5 +1,9 @@
 """CPU-only tests for mobile parsing; no model, Termux or GPU needed."""
 import importlib.util
+import io
+import json
+from unittest.mock import patch
+from urllib.error import HTTPError
 from pathlib import Path
 import unittest
 
@@ -33,6 +37,31 @@ class MobileChatTest(unittest.TestCase):
         result = module.extract({"choices": [{"message": {"content": "test"}}]})
         self.assertIsNone(result["metrics"]["reasoningTokens"])
         self.assertIsNone(result["metrics"]["generationSeconds"])
+
+
+    def test_model_request_keeps_thinking_enabled(self):
+        response = io.BytesIO(json.dumps({
+            "choices": [{"message": {"content": "43"}}]
+        }).encode("utf-8"))
+        with patch.object(module, "urlopen", return_value=response) as mocked:
+            module.call_model([{"role": "user", "content": "5 * 12 - 17"}])
+        request = mocked.call_args.args[0]
+        payload = json.loads(request.data)
+        self.assertEqual(payload["chat_template_kwargs"], {"enable_thinking": True})
+        self.assertEqual(payload["max_tokens"], 512)
+        self.assertFalse(payload["stream"])
+
+    def test_upstream_error_shows_reason_not_request(self):
+        message = '{"error":{"code":400,"message":"unsupported template option"}}'
+        failure = HTTPError("http://127.0.0.1", 400, "Bad Request", None,
+                            io.BytesIO(message.encode()))
+        detail = module.upstream_error_detail(failure)
+        self.assertEqual(detail, "unsupported template option")
+
+    def test_upstream_error_does_not_reflect_arbitrary_response(self):
+        failure = HTTPError("http://127.0.0.1", 500, "Failed", None,
+                            io.BytesIO(b"client prompt: personal information"))
+        self.assertEqual(module.upstream_error_detail(failure), "llama.cpp HTTP 500")
 
 
 if __name__ == "__main__":
