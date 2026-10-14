@@ -37,9 +37,28 @@ def upstream_error_detail(exc):
     return f"llama.cpp HTTP {exc.code}"
 
 
-def call_model(messages, timeout=180):
+LANGUAGE_MODES = {"raw", "cs"}
+CZECH_SYSTEM_PROMPT = (
+    "You are Qwen3-0.6B in a Czech-language chat experiment. "
+    "Understand the user's request and reply naturally in Czech (cs-CZ). "
+    "Keep numbers, logical conditions, and facts unchanged. "
+    "If you do not understand a Czech question, ask for clarification in Czech "
+    "instead of guessing. Keep your final answer clear. "
+    "This is not an official model benchmark."
+)
+
+
+def prepare_messages(messages, language_mode="raw"):
+    if language_mode not in LANGUAGE_MODES:
+        raise ValueError("invalid language mode")
+    if language_mode == "raw":
+        return list(messages)
+    return [{"role": "system", "content": CZECH_SYSTEM_PROMPT}, *messages]
+
+
+def call_model(messages, timeout=180, language_mode="raw"):
     payload = {
-        "messages": messages, "temperature": 0.6, "top_p": 0.95,
+        "messages": prepare_messages(messages, language_mode), "temperature": 0.6, "top_p": 0.95,
         "max_tokens": 512, "stream": False,
         "chat_template_kwargs": {"enable_thinking": True},
     }
@@ -128,7 +147,11 @@ class Handler(BaseHTTPRequestHandler):
             if any(not isinstance(m, dict) or m.get("role") not in ("user", "assistant")
                    or not isinstance(m.get("content"), str) or len(m["content"]) > 8000 for m in messages):
                 return self.respond(400, {"error": "invalid_message_content"})
-            result = extract(call_model(messages))
+            language_mode = request.get("languageMode", "raw")
+            if language_mode not in LANGUAGE_MODES:
+                return self.respond(400, {"error": "invalid_language_mode"})
+            result = extract(call_model(messages, language_mode=language_mode))
+            result["languageMode"] = language_mode
             result["timestamp"] = datetime.now(timezone.utc).isoformat()
             result["runtime"] = "llama.cpp / GGUF (unofficial)"
             folder = ROOT / "runs"
@@ -136,7 +159,8 @@ class Handler(BaseHTTPRequestHandler):
             # Store aggregate research data only; never store private chat text by default.
             with (folder / "metrics.jsonl").open("a", encoding="utf-8") as file:
                 file.write(json.dumps({"timestamp": result["timestamp"],
-                    "runtime": result["runtime"], **result["metrics"]}) + "\n")
+                    "runtime": result["runtime"], "languageMode": language_mode,
+                    **result["metrics"]}) + "\n")
             self.respond(200, result)
         except HTTPError as exc:
             self.respond(502, {
